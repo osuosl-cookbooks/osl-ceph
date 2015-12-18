@@ -6,3 +6,6 @@ description      'Installs/Configures osl-ceph'
 long_description 'Installs/Configures osl-ceph'
 version          '0.1.0'
 
+
+supports         'centos', '~> 6'
+supports         'centos', '~> 7'
