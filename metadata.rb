@@ -1,11 +1,11 @@
 name             'osl-ceph'
 maintainer       'Oregon State University'
 maintainer_email 'chef@osuosl.org'
-license          'apache2'
+license          'apachev2'
+issues_url       'https://github.com/osuosl-cookbooks/osl-ceph/issues'
+source_url       'https://github.com/osuosl-cookbooks/osl-ceph'
 description      'Installs/Configures osl-ceph'
 long_description 'Installs/Configures osl-ceph'
 version          '0.1.0'
 
-
-supports         'centos', '~> 6'
-supports         'centos', '~> 7'
+supports         'centos', '~> 7.0'

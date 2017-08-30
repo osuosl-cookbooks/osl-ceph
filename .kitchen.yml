@@ -1,7 +1,4 @@
 ---
-provisioner:
-  name: chef_solo
-
 suites:
   - name: default
     run_list:
