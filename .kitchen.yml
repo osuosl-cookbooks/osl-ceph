@@ -50,3 +50,7 @@ suites:
   - name: mon
     run_list:
       - role[ceph_mon]
+  - name: mgr
+    run_list:
+      - role[ceph_mon]
+      - role[ceph_mgr]

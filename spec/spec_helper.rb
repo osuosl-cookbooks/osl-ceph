@@ -40,5 +40,7 @@ shared_context 'common_stubs' do
     stub_command('grep \'admin\' /etc/ceph/ceph.mon.keyring')
     stub_command('test -s /var/lib/ceph/mon/ceph-Fauxhai/keyring')
     stub_command('test -f /var/lib/ceph/mon/ceph-Fauxhai/done')
+    stub_command('test -d /var/lib/ceph/mgr/ceph-Fauxhai')
+    stub_command('test -s /var/lib/ceph/mgr/ceph-Fauxhai/keyring')
   end
 end
