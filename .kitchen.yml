@@ -1,12 +1,46 @@
 ---
 driver:
   name: openstack
+  flavor_ref: 'm1.large'
   user_data: userdata.txt
 
 driver_config:
   server_name: node1
 
+provisioner:
+  name: chef_zero
+  roles_path: test/integration/roles
+  attributes:
+    yum:
+      epel:
+        baseurl: http://epel.osuosl.org/7/$basearch
+        gpgkey: http://epel.osuosl.org/RPM-GPG-KEY-EPEL-7
+    ceph:
+      mon:
+        role: 'ceph_mon'
+      mds:
+        role: 'ceph_mds'
+      network:
+        public:
+          cidr:
+            - '10.1.100.0/24'
+        cluster:
+          cidr:
+            - '10.1.100.0/24'
+      osd:
+        role: 'ceph_osd'
+        devices:
+          -
+            data: '/dev/loop0'
+          -
+            data: '/dev/loop1'
+          -
+            data: '/dev/loop2'
+
 suites:
   - name: default
     run_list:
-      - recipe[osl-ceph]
+      - recipe[ceph_test]
+      - role[ceph_mon]
+      - role[ceph_mgr]
+      - role[ceph_osd]
