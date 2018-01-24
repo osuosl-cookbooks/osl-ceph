@@ -17,3 +17,4 @@
 # limitations under the License.
 node.default['ceph']['version'] = 'luminous'
 node.default['ceph']['mgr']['enable'] = true
+include_recipe 'firewall::ceph'
