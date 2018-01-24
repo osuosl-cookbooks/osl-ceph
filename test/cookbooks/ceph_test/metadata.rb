@@ -5,5 +5,3 @@ license          'Apache 2.0'
 description      'Installs/Configures ceph_test'
 long_description ''
 version          '0.1.0'
-
-depends          'resolver'

@@ -42,5 +42,8 @@ shared_context 'common_stubs' do
     stub_command('test -f /var/lib/ceph/mon/ceph-Fauxhai/done')
     stub_command('test -d /var/lib/ceph/mgr/ceph-Fauxhai')
     stub_command('test -s /var/lib/ceph/mgr/ceph-Fauxhai/keyring')
+    stub_command('test -d /etc/ceph/scripts')
+    stub_command('test -f /etc/ceph/scripts/ceph_journal.sh')
+    stub_command('test -s /var/lib/ceph/bootstrap-osd/ceph.keyring')
   end
 end
