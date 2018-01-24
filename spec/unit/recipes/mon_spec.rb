@@ -1,6 +1,6 @@
 require_relative '../../spec_helper'
 
-describe 'osl-ceph::default' do
+describe 'osl-ceph::mon' do
   ALL_PLATFORMS.each do |p|
     context "#{p[:platform]} #{p[:version]}" do
       include_context 'chef_server', p

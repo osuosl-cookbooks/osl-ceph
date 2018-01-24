@@ -1,8 +1,8 @@
 #
 # Cookbook:: osl-ceph
-# Recipe:: default
+# Recipe:: mon
 #
-# Copyright:: 2017, Oregon State University
+# Copyright:: 2018, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-node.default['ceph']['version'] = 'luminous'
-node.default['ceph']['mgr']['enable'] = true
-include_recipe 'firewall::ceph'
-include_recipe 'ceph-chef'
-include_recipe 'ceph-chef::repo'
+include_recipe 'osl-ceph'
+include_recipe 'ceph-chef::mon'
+include_recipe 'ceph-chef::mon_start'
