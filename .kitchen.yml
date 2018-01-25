@@ -34,11 +34,17 @@ provisioner:
         role: 'ceph_osd'
         devices:
           -
-            data: '/dev/loop0'
+            data: '/dev/mapper/loop2p1'
+            block_db: '/dev/mapper/loop0p1'
+            block_wal: '/dev/mapper/loop1p1'
           -
-            data: '/dev/loop1'
+            data: '/dev/mapper/loop3p1'
+            block_db: '/dev/mapper/loop0p2'
+            block_wal: '/dev/mapper/loop1p2'
           -
-            data: '/dev/loop2'
+            data: '/dev/mapper/loop4p1'
+            block_db: '/dev/mapper/loop0p3'
+            block_wal: '/dev/mapper/loop1p3'
 
 suites:
   - name: default

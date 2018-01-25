@@ -16,5 +16,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 include_recipe 'osl-ceph'
+
+package 'lvm2'
+
 include_recipe 'ceph-chef::osd'
 include_recipe 'ceph-chef::osd_start_all'

@@ -17,6 +17,7 @@
 # limitations under the License.
 node.default['ceph']['version'] = 'luminous'
 node.default['ceph']['mgr']['enable'] = true
+node.default['ceph']['osd']['type'] = 'bluestore'
 include_recipe 'firewall::ceph'
 include_recipe 'ceph-chef'
 include_recipe 'ceph-chef::repo'
