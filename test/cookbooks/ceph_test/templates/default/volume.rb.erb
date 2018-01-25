@@ -1,0 +1,45 @@
+#!/opt/chef/embedded/bin/ruby
+require 'fog/openstack'
+@connection_params = {
+  provider:               :openstack,
+  openstack_auth_url:     '<%= node['ceph_test']['openstack_auth_url'] %>',
+  openstack_username:     '<%= node['ceph_test']['openstack_username'] %>',
+  openstack_api_key:      '<%= node['ceph_test']['openstack_api_key'] %>',
+  openstack_tenant:       '<%= node['ceph_test']['openstack_tenant'] %>'
+}
+
+compute_client ||= ::Fog::Compute.new(@connection_params)
+
+begin
+  vm = compute_client.servers.get('<%= @vm_uuid %>')
+  compute_client.volumes.all(options: true).each do |volume|
+    if volume.name =~ /ceph-test-vd[a-z]/
+      if volume.ready?
+        puts "deleting #{volume.name}"
+        volume.destroy
+      end
+    end
+  end
+  ('b'..'f').to_a.each do |i|
+    puts "creating ceph-test-vd#{i}"
+    volume = compute_client.volumes.create name: "ceph-test-vd#{i}-#{vm.id}", size: 4, description: ''
+    volume.reload
+    until volume.ready?
+      puts "volume #{volume.name} not ready, waiting.."
+      volume.reload
+      sleep 2
+    end
+    puts "attaching ceph-test-vd#{i} to #{vm.name}"
+    vm.attach_volume(volume.id, "/dev/vd#{i}")
+  end
+  sleep 5
+
+rescue => e
+  begin
+    puts JSON.parse(e.response.body)['badRequest']['message']
+    exit 1
+  rescue => error
+    puts error
+    exit 1
+  end
+end

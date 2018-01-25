@@ -34,17 +34,22 @@ provisioner:
         role: 'ceph_osd'
         devices:
           -
-            data: '/dev/mapper/loop2p1'
-            block_db: '/dev/mapper/loop0p1'
-            block_wal: '/dev/mapper/loop1p1'
+            data: '/dev/vdd1'
+            block_db: '/dev/vdb1'
+            block_wal: '/dev/vdc1'
           -
-            data: '/dev/mapper/loop3p1'
-            block_db: '/dev/mapper/loop0p2'
-            block_wal: '/dev/mapper/loop1p2'
+            data: '/dev/vde1'
+            block_db: '/dev/vdb2'
+            block_wal: '/dev/vdc2'
           -
-            data: '/dev/mapper/loop4p1'
-            block_db: '/dev/mapper/loop0p3'
-            block_wal: '/dev/mapper/loop1p3'
+            data: '/dev/vdf1'
+            block_db: '/dev/vdb3'
+            block_wal: '/dev/vdc3'
+    ceph_test:
+      openstack_auth_url: <%= "#{ENV['OS_AUTH_URL']}/tokens" %>
+      openstack_username: <%= ENV['OS_USERNAME'] %>
+      openstack_api_key: <%= ENV['OS_PASSWORD'] %>
+      openstack_tenant: <%= ENV['OS_TENANT_NAME'] %>
 
 suites:
   - name: default

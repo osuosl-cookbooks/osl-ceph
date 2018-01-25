@@ -1,33 +1,47 @@
 # Create wal and blk devices
-0.upto(1) do |i|
+chef_gem 'fog-openstack' do
+  compile_time true
+end
+
+vm_uuid = File.read('/run/cloud-init/.instance-id').strip
+
+template '/root/volume.rb' do
+  source 'volume.rb.erb'
+  sensitive true
+  mode '750'
+  variables(vm_uuid: vm_uuid)
+end
+
+execute 'create volumes' do
+  command '/root/volume.rb'
+  live_stream true
+  creates '/dev/vdf'
+end
+
+# Format wal and blk devices
+('b'..'c').to_a.each do |i|
   execute "create ssd#{i}" do
     command <<-EOF
-      dd if=/dev/zero of=/root/loop#{i} bs=1M count=4096
-      losetup /dev/loop#{i} /root/loop#{i}
-      parted --script /dev/loop#{i} \
+      parted --script /dev/vd#{i} \
         mklabel gpt \
         mkpart primary 1MiB 512MiB \
         mkpart primary 512MiB 1Gib \
         mkpart primary 1Gib 1.5Gib \
         mkpart primary 1.5Gib 2Gib
-      kpartx -a /dev/loop#{i}
     EOF
-    creates "/dev/mapper/loop#{i}p1"
+    creates "/dev/vd#{i}1"
   end
 end
 
 # Create OSD devices
-2.upto(4) do |i|
+('d'..'f').to_a.each do |i|
   execute "create osd#{i}" do
     command <<-EOF
-      dd if=/dev/zero of=/root/loop#{i} bs=1M count=4096
-      losetup /dev/loop#{i} /root/loop#{i}
-      parted --script /dev/loop#{i} \
+      parted --script /dev/vd#{i} \
         mklabel gpt \
         mkpart primary 1 100%
-      kpartx -a /dev/loop#{i}
     EOF
-    creates "/dev/mapper/loop#{i}p1"
+    creates "/dev/vd#{i}1"
   end
 end
 
