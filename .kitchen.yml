@@ -54,10 +54,7 @@ provisioner:
 suites:
   - name: default
     run_list:
-      - recipe[ceph_test]
-      - role[ceph_mon]
-      - role[ceph_mgr]
-      - role[ceph_osd]
+      - recipe[osl-ceph]
   - name: mon
     run_list:
       - role[ceph_mon]

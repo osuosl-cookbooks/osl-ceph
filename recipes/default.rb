@@ -18,6 +18,14 @@
 node.default['ceph']['version'] = 'luminous'
 node.default['ceph']['mgr']['enable'] = true
 node.default['ceph']['osd']['type'] = 'bluestore'
+
+if node['kernel']['machine'] == 'ppc64le'
+  node.override['ceph']['rhel']['stable']['repository'] =
+    "http://ftp.osuosl.org/pub/osl/repos/yum/openpower/centos-$releasever/ppc64le/ceph-#{node['ceph']['version']}/"
+  node.override['ceph']['rhel']['stable']['repository_key'] =
+    'http://ftp.osuosl.org/pub/osl/repos/yum/RPM-GPG-KEY-osuosl'
+end
+
 include_recipe 'firewall::ceph'
 include_recipe 'ceph-chef'
 include_recipe 'ceph-chef::repo'
