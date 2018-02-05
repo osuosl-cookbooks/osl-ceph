@@ -15,5 +15,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+systemd_service 'ceph-mgr@' do
+  restart_sec 10
+  start_limit_burst 5
+  override 'ceph-mgr@'
+  drop_in true
+end
+
 include_recipe 'osl-ceph'
 include_recipe 'ceph-chef::mgr'
