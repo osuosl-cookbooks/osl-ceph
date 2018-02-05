@@ -17,14 +17,15 @@ RSpec.configure do |config|
   config.log_level = :fatal
 end
 
-shared_context 'chef_server' do |platform|
+shared_context 'chef_server' do |platform, arch|
   cached(:chef_run) do
     mon_node = stub_node('mon', platform) do |node|
       node.automatic['fqdn'] = 'ceph-mon.example.org'
       node.automatic['roles'] = 'search-ceph-mon'
     end
-    ChefSpec::ServerRunner.new(platform) do |_node, server|
+    ChefSpec::ServerRunner.new(platform) do |node, server|
       server.create_node(mon_node)
+      node.automatic['kernel']['machine'] = arch.nil? ? 'x86_64' : arch
     end.converge(described_recipe)
   end
 end

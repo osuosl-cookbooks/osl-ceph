@@ -8,6 +8,9 @@ describe 'osl-ceph::mon' do
       it 'converges successfully' do
         expect { chef_run }.to_not raise_error
       end
+      it do
+        expect(chef_run).to_not create_cookbook_file('/etc/systemd/system/ceph-mon@.service')
+      end
     end
   end
 end
