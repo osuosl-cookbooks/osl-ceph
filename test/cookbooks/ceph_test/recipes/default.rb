@@ -44,7 +44,3 @@ end
     creates "/dev/vd#{i}1"
   end
 end
-
-execute 'hostnamectl set-hostname node1.example.org' do
-  not_if 'hostname -f | grep node1.example.org'
-end
