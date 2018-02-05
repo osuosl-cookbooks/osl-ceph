@@ -18,6 +18,10 @@
 node.default['ceph']['version'] = 'luminous'
 node.default['ceph']['mgr']['enable'] = true
 node.default['ceph']['osd']['type'] = 'bluestore'
+node.default['ceph']['init_style'] = 'systemd'
+%w(mds mon osd radosgw rbd).each do |s|
+  node.default['ceph'][s]['init_style'] = 'systemd'
+end
 
 if node['kernel']['machine'] == 'ppc64le'
   node.override['ceph']['rhel']['stable']['repository'] =
