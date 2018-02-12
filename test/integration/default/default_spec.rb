@@ -8,6 +8,12 @@ describe command('ceph --version') do
   its('stdout') { should include 'luminous' }
 end
 
+describe file('/etc/ceph') do
+  its('owner') { should eq 'ceph' }
+  its('group') { should eq 'ceph' }
+  its('mode') { should cmp '0750' }
+end
+
 describe yum.repo('ceph') do
   it { should exist }
   it { should be_enabled }

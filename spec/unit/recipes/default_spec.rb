@@ -11,6 +11,13 @@ describe 'osl-ceph::default' do
       it do
         expect(chef_run).to create_yum_repository('ceph').with(baseurl: /luminous/)
       end
+      it do
+        expect(chef_run).to create_directory('/etc/ceph')
+          .with(
+            owner: 'ceph',
+            group: 'ceph'
+          )
+      end
       context 'ppc64le' do
         include_context 'chef_server', p, 'ppc64le'
         it do

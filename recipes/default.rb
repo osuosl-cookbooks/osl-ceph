@@ -33,3 +33,8 @@ end
 include_recipe 'firewall::ceph'
 include_recipe 'ceph-chef'
 include_recipe 'ceph-chef::repo'
+
+directory '/etc/ceph' do
+  owner node['ceph']['owner']
+  group node['ceph']['group']
+end
