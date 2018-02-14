@@ -28,6 +28,7 @@ shared_context 'chef_server' do |platform, arch|
       node.automatic['kernel']['machine'] = arch.nil? ? 'x86_64' : arch
     end.converge(described_recipe)
   end
+  include_context 'common_stubs'
 end
 
 shared_context 'common_stubs' do
