@@ -1,0 +1,58 @@
+{
+  "env_run_lists": {},
+  "run_list": [
+    "recipe[ceph_test]",
+    "recipe[osl-ceph]"
+  ],
+  "chef_type": "role",
+  "override_attributes": {},
+  "default_attributes": {
+    "ceph": {
+      "mon": {
+        "role": "ceph_mon"
+      },
+      "osd": {
+        "role": "ceph_osd",
+        "devices": [
+          {
+            "data": "/dev/vdd1",
+            "block_db": "/dev/vdb1",
+            "block_wal": "/dev/vdc1"
+          },
+
+          {
+            "data": "/dev/vde1",
+            "block_db": "/dev/vdb2",
+            "block_wal": "/dev/vdc2"
+          },
+          {
+            "data": "/dev/vdf1",
+            "block_db": "/dev/vdb3",
+            "block_wal": "/dev/vdc3"
+          }
+        ]
+      },
+      "network": {
+        "public": {
+          "cidr": [
+            "10.1.100.0/23"
+          ]
+        },
+        "cluster": {
+          "cidr": [
+            "10.1.100.0/23"
+          ]
+        }
+      }
+    },
+    "yum": {
+      "epel": {
+        "baseurl": "http://epel.osuosl.org/7/$basearch",
+        "gpgkey": "http://epel.osuosl.org/RPM-GPG-KEY-EPEL-7"
+      }
+    }
+  },
+  "json_class": "Chef::Role",
+  "description": "Ceph Role",
+  "name": "ceph"
+}

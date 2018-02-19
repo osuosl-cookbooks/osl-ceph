@@ -1,5 +1,70 @@
 ---
+verifier:
+  name: inspec
+
+driver:
+  name: openstack
+  flavor_ref: 'm1.large'
+  user_data: userdata.txt
+
+driver_config:
+  server_name: node1
+
+provisioner:
+  name: chef_zero
+  roles_path: test/integration/roles
+  attributes:
+    yum:
+      epel:
+        baseurl: http://epel.osuosl.org/7/$basearch
+        gpgkey: http://epel.osuosl.org/RPM-GPG-KEY-EPEL-7
+    ceph:
+      mon:
+        role: 'ceph_mon'
+      mds:
+        role: 'ceph_mds'
+      network:
+        public:
+          cidr:
+            - '10.1.100.0/24'
+        cluster:
+          cidr:
+            - '10.1.100.0/24'
+      osd:
+        role: 'ceph_osd'
+        devices:
+          -
+            data: '/dev/vdd1'
+            block_db: '/dev/vdb1'
+            block_wal: '/dev/vdc1'
+          -
+            data: '/dev/vde1'
+            block_db: '/dev/vdb2'
+            block_wal: '/dev/vdc2'
+          -
+            data: '/dev/vdf1'
+            block_db: '/dev/vdb3'
+            block_wal: '/dev/vdc3'
+    ceph_test:
+      openstack_auth_url: <%= "#{ENV['OS_AUTH_URL']}/tokens" %>
+      openstack_username: <%= ENV['OS_USERNAME'] %>
+      openstack_api_key: <%= ENV['OS_PASSWORD'] %>
+      openstack_tenant: <%= ENV['OS_TENANT_NAME'] %>
+
 suites:
   - name: default
     run_list:
-      - recipe[osl-ceph::default]
+      - recipe[osl-ceph]
+  - name: mon
+    run_list:
+      - role[ceph_mon]
+  - name: mgr
+    run_list:
+      - role[ceph_mon]
+      - role[ceph_mgr]
+  - name: osd
+    run_list:
+      - recipe[ceph_test]
+      - role[ceph_mon]
+      - role[ceph_mgr]
+      - role[ceph_osd]
