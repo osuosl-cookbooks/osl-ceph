@@ -68,3 +68,10 @@ suites:
       - role[ceph_mon]
       - role[ceph_mgr]
       - role[ceph_osd]
+  - name: monitoring
+    run_list:
+      - recipe[ceph_test]
+      - role[ceph_mon]
+      - role[ceph_mgr]
+      - role[ceph_osd]
+      - recipe[osl-ceph::monitoring]
