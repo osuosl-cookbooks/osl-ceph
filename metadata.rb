@@ -10,6 +10,8 @@ version          '1.0.0'
 
 depends          'ceph-chef', '~> 1.1.27'
 depends          'firewall'
+depends          'git'
+depends          'osl-nrpe'
 depends          'systemd', '< 3.0.0'
 
 supports         'centos', '~> 7.0'
