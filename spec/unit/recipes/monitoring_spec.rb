@@ -28,11 +28,11 @@ describe 'osl-ceph::monitoring' do
         end
       end
       it do
-        expect(chef_run).to add_ceph_chef_client('nagios')
+        expect(chef_run).to add_ceph_chef_client('nagios-Fauxhai')
           .with(
             caps: { mon: 'allow r' },
-            keyname: 'client.nagios',
-            filename: '/etc/ceph//ceph.client.nagios.keyring',
+            keyname: 'client.nagios-Fauxhai',
+            filename: '/etc/ceph/ceph.client.nagios-Fauxhai.keyring',
             owner: 'nrpe',
             group: 'nrpe'
           )
@@ -51,28 +51,28 @@ describe 'osl-ceph::monitoring' do
         expect(chef_run).to add_nrpe_check('check_ceph_df')
           .with(
             command: '/usr/lib64/nagios/plugins/check_ceph_df',
-            parameters: '-i nagios -m 10.0.0.2 -W 80 -C 90'
+            parameters: '-i nagios-Fauxhai -m 10.0.0.2 -W 80 -C 90'
           )
       end
       it do
         expect(chef_run).to add_nrpe_check('check_ceph_osd')
           .with(
             command: '/usr/lib64/nagios/plugins/check_ceph_osd',
-            parameters: '-i nagios -m 10.0.0.2 -C 1 -H 10.0.0.2'
+            parameters: '-i nagios-Fauxhai -m 10.0.0.2 -C 1 -H 10.0.0.2'
           )
       end
       it do
         expect(chef_run).to add_nrpe_check('check_ceph_health')
           .with(
             command: '/usr/lib64/nagios/plugins/check_ceph_health',
-            parameters: '-i nagios -m 10.0.0.2'
+            parameters: '-i nagios-Fauxhai -m 10.0.0.2'
           )
       end
       it do
         expect(chef_run).to add_nrpe_check('check_ceph_mon')
           .with(
             command: '/usr/lib64/nagios/plugins/check_ceph_mon',
-            parameters: '-i nagios -m 10.0.0.2 -I Fauxhai'
+            parameters: '-i nagios-Fauxhai -m 10.0.0.2 -I Fauxhai'
           )
       end
     end
