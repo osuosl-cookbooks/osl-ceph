@@ -39,10 +39,12 @@ end
   end
 end
 
-ceph_chef_client 'nagios' do
+keyname = "nagios-#{node['hostname']}"
+
+ceph_chef_client keyname do
   caps(mon: 'allow r')
-  keyname 'client.nagios'
-  filename '/etc/ceph//ceph.client.nagios.keyring'
+  keyname "client.#{keyname}"
+  filename "/etc/ceph/ceph.client.#{keyname}.keyring"
   owner node['nrpe']['user']
   group node['nrpe']['group']
 end
@@ -59,7 +61,7 @@ nrpe = node['osl-ceph']['nrpe']
 nrpe_check 'check_ceph_df' do
   command ::File.join(node['nrpe']['plugin_dir'], 'check_ceph_df')
   parameters [
-    '-i nagios',
+    "-i #{keyname}",
     "-m #{node['ipaddress']}",
     "-W #{nrpe['check_ceph_df']['warning']}",
     "-C #{nrpe['check_ceph_df']['critical']}"
@@ -69,7 +71,7 @@ end
 nrpe_check 'check_ceph_osd' do
   command ::File.join(node['nrpe']['plugin_dir'], 'check_ceph_osd')
   parameters [
-    '-i nagios',
+    "-i #{keyname}",
     "-m #{node['ipaddress']}",
     "-C #{nrpe['check_ceph_osd']['critical']}",
     "-H #{node['ipaddress']}"
@@ -78,10 +80,10 @@ end
 
 nrpe_check 'check_ceph_health' do
   command ::File.join(node['nrpe']['plugin_dir'], 'check_ceph_health')
-  parameters "-i nagios -m #{node['ipaddress']}"
+  parameters "-i #{keyname} -m #{node['ipaddress']}"
 end
 
 nrpe_check 'check_ceph_mon' do
   command ::File.join(node['nrpe']['plugin_dir'], 'check_ceph_mon')
-  parameters "-i nagios -m #{node['ipaddress']} -I #{node['hostname']}"
+  parameters "-i #{keyname} -m #{node['ipaddress']} -I #{node['hostname']}"
 end
