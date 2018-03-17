@@ -58,7 +58,7 @@ describe 'osl-ceph::monitoring' do
         expect(chef_run).to add_nrpe_check('check_ceph_osd')
           .with(
             command: '/usr/lib64/nagios/plugins/check_ceph_osd',
-            parameters: '-i nagios-Fauxhai -m 10.0.0.2 -C 1 -H 10.0.0.2'
+            parameters: '-i nagios-Fauxhai -C 1 -H 10.0.0.2'
           )
       end
       it do
