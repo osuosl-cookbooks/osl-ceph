@@ -72,7 +72,6 @@ nrpe_check 'check_ceph_osd' do
   command ::File.join(node['nrpe']['plugin_dir'], 'check_ceph_osd')
   parameters [
     "-i #{keyname}",
-    "-m #{node['ipaddress']}",
     "-C #{nrpe['check_ceph_osd']['critical']}",
     "-H #{node['ipaddress']}"
   ].join(' ')
