@@ -15,29 +15,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-include_recipe 'osl-ceph'
-include_recipe 'osl-nrpe'
-include_recipe 'git'
-
-ceph_nagios = ::File.join(Chef::Config[:file_cache_path], 'ceph-nagios')
-
-git ceph_nagios do
-  repository 'https://github.com/osuosl/ceph-nagios-plugins.git'
-  ignore_failure true
-end
-
-%w(
-  check_ceph_df
-  check_ceph_health
-  check_ceph_mds
-  check_ceph_mon
-  check_ceph_osd
-  check_ceph_rgw
-).each do |check|
-  link ::File.join(node['nrpe']['plugin_dir'], check) do
-    to ::File.join(ceph_nagios, 'src', check)
-  end
-end
+include_recipe 'osl-ceph::nagios'
 
 keyname = "nagios-#{node['hostname']}"
 
