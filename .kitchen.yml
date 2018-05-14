@@ -34,17 +34,17 @@ provisioner:
         role: 'ceph_osd'
         devices:
           -
-            data: '/dev/vdd1'
-            block_db: '/dev/vdb1'
-            block_wal: '/dev/vdc1'
+            data: '/dev/sdd1'
+            block_db: '/dev/sdb1'
+            block_wal: '/dev/sdc1'
           -
-            data: '/dev/vde1'
-            block_db: '/dev/vdb2'
-            block_wal: '/dev/vdc2'
+            data: '/dev/sde1'
+            block_db: '/dev/sdb2'
+            block_wal: '/dev/sdc2'
           -
-            data: '/dev/vdf1'
-            block_db: '/dev/vdb3'
-            block_wal: '/dev/vdc3'
+            data: '/dev/sdf1'
+            block_db: '/dev/sdb3'
+            block_wal: '/dev/sdc3'
     ceph_test:
       openstack_auth_url: <%= "#{ENV['OS_AUTH_URL']}/tokens" %>
       openstack_username: <%= ENV['OS_USERNAME'] %>
