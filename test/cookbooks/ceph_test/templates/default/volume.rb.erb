@@ -13,7 +13,7 @@ compute_client ||= ::Fog::Compute.new(@connection_params)
 begin
   vm = compute_client.servers.get('<%= @vm_uuid %>')
   compute_client.volumes.all(options: true).each do |volume|
-    if volume.name =~ /ceph-test-#{vm.name}-vd[a-z]/
+    if volume.name =~ /ceph-test-#{vm.name}-sd[a-z]/
       if volume.ready?
         puts "deleting #{volume.name}"
         volume.destroy
@@ -23,16 +23,16 @@ begin
   # let things settle for five seconds
   sleep 5
   ('b'..'f').to_a.each do |i|
-    puts "creating ceph-test-#{vm.name}-vd#{i}-#{vm.id}"
-    volume = compute_client.volumes.create name: "ceph-test-#{vm.name}-vd#{i}-#{vm.id}", size: 4, description: ''
+    puts "creating ceph-test-#{vm.name}-sd#{i}-#{vm.id}"
+    volume = compute_client.volumes.create name: "ceph-test-#{vm.name}-sd#{i}-#{vm.id}", size: 4, description: ''
     volume.reload
     until volume.ready?
       puts "volume #{volume.name} not ready, waiting.."
       volume.reload
       sleep 2
     end
-    puts "attaching ceph-test-#{vm.name}-vd#{i} to #{vm.name}"
-    vm.attach_volume(volume.id, "/dev/vd#{i}")
+    puts "attaching ceph-test-#{vm.name}-sd#{i} to #{vm.name}"
+    vm.attach_volume(volume.id, "/dev/sd#{i}")
   end
   sleep 5
 
