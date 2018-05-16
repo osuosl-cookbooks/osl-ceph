@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+1.2.0 (2018-05-16)
+------------------
+- Split nagios plugin installation into its own recipe
+
 1.1.2 (2018-03-17)
 ------------------
 - Don't assume the OSD node also is a mon node
