@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+1.3.0 (2018-05-18)
+------------------
+- Implement ceph_keyring resource
+
 1.2.0 (2018-05-16)
 ------------------
 - Split nagios plugin installation into its own recipe
