@@ -26,6 +26,15 @@ shared_context 'chef_server' do |platform, arch|
     ChefSpec::ServerRunner.new(platform) do |node, server|
       server.create_node(mon_node)
       node.automatic['kernel']['machine'] = arch.nil? ? 'x86_64' : arch
+      server.create_data_bag(
+        'ceph',
+        'nagios' => {
+          'nagios_token' => {
+            'x86' => 'x86_key',
+            'ppc64' => 'ppc64_key'
+          }
+        }
+      )
     end.converge(described_recipe)
   end
   include_context 'common_stubs'

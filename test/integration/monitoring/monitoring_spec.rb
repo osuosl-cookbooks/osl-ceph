@@ -1,6 +1,4 @@
 %w(
-  check_ceph_df
-  check_ceph_health
   check_ceph_mon
   check_ceph_osd
 ).each do |check|
