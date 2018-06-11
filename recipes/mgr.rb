@@ -24,3 +24,4 @@ end
 
 include_recipe 'osl-ceph'
 include_recipe 'ceph-chef::mgr'
+delete_resource(:execute, 'change-ceph-conf-perm')

@@ -20,5 +20,6 @@ include_recipe 'ceph-chef::mon'
 include_recipe 'ceph-chef::mon_start'
 
 delete_resource(:cookbook_file, '/etc/systemd/system/ceph-mon@.service')
+delete_resource(:execute, 'change-ceph-conf-perm')
 tag(node['ceph']['admin']['tag'])
 tag(node['ceph']['mon']['tag'])

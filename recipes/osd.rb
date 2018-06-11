@@ -18,4 +18,5 @@
 include_recipe 'osl-ceph'
 include_recipe 'ceph-chef::osd'
 include_recipe 'ceph-chef::osd_start_all'
+delete_resource(:execute, 'change-ceph-conf-perm')
 tag(node['ceph']['osd']['tag'])
