@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+1.3.2 (2018-06-11)
+------------------
+- Remove execute[change-ceph-conf-perm] resource
+
 1.3.1 (2018-06-11)
 ------------------
 - Improve nagios checks deployment
