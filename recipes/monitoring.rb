@@ -17,12 +17,11 @@
 # limitations under the License.
 include_recipe 'osl-ceph::nagios'
 
-keyname = "nagios-#{node['hostname']}"
+secrets = data_bag_item('ceph', 'nagios')
+arch = node['kernel']['machine'] == 'ppc64le' ? 'ppc64' : 'x86'
 
-ceph_chef_client keyname do
-  caps(mon: 'allow r')
-  keyname "client.#{keyname}"
-  filename "/etc/ceph/ceph.client.#{keyname}.keyring"
+ceph_keyring 'nagios' do
+  key secrets['nagios_token'][arch]
   owner node['nrpe']['user']
   group node['nrpe']['group']
 end
@@ -36,31 +35,16 @@ end
 
 nrpe = node['osl-ceph']['nrpe']
 
-nrpe_check 'check_ceph_df' do
-  command ::File.join(node['nrpe']['plugin_dir'], 'check_ceph_df')
-  parameters [
-    "-i #{keyname}",
-    "-m #{node['ipaddress']}",
-    "-W #{nrpe['check_ceph_df']['warning']}",
-    "-C #{nrpe['check_ceph_df']['critical']}"
-  ].join(' ')
-end
-
 nrpe_check 'check_ceph_osd' do
   command ::File.join(node['nrpe']['plugin_dir'], 'check_ceph_osd')
   parameters [
-    "-i #{keyname}",
+    '-i nagios',
     "-C #{nrpe['check_ceph_osd']['critical']}",
     "-H #{node['ipaddress']}"
   ].join(' ')
 end
 
-nrpe_check 'check_ceph_health' do
-  command ::File.join(node['nrpe']['plugin_dir'], 'check_ceph_health')
-  parameters "-i #{keyname} -m #{node['ipaddress']}"
-end
-
 nrpe_check 'check_ceph_mon' do
   command ::File.join(node['nrpe']['plugin_dir'], 'check_ceph_mon')
-  parameters "-i #{keyname} -m #{node['ipaddress']} -I #{node['hostname']}"
+  parameters "-i nagios -m #{node['ipaddress']} -I #{node['hostname']}"
 end

@@ -1,0 +1,10 @@
+{
+  "id": "nagios",
+  "nagios_token": {
+    "encrypted_data": "9hv/GcggSh9j21UwnL5YCsn5/IUrrbarbLXbxAUSDW6TUs/2w7dsOgxcX0C8\n8CwGg0M44jmWkCGUejWYz4FtVj1YogE5Nd/jED10qHVUQ6XRgGa/t9v5ljsz\nAnUwohQ+UGx/5kX1nX77bdXuigw/bB/kf0lMgPNKIJ1VEX3EpLk=\n",
+    "hmac": "g9+KZaEn1zMw4lz5EOr1HRxtk0Ht3vWweMLl2PzIIM0=\n",
+    "iv": "x98/vjRpgNqYNdPzkkfihA==\n",
+    "version": 2,
+    "cipher": "aes-256-cbc"
+  }
+}

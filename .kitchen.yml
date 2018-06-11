@@ -13,6 +13,8 @@ driver_config:
 provisioner:
   name: chef_zero
   roles_path: test/integration/roles
+  data_bags_path: test/integration/data_bags
+  encrypted_data_bag_secret_key_path: test/integration/encrypted_data_bag_secret
   attributes:
     yum:
       epel:
@@ -71,11 +73,8 @@ suites:
       - role[ceph_osd]
   - name: monitoring
     run_list:
-      - recipe[ceph_test]
-      - role[ceph_mon]
-      - role[ceph_mgr]
-      - role[ceph_osd]
       - recipe[osl-ceph::monitoring]
+      - recipe[ceph_test::docker]
   - name: nagios
     run_list:
       - recipe[osl-ceph::nagios]
