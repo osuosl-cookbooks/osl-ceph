@@ -1,7 +1,6 @@
 resource_name :ceph_keyring
 default_action :create
 
-property :name, String, name_property: true
 property :key, String, required: true
 property :key_name, String, default: nil
 property :key_filename, String, default: nil
