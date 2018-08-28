@@ -14,7 +14,8 @@ describe 'osl-ceph::default' do
         expect(chef_run).to create_directory('/etc/ceph')
           .with(
             owner: 'ceph',
-            group: 'ceph'
+            group: 'ceph',
+            mode:  '0750'
           )
       end
       context 'ppc64le' do

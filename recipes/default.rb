@@ -39,4 +39,5 @@ delete_resource(:execute, 'change-ceph-conf-perm')
 directory '/etc/ceph' do
   owner node['ceph']['owner']
   group node['ceph']['group']
+  mode '0750'
 end
