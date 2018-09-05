@@ -12,7 +12,7 @@ machine 'node2' do
                     key_data: nil,
                   },
                   convergence_options: {
-                    chef_version: '12.18.31',
+                    chef_version: '13.8.5',
                   }
 
   ohai_hints 'openstack' => '{}'
