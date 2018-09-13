@@ -11,10 +11,11 @@ describe 'osl-ceph::default' do
         expect(chef_run).to create_yum_repository('ceph').with(baseurl: /luminous/)
       end
       it do
-        expect(chef_run).to create_directory('/etc/ceph')
+        expect(chef_run).to create_directory('Set /etc/ceph owner/group')
           .with(
             owner: 'ceph',
             group: 'ceph',
+            path: '/etc/ceph',
             mode:  '0750'
           )
       end

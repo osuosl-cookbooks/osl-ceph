@@ -36,8 +36,9 @@ include_recipe 'ceph-chef::repo'
 
 delete_resource(:execute, 'change-ceph-conf-perm')
 
-edit_resource!(:directory, '/etc/ceph') do
+directory 'Set /etc/ceph owner/group' do
   owner node['ceph']['owner']
   group node['ceph']['group']
+  path '/etc/ceph'
   mode '0750'
 end
