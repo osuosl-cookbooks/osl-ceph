@@ -1,6 +1,7 @@
 # Create wal and blk devices
 chef_gem 'fog-openstack' do
   compile_time true
+  version '0.1.27'
 end
 
 vm_uuid = File.read('/run/cloud-init/.instance-id').strip
