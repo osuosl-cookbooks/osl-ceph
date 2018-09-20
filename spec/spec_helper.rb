@@ -6,11 +6,11 @@ ChefSpec::Coverage.start! { add_filter 'osl-ceph' }
 # rubocop:disable MutableConstant
 CENTOS_7 = {
   platform: 'centos',
-  version: '7.2.1511'
+  version: '7.2.1511',
 }
 
 ALL_PLATFORMS = [
-  CENTOS_7
+  CENTOS_7,
 ].freeze
 
 RSpec.configure do |config|
@@ -31,8 +31,8 @@ shared_context 'chef_server' do |platform, arch|
         'nagios' => {
           'nagios_token' => {
             'x86' => 'x86_key',
-            'ppc64' => 'ppc64_key'
-          }
+            'ppc64' => 'ppc64_key',
+          },
         }
       )
     end.converge(described_recipe)

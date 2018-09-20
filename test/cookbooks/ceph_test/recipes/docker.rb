@@ -15,7 +15,7 @@ docker_container 'ceph' do
     "MON_IP=#{node['ipaddress']}",
     'CEPH_PUBLIC_NETWORK=10.1.100.0/22',
     'RGW_CIVETWEB_PORT=8000',
-    'RESTAPI_PORT=8001'
+    'RESTAPI_PORT=8001',
   ]
   action :run
 end
@@ -26,7 +26,7 @@ ruby_block 'wait for ceph' do
     require 'English'
     true until ::File.exist?('/etc/ceph-docker1/ceph.client.admin.keyring')
     system('docker logs ceph 2>1 | grep -q HEALTH_OK')
-    until $CHILD_STATUS.exitstatus.zero?
+    until $CHILD_STATUS.exitstatus == 0
       sleep 1
       system('docker logs ceph 2>1 | grep -q HEALTH_OK')
     end

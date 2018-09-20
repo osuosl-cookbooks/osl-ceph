@@ -40,7 +40,7 @@ nrpe_check 'check_ceph_osd' do
   parameters [
     '-i nagios',
     "-C #{nrpe['check_ceph_osd']['critical']}",
-    "-H #{node['ipaddress']}"
+    "-H #{node['ipaddress']}",
   ].join(' ')
 end
 

@@ -1,10 +1,9 @@
 resource_name :ceph_keyring
 default_action :create
 
-property :name, String, name_property: true
 property :key, String, required: true
-property :key_name, String, default: nil
-property :key_filename, String, default: nil
+property :key_name, [String, nil], default: nil
+property :key_filename, [String, nil], default: nil
 property :owner, String, default: node['ceph']['owner']
 property :group, String, default: node['ceph']['group']
 property :chef_dir, String, default: '/etc/ceph'

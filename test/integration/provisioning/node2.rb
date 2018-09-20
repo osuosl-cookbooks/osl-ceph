@@ -5,14 +5,14 @@ machine 'node2' do
     image_ref: ENV['NODE_OS'],
     flavor_ref: ENV['FLAVOR'],
     key_name: ENV['OS_SSH_KEYPAIR'],
-    nics: [{ net_id: ENV['OS_NETWORK_UUID'] }]
+    nics: [{ net_id: ENV['OS_NETWORK_UUID'] }],
   },
                   ssh_username: 'centos',
                   ssh_options: {
-                    key_data: nil
+                    key_data: nil,
                   },
                   convergence_options: {
-                    chef_version: '12.18.31'
+                    chef_version: '13.8.5',
                   }
 
   ohai_hints 'openstack' => '{}'
