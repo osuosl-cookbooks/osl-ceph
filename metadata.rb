@@ -7,7 +7,7 @@ issues_url       'https://github.com/osuosl-cookbooks/osl-ceph/issues'
 source_url       'https://github.com/osuosl-cookbooks/osl-ceph'
 description      'Installs/Configures osl-ceph'
 long_description 'Installs/Configures osl-ceph'
-version          '1.3.3'
+version          '2.0.0'
 
 depends          'ceph-chef', '~> 1.1.27'
 depends          'firewall'

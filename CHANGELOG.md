@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+2.0.0 (2018-09-20)
+------------------
+- Chef 13 Fixes
+
 1.3.3 (2018-06-11)
 ------------------
 - Remove execute[change-ceph-conf-perm] resource in other recipes
