@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+2.1.0 (2018-09-21)
+------------------
+- Add MDS (metadata server) recipe
+
 2.0.0 (2018-09-20)
 ------------------
 - Chef 13 Fixes
