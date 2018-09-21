@@ -1,0 +1,1 @@
+../mgr/mgr_spec.rb
