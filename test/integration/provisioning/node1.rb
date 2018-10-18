@@ -15,11 +15,6 @@ machine 'node1' do
                     chef_version: '13.8.5',
                   }
 
-  ohai_hints 'openstack' => '{}'
-  attribute %w(ceph_test openstack_auth_url), "#{ENV['OS_AUTH_URL']}/tokens"
-  attribute %w(ceph_test openstack_username), ENV['OS_USERNAME']
-  attribute %w(ceph_test openstack_api_key), ENV['OS_PASSWORD']
-  attribute %w(ceph_test openstack_tenant), ENV['OS_TENANT_NAME']
   role 'ceph'
   role 'ceph_mon'
   role 'ceph_mgr'

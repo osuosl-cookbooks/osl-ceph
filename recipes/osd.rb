@@ -17,6 +17,27 @@
 # limitations under the License.
 include_recipe 'osl-ceph'
 include_recipe 'ceph-chef::osd'
+
+# The following is only for test-kitchen testing purposes and NOT production
+if node['osl-ceph']['create-filesystem-osd']
+  node['osl-ceph']['filesystem-osd-ids'].each do |id|
+    osd_device = "/var/lib/ceph/osd/ceph-#{id}"
+
+    directory osd_device do
+      recursive true
+    end
+
+    execute "ceph-disk prepare and activate on #{osd_device}" do
+      command <<-EOF
+        ceph-disk -v prepare #{osd_device}
+        chown --verbose -R ceph. #{osd_device}
+        ceph-disk -v activate --mark-init none #{osd_device}
+      EOF
+      creates "#{osd_device}/mkfs_done"
+    end
+  end
+end
+
 include_recipe 'ceph-chef::osd_start_all'
 delete_resource(:execute, 'change-ceph-conf-perm')
 tag(node['ceph']['osd']['tag'])

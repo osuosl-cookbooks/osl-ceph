@@ -39,24 +39,6 @@ provisioner:
         crush:
           chooseleaf_type: 0
           update: true
-        devices:
-          -
-            data: '/dev/sdd1'
-            block_db: '/dev/sdb1'
-            block_wal: '/dev/sdc1'
-          -
-            data: '/dev/sde1'
-            block_db: '/dev/sdb2'
-            block_wal: '/dev/sdc2'
-          -
-            data: '/dev/sdf1'
-            block_db: '/dev/sdb3'
-            block_wal: '/dev/sdc3'
-    ceph_test:
-      openstack_auth_url: <%= "#{ENV['OS_AUTH_URL']}/tokens" %>
-      openstack_username: <%= ENV['OS_USERNAME'] %>
-      openstack_api_key: <%= ENV['OS_PASSWORD'] %>
-      openstack_tenant: <%= ENV['OS_TENANT_NAME'] %>
 
 suites:
   - name: default
@@ -72,7 +54,6 @@ suites:
       - role[ceph_mgr]
   - name: mds
     run_list:
-      - recipe[ceph_test]
       - role[ceph_mon]
       - role[ceph_mgr]
       - role[ceph_osd]
@@ -81,14 +62,16 @@ suites:
       - recipe[ceph_test::mds]
   - name: osd
     run_list:
-      - recipe[ceph_test]
       - role[ceph_mon]
       - role[ceph_mgr]
       - role[ceph_osd]
   - name: monitoring
     run_list:
+      - role[ceph_mon]
+      - role[ceph_mgr]
+      - role[ceph_osd]
       - recipe[osl-ceph::monitoring]
-      - recipe[ceph_test::docker]
+      - recipe[ceph_test::monitoring]
   - name: nagios
     run_list:
       - recipe[osl-ceph::nagios]
