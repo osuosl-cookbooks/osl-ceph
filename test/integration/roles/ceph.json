@@ -1,7 +1,6 @@
 {
   "env_run_lists": {},
   "run_list": [
-    "recipe[ceph_test]",
     "recipe[osl-ceph]"
   ],
   "chef_type": "role",
@@ -12,25 +11,7 @@
         "role": "ceph_mon"
       },
       "osd": {
-        "role": "ceph_osd",
-        "devices": [
-          {
-            "data": "/dev/sdd1",
-            "block_db": "/dev/sdb1",
-            "block_wal": "/dev/sdc1"
-          },
-
-          {
-            "data": "/dev/sde1",
-            "block_db": "/dev/sdb2",
-            "block_wal": "/dev/sdc2"
-          },
-          {
-            "data": "/dev/sdf1",
-            "block_db": "/dev/sdb3",
-            "block_wal": "/dev/sdc3"
-          }
-        ]
+        "role": "ceph_osd"
       },
       "network": {
         "public": {
@@ -44,6 +25,9 @@
           ]
         }
       }
+    },
+    "osl-ceph": {
+      "create-filesystem-osd": true
     },
     "yum": {
       "epel": {

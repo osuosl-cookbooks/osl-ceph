@@ -15,15 +15,11 @@ machine 'node3' do
                     chef_version: '13.8.5',
                   }
 
-  ohai_hints 'openstack' => '{}'
-  attribute %w(ceph_test openstack_auth_url), "#{ENV['OS_AUTH_URL']}/tokens"
-  attribute %w(ceph_test openstack_username), ENV['OS_USERNAME']
-  attribute %w(ceph_test openstack_api_key), ENV['OS_PASSWORD']
-  attribute %w(ceph_test openstack_tenant), ENV['OS_TENANT_NAME']
   role 'ceph'
   role 'ceph_mon'
   role 'ceph_mgr'
   role 'ceph_osd'
+  attribute %w(osl-ceph filesystem-osd-ids), %w(6 7 8)
   file('/etc/chef/encrypted_data_bag_secret', File.dirname(__FILE__) + '/../encrypted_data_bag_secret')
   converge true
 end
