@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+2.1.1 (2018-10-19)
+------------------
+- Switch to using filesystem based OSD for test-kitchen testing
+
 2.1.0 (2018-09-21)
 ------------------
 - Add MDS (metadata server) recipe
