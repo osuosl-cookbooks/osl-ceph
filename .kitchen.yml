@@ -21,24 +21,9 @@ provisioner:
         baseurl: http://epel.osuosl.org/7/$basearch
         gpgkey: http://epel.osuosl.org/RPM-GPG-KEY-EPEL-7
     ceph:
+      fsid-secret: ae3f1d03-bacd-4a90-b869-1a4fabb107f2
       keyring:
         mon: '/etc/ceph/$cluster.mon.keyring'
-      mon:
-        role: 'ceph_mon'
-      mds:
-        role: 'ceph_mds'
-      network:
-        public:
-          cidr:
-            - '10.1.100.0/24'
-        cluster:
-          cidr:
-            - '10.1.100.0/24'
-      osd:
-        role: 'ceph_osd'
-        crush:
-          chooseleaf_type: 0
-          update: true
 
 suites:
   - name: default
@@ -47,26 +32,30 @@ suites:
       - recipe[ceph_test::ceph_keyring]
   - name: mon
     run_list:
+      - role[ceph]
       - role[ceph_mon]
   - name: mgr
     run_list:
+      - role[ceph]
       - role[ceph_mon]
       - role[ceph_mgr]
   - name: mds
     run_list:
+      - role[ceph]
       - role[ceph_mon]
       - role[ceph_mgr]
       - role[ceph_osd]
-      - recipe[ceph_test::osd]
       - role[ceph_mds]
       - recipe[ceph_test::mds]
   - name: osd
     run_list:
+      - role[ceph]
       - role[ceph_mon]
       - role[ceph_mgr]
       - role[ceph_osd]
   - name: monitoring
     run_list:
+      - role[ceph]
       - role[ceph_mon]
       - role[ceph_mgr]
       - role[ceph_osd]
