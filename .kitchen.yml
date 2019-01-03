@@ -46,6 +46,7 @@ suites:
       - role[ceph_mgr]
       - role[ceph_osd]
       - role[ceph_mds]
+      - recipe[ceph_test::mds_setup]
       - recipe[ceph_test::mds]
   - name: osd
     run_list:
