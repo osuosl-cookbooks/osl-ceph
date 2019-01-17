@@ -1,5 +1,5 @@
 describe command('ceph -s') do
-  its('stdout') { should match(/mgr: node1\(active\)/) }
+  its('stdout') { should match(/mgr: node1\(active/) }
 end
 
 describe command('ss -tpln') do
