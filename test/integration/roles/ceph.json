@@ -4,14 +4,21 @@
     "recipe[osl-ceph]"
   ],
   "chef_type": "role",
-  "override_attributes": {},
-  "default_attributes": {
+  "default_attributes": {},
+  "override_attributes": {
     "ceph": {
       "mon": {
         "role": "ceph_mon"
       },
+      "mds": {
+        "role": "ceph_mds"
+      },
       "osd": {
-        "role": "ceph_osd"
+        "role": "ceph_osd",
+        "crush": {
+          "chooseleaf_type": 0,
+          "update": true
+        }
       },
       "network": {
         "public": {
