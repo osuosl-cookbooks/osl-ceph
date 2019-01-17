@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+2.2.0 (2019-01-17)
+------------------
+- Create osl_cephfs custom resource
+
 2.1.1 (2018-10-19)
 ------------------
 - Switch to using filesystem based OSD for test-kitchen testing
