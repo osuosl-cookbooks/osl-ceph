@@ -25,7 +25,7 @@ end
 
 if node['kernel']['machine'] == 'ppc64le'
   node.override['ceph']['rhel']['stable']['repository'] =
-    "http://ftp.osuosl.org/pub/osl/repos/yum/openpower/centos-$releasever/ppc64le/ceph-#{node['ceph']['version']}/"
+    "http://ftp.osuosl.org/pub/osl/repos/yum/$releasever/ceph-#{node['ceph']['version']}/ppc64le"
   node.override['ceph']['rhel']['stable']['repository_key'] =
     'http://ftp.osuosl.org/pub/osl/repos/yum/RPM-GPG-KEY-osuosl'
 end

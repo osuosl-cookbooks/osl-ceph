@@ -24,7 +24,7 @@ describe 'osl-ceph::default' do
         it do
           expect(chef_run).to create_yum_repository('ceph')
             .with(
-              baseurl: 'http://ftp.osuosl.org/pub/osl/repos/yum/openpower/centos-$releasever/ppc64le/ceph-luminous/',
+              baseurl: 'http://ftp.osuosl.org/pub/osl/repos/yum/$releasever/ceph-luminous/ppc64le',
               gpgkey: 'http://ftp.osuosl.org/pub/osl/repos/yum/RPM-GPG-KEY-osuosl'
             )
         end
