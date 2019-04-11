@@ -6,7 +6,7 @@ ChefSpec::Coverage.start! { add_filter 'osl-ceph' }
 # rubocop:disable MutableConstant
 CENTOS_7 = {
   platform: 'centos',
-  version: '7.2.1511',
+  version: '7.4.1708',
 }
 
 ALL_PLATFORMS = [
