@@ -10,10 +10,3 @@ execute 'update crush map' do
   EOF
   creates '/var/tmp/new_crush_map_compressed.done'
 end
-
-%w(cephfs_data cephfs_metadata).each do |p|
-  ceph_chef_pool p do
-    pg_num 32
-    pgp_num 32
-  end
-end

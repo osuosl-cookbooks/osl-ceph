@@ -10,93 +10,66 @@ ppc64le compute nodes.
 
 # Multi-host test integration
 
-This cookbook utilizes [Chef Provisioning](https://github.com/chef/chef-provisioning) to test deploying various parts
-of this cookbook in multiple nodes, similar to that in production.
+This cookbook utilizes [kitchen-terraform](https://github.com/newcontext-oss/kitchen-terraform) to test deploying
+various parts of this cookbook in multiple nodes, similar to that in production.
 
 ## Prereqs
 
-- ChefDK 1.2.20
+- ChefDK 2.5.3
+- Terraform
+- kitchen-terraform
 - OpenStack cluster
 
-### Openstack Provisioning
-
-This uses the [Chef Provisioning Fog provider](https://github.com/chef/chef-provisioning-fog) and requires a bit of
-extra setup:
-
-``` console
-$ chef gem install chef-provisioning-fog
-```
-
-Next you need to create a ``~/.fog`` file which contains the various bits of information (replace with your
-credentials):
-
-``` yaml
-default:
-    openstack_api_key: <OS_PASSWORD>
-    openstack_auth_url: https://openstack.example.org:5000/v2.0/tokens
-    openstack_tenant: admin
-    openstack_username: admin
-    private_key_path: /home/manatee/.ssh/id_rsa
-    public_key_path: /home/manatee/.ssh/id_rsa.pub
-```
-
-Next you need to set the following environment variables:
+Ensure you have the following in your ``.bashrc`` (or similar):
 
 ``` bash
-NODE_OS=        # UUID of CentOS 7 image
-FLAVOR=         # UUID of flavor for m1.large
-CHEF_DRIVER=fog:OpenStack
-
-# Various OpenStack variables
-OS_SSH_KEYPAIR=       # Name of ssh key on OpenStack to use
-OS_NETWORK_UUID=			# UUID of the network to use
+export TF_VAR_ssh_key_name="$OS_SSH_KEYPAIR"
 ```
 
-## Initial Setup Steps
-
-``` console
-$ git clone https://github.com/osuosl-cookbooks/osl-ceph.git
-$ cd osl-ceph
-$ chef exec rake berks_vendor
-```
 ## Supported Deployments
 
+- Chef-zero node acting as a Chef Server
 - Three node ceph cluster
-	- Each node runs mon, mgr and osd services
+	- Each node ceph node runs mon, mgr, mds and osd services
+- One cephfs client node
+  - The cephfs client node will mount cephfs from the ceph cluster
 
-## Rake Deploy Commands
+## Testing
 
-These commands will spin up various compute nodes.
+First, generate some keys for chef-zero and then simply run the following suite.
 
-``` bash
-# Spin up three node ceph cluster
-$ chef exec rake ceph
-# Spin up only node1
-$ chef exec rake node1
-# Spin up only node2
-$ chef exec rake node2
-# Spin up only node3
-$ chef exec rake node3
+``` console
+# Only need to run this once
+$ chef exec rake create_key
+$ kitchen test ceph-cluster
 ```
+
+Be patient as this will take a while to converge all of the nodes (approximately 15 minutes).
 
 ## Access the nodes
 
-If you get an error about more than one server exists, just run ``openstack server list`` and find the UUID of the
-server you created.
+Unfortunately, kitchen-terraform doesn't support using ``kitchen console`` so you will need to log into the nodes
+manually. To see what their IP addresses are, just run ``terraform output`` which will output all of the IPs.
 
 ``` bash
-# node1
-$ openstack server show -c addresses -f value node1
-private=192.168.56.X, 140.211.168.X
-$ ssh centos@140.211.168.X
-# node2
-$ openstack server show -c addresses -f value node2
-private=192.168.56.X, 140.211.168.X
-$ ssh centos@140.211.168.X
-# node3
-$ openstack server show -c addresses -f value node3
-private=192.168.56.X, 140.211.168.X
-$ ssh centos@140.211.168.X
+# You can run the following commands to login to each node
+$ ssh centos@$(terraform output node1)
+$ ssh centos@$(terraform output node2)
+$ ssh centos@$(terraform output node3)
+$ ssh centos@$(terraform output cephfs_client)
+
+# Or you can look at the IPs for all for all of the nodes at once
+$ terraform output
+ceph_nodes = [
+    10.1.100.3,
+    10.1.100.66,
+    10.1.100.45
+]
+cephfs_client = 10.1.100.8
+chef_zero = 10.1.100.43
+node1 = 10.1.100.3
+node2 = 10.1.100.66
+node3 = 10.1.100.45
 ```
 
 ## Running ceph commands
@@ -106,48 +79,78 @@ Once you're logged into one of the nodes, you should be able to run the followin
 ``` bash
 $ ceph -s
   cluster:
-    id:     b82e53b3-595b-4ee4-833a-56a714ea5c76
+    id:     7964405e-3e4a-4aee-b5a8-bf5e4f816c5d
     health: HEALTH_OK
 
   services:
-    mon: 3 daemons, quorum node3,node2,node1
+    mon: 3 daemons, quorum node1,node3,node2
     mgr: node1(active), standbys: node2, node3
+    mds: cephfs-1/1/1 up  {0=node2=up:active}, 2 up:standby
     osd: 9 osds: 9 up, 9 in
 
   data:
-    pools:   4 pools, 512 pgs
-    objects: 45 objects, 95157 kB
-    usage:   14162 MB used, 27270 MB / 41432 MB avail
-    pgs:     512 active+clean
+    pools:   2 pools, 256 pgs
+    objects: 24 objects, 32.6KiB
+    usage:   9.04GiB used, 81.0GiB / 90GiB avail
+    pgs:     256 active+clean
 
 $ ceph osd tree
 ID CLASS WEIGHT  TYPE NAME      STATUS REWEIGHT PRI-AFF
--1       0.03955 root default
--3       0.01318     host node1
- 0   hdd 0.00439         osd.0      up  1.00000 1.00000
- 1   hdd 0.00439         osd.1      up  1.00000 1.00000
- 2   hdd 0.00439         osd.2      up  1.00000 1.00000
--5       0.01318     host node2
- 3   hdd 0.00439         osd.3      up  1.00000 1.00000
- 4   hdd 0.00439         osd.4      up  1.00000 1.00000
- 5   hdd 0.00439         osd.5      up  1.00000 1.00000
--7       0.01318     host node3
- 6   hdd 0.00439         osd.6      up  1.00000 1.00000
- 7   hdd 0.00439         osd.7      up  1.00000 1.00000
- 8   hdd 0.00439         osd.8      up  1.00000 1.00000
+-1       0.08817 root default
+-3       0.02939     host node1
+ 0   hdd 0.00980         osd.0      up  1.00000 1.00000
+ 1   hdd 0.00980         osd.1      up  1.00000 1.00000
+ 2   hdd 0.00980         osd.2      up  1.00000 1.00000
+-5       0.02939     host node2
+ 3   hdd 0.00980         osd.3      up  1.00000 1.00000
+ 4   hdd 0.00980         osd.4      up  1.00000 1.00000
+ 5   hdd 0.00980         osd.5      up  1.00000 1.00000
+-7       0.02939     host node3
+ 6   hdd 0.00980         osd.6      up  1.00000 1.00000
+ 7   hdd 0.00980         osd.7      up  1.00000 1.00000
+ 8   hdd 0.00980         osd.8      up  1.00000 1.00000
+```
+
+## Interacting with the chef-zero server
+
+All of these nodes are configured using a Chef Server which is a container running chef-zero. You can interact with the
+chef-zero server by doing the following:
+
+``` bash
+$ CHEF_SERVER="$(terraform output chef_zero)" knife node list -c test/chef-config/knife.rb
+cephfs_client
+node1
+node2
+node3
+$ CHEF_SERVER="$(terraform output chef_zero)" knife node edit -c test/chef-config/knife.rb
+```
+
+In addition, on any node that has been deployed, you can re-run ``chef-client`` like you normally would on a production
+system. This should allow you to do development on your multi-node environment as needed. **Just make sure you include
+the knife config otherwise you will be interacting with our production chef server!**
+
+## Using Terraform directly
+
+You do not need to use kitchen-terraform directly if you're just doing development. It's primarily useful for testing
+the multi-node cluster using inspec. You can simply deploy the cluster using terraform directly by doing the following:
+
+``` bash
+# Sanity check
+$ terraform plan
+# Deploy the cluster
+$ terraform apply
+# Destroy the cluster
+$ terraform destroy
 ```
 
 ## Cleanup
 
 ``` bash
-# To remove all the nodes and start again, run the following rake command.
-$ chef exec rake destroy_machines
+# To remove all the nodes and start again, run the following test-kitchen command.
+$ kitchen destroy ceph-cluster
 
 # To refresh all the cookbooks, use the following command.
-$ chef exec rake berks_vendor
-
-# To cleanup everything, including the cookbooks and machines run the following command.
-$ chef exec rake clean
+$ CHEF_SERVER="$(terraform output chef_zero)" chef exec rake knife_upload
 ```
 
 ## Contributing
@@ -159,12 +162,12 @@ $ chef exec rake clean
 5. Run the tests, ensuring they all pass
 6. Submit a Pull Request using Github
 
-##License and Authors
+## License and Authors
 
 - Author:: Oregon State University <chef@osuosl.org>
 
 ```text
-Copyright:: 2017, Oregon State University
+Copyright:: 2017-2019 Oregon State University
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
