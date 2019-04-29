@@ -16,6 +16,3 @@ variable "ssh_user_name" {
 variable "network" {
     default = "vlan42"
 }
-variable "subnet" {
-    default = "vlan42"
-}

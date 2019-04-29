@@ -1,14 +1,3 @@
-resource "openstack_networking_network_v2" "network" {
-    name            = "network"
-    admin_state_up  = "true"
-}
-
-resource "openstack_networking_port_v2" "port" {
-    name            = "port"
-    network_id      = "${openstack_networking_network_v2.network.id}"
-    admin_state_up  = "true"
-}
-
 resource "openstack_compute_instance_v2" "chef_zero" {
     name            = "chef-zero"
     image_name      = "${var.centos_atomic_image}"
@@ -19,7 +8,7 @@ resource "openstack_compute_instance_v2" "chef_zero" {
         user = "centos"
     }
     network {
-        name = "${var.network}"
+        uuid = "${data.openstack_networking_network_v2.network.id}"
     }
     provisioner "remote-exec" {
         inline = [
@@ -46,7 +35,7 @@ resource "openstack_compute_instance_v2" "node1" {
         user = "centos"
     }
     network {
-        name = "${var.network}"
+        uuid = "${data.openstack_networking_network_v2.network.id}"
     }
     provisioner "chef" {
         run_list        = [ "role[ceph]", "role[ceph_mon]", "role[ceph_mgr]", "role[ceph_osd]", "role[ceph_mds]" ]
@@ -70,7 +59,7 @@ resource "openstack_compute_instance_v2" "node2" {
         user = "centos"
     }
     network {
-        name = "${var.network}"
+        uuid = "${data.openstack_networking_network_v2.network.id}"
     }
     provisioner "chef" {
         attributes_json = <<EOF
@@ -102,7 +91,7 @@ resource "openstack_compute_instance_v2" "node3" {
         user = "centos"
     }
     network {
-        name = "${var.network}"
+        uuid = "${data.openstack_networking_network_v2.network.id}"
     }
     provisioner "chef" {
         attributes_json = <<EOF
@@ -145,7 +134,7 @@ resource "openstack_compute_instance_v2" "cephfs_client" {
         user = "centos"
     }
     network {
-        name = "${var.network}"
+        uuid = "${data.openstack_networking_network_v2.network.id}"
     }
     provisioner "chef" {
         run_list        = [
