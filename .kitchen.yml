@@ -71,7 +71,7 @@ suites:
   - name: ceph-cluster
     driver:
       name: terraform
-      command_timeout: 1000
+      command_timeout: 1800
     provisioner: terraform
     verifier:
       name: terraform
