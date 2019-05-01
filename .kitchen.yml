@@ -68,7 +68,7 @@ suites:
   - name: nagios
     run_list:
       - recipe[osl-ceph::nagios]
-  - name: ceph-cluster
+  - name: multi-node
     driver:
       name: terraform
       command_timeout: 1800

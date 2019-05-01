@@ -41,7 +41,7 @@ First, generate some keys for chef-zero and then simply run the following suite.
 ``` console
 # Only need to run this once
 $ chef exec rake create_key
-$ kitchen test ceph-cluster
+$ kitchen test multi-node
 ```
 
 Be patient as this will take a while to converge all of the nodes (approximately 15 minutes).
@@ -147,7 +147,7 @@ $ terraform destroy
 
 ``` bash
 # To remove all the nodes and start again, run the following test-kitchen command.
-$ kitchen destroy ceph-cluster
+$ kitchen destroy multi-node
 
 # To refresh all the cookbooks, use the following command.
 $ CHEF_SERVER="$(terraform output chef_zero)" chef exec rake knife_upload
