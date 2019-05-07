@@ -12,8 +12,6 @@ snakeoil_file_path = 'test/integration/data_bags/certificates/snakeoil.json'
 encrypted_data_bag_secret_path = 'test/integration/encrypted_data_bag_secret'
 current_dir = File.dirname(__FILE__)
 client_cfg = "#{current_dir}/test/chef-config"
-client_options = '--force-formatter -z ' \
-    "--config #{client_cfg}/knife.rb"
 
 ##
 # Run command wrapper
@@ -130,22 +128,18 @@ task :unit do
   run_command('rspec')
 end
 
-PROV_PATH = 'test/integration/provisioning'.freeze
-
 task :destroy_all do
-  Rake::Task[:destroy_machines].invoke
-  run_command('rm -rf Gemfile.lock && rm -rf Berksfile.lock && ' \
-    'rm -rf cookbooks/')
-end
-
-desc 'Destroy machines'
-task :destroy_machines do
-  run_command("chef-client #{client_options} #{PROV_PATH}/destroy_all.rb")
+  run_command('rm -rf Gemfile.lock && rm -rf Berksfile.lock && rm -rf cookbooks/')
 end
 
 desc 'Vendor your cookbooks/'
-task :berks_vendor do
+task berks_vendor: :clean do
   run_command('berks vendor cookbooks')
+end
+
+desc 'Upload data to chef-zero server'
+task knife_upload: [:berks_vendor, :create_key] do
+  run_command('knife upload . --force -c test/chef-config/knife.rb')
 end
 
 desc 'Create Chef Key'
@@ -155,28 +149,12 @@ task :create_key do
 File.binwrite('#{client_cfg}/validator.pem',
 OpenSSL::PKey::RSA.new(2048).to_pem)")
   end
+  unless File.exist?("#{client_cfg}/fakeclient.pem")
+    sh %(chef exec ruby -e "require 'openssl';
+File.binwrite('#{client_cfg}/fakeclient.pem',
+OpenSSL::PKey::RSA.new(2048).to_pem)")
+  end
 end
-
-desc 'node1 of Ceph cluster'
-task node1: [:create_key, :berks_vendor] do
-  run_command("chef-client #{client_options} " \
-    "#{PROV_PATH}/node1.rb")
-end
-
-desc 'node2 of Ceph cluster'
-task node2: [:create_key, :berks_vendor] do
-  run_command("chef-client #{client_options} " \
-    "#{PROV_PATH}/node2.rb")
-end
-
-desc 'node3 of Ceph cluster'
-task node3: [:create_key, :berks_vendor] do
-  run_command("chef-client #{client_options} " \
-    "#{PROV_PATH}/node3.rb")
-end
-
-desc 'Three node Ceph cluster'
-task ceph: [:node1, :node2, :node3]
 
 desc 'Blow everything away'
 task clean: [:destroy_all]

@@ -1,4 +1,4 @@
-cookbook_file '/var/tmp/crush_map_decompressed'
+template '/var/tmp/crush_map_decompressed'
 
 # This allows us to make ceph happy on a single node for testing
 execute 'update crush map' do
@@ -9,11 +9,4 @@ execute 'update crush map' do
     touch /var/tmp/new_crush_map_compressed.done
   EOF
   creates '/var/tmp/new_crush_map_compressed.done'
-end
-
-%w(cephfs_data cephfs_metadata).each do |p|
-  ceph_chef_pool p do
-    pg_num 32
-    pgp_num 32
-  end
 end

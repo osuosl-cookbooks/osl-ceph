@@ -20,10 +20,8 @@ Berksfile.lock
 .zero-knife.rb
 Policyfile.lock.json
 
-# chef-provisioner
+# kitchen-terraform
+.terraform/
+terraform.*
 test/chef-config/*.pem
-test/chef-config/local-mode-cache/
-clients/
-nodes/
 /cookbooks/
-vms/
