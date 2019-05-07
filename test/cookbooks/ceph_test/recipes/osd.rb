@@ -1,4 +1,4 @@
-cookbook_file '/var/tmp/crush_map_decompressed'
+template '/var/tmp/crush_map_decompressed'
 
 # This allows us to make ceph happy on a single node for testing
 execute 'update crush map' do

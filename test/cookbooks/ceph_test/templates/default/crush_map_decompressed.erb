@@ -9,15 +9,9 @@ tunable straw_calc_version 1
 tunable allowed_bucket_algs 54
 
 # devices
-device 0 osd.0 class hdd
-device 1 osd.1 class hdd
-device 2 osd.2 class hdd
-device 3 osd.3 class hdd
-device 4 osd.4 class hdd
-device 5 osd.5 class hdd
-device 6 osd.6 class hdd
-device 7 osd.7 class hdd
-device 8 osd.8 class hdd
+<% node['osl-ceph']['filesystem-osd-ids'].each do |n| -%>
+device <%= n %> osd.<%= n %> class hdd
+<% end -%>
 
 # types
 type 0 osd
@@ -39,15 +33,9 @@ host node1 {
 	# weight 0.012
 	alg straw2
 	hash 0	# rjenkins1
-	item osd.0 weight 0.004
-	item osd.1 weight 0.004
-	item osd.2 weight 0.004
-	item osd.3 weight 0.004
-	item osd.4 weight 0.004
-	item osd.5 weight 0.004
-	item osd.6 weight 0.004
-	item osd.7 weight 0.004
-	item osd.8 weight 0.004
+<% node['osl-ceph']['filesystem-osd-ids'].each do |n| -%>
+	item osd.<%= n %> weight 0.004
+<% end -%>
 }
 root default {
 	id -1		# do not change unnecessarily
@@ -55,9 +43,9 @@ root default {
 	# weight 0.012
 	alg straw2
 	hash 0	# rjenkins1
-	item node1 weight 0.012
-	item node2 weight 0.012
-	item node3 weight 0.012
+<% node['ceph_test']['nodes'].each do |node| -%>
+	item <%= node %> weight 0.012
+<% end -%>
 }
 
 # rules

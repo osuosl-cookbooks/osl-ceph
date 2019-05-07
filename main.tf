@@ -38,6 +38,13 @@ resource "openstack_compute_instance_v2" "node1" {
         uuid = "${data.openstack_networking_network_v2.network.id}"
     }
     provisioner "chef" {
+        attributes_json = <<EOF
+            {
+                "ceph_test": {
+                    "nodes": [ "node1", "node2", "node3" ]
+                }
+            }
+        EOF
         run_list        = [ "role[ceph]", "role[ceph_mon]", "role[ceph_mgr]", "role[ceph_osd]", "role[ceph_mds]" ]
         node_name       = "node1"
         secret_key      = "${file("test/integration/encrypted_data_bag_secret")}"
@@ -66,6 +73,9 @@ resource "openstack_compute_instance_v2" "node2" {
             {
                 "osl-ceph": {
                     "filesystem-osd-ids": [ 3, 4, 5 ]
+                },
+                "ceph_test": {
+                    "nodes": [ "node1", "node2", "node3" ]
                 }
             }
         EOF
@@ -100,7 +110,8 @@ resource "openstack_compute_instance_v2" "node3" {
                     "filesystem-osd-ids": [ 6, 7, 8 ]
                 },
                 "ceph_test": {
-                    "pg_num": 128
+                    "pg_num": 128,
+                    "nodes": [ "node1", "node2", "node3" ]
                 }
             }
         EOF
