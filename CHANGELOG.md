@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+3.0.0 (2019-05-09)
+------------------
+- Update to Mimic release
+
 2.2.1 (2019-03-26)
 ------------------
 - Update baseurl for ppc64le repository
