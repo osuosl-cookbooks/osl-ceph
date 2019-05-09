@@ -1,12 +1,12 @@
 control 'ceph_nodes' do
   describe package('ceph') do
     it { should be_installed }
-    its('version') { should cmp < '13.0.0' }
+    its('version') { should cmp < '14.0.0' }
   end
 
   describe command('ceph --version') do
     its('exit_status') { should eq 0 }
-    its('stdout') { should include 'luminous' }
+    its('stdout') { should include 'mimic' }
   end
 
   describe file('/etc/ceph') do
@@ -30,7 +30,7 @@ control 'ceph_nodes' do
   end
 
   describe command('ceph osd stat') do
-    its('stdout') { should match(/^9 osds: 9 up, 9 in$/) }
+    its('stdout') { should match(/^9 osds: 9 up, 9 in;/) }
   end
 
   describe command('ceph mds stat') do

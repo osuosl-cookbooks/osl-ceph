@@ -15,7 +15,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-node.default['ceph']['version'] = 'luminous'
+node.default['ceph']['version'] = 'mimic'
 node.default['ceph']['mgr']['enable'] = true
 node.default['ceph']['osd']['type'] = 'bluestore'
 node.default['ceph']['init_style'] = 'systemd'

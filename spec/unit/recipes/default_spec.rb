@@ -8,7 +8,7 @@ describe 'osl-ceph::default' do
         expect { chef_run }.to_not raise_error
       end
       it do
-        expect(chef_run).to create_yum_repository('ceph').with(baseurl: /luminous/)
+        expect(chef_run).to create_yum_repository('ceph').with(baseurl: /mimic/)
       end
       it do
         expect(chef_run).to create_directory('Set /etc/ceph owner/group')
@@ -24,7 +24,7 @@ describe 'osl-ceph::default' do
         it do
           expect(chef_run).to create_yum_repository('ceph')
             .with(
-              baseurl: 'http://ftp.osuosl.org/pub/osl/repos/yum/$releasever/ceph-luminous/ppc64le',
+              baseurl: 'http://ftp.osuosl.org/pub/osl/repos/yum/$releasever/ceph-mimic/ppc64le',
               gpgkey: 'http://ftp.osuosl.org/pub/osl/repos/yum/RPM-GPG-KEY-osuosl'
             )
         end
