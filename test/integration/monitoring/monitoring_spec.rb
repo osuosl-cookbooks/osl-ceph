@@ -6,3 +6,11 @@
     its('exit_status') { should eq 0 }
   end
 end
+
+describe command('/usr/lib64/nagios/plugins/check_ceph_df -W 80 -C 90') do
+  its('exit_status') { should eq 0 }
+end
+
+describe command('/usr/lib64/nagios/plugins/check_ceph_health') do
+  its('exit_status') { should eq 0 }
+end
