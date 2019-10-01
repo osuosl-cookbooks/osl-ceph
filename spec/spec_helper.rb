@@ -1,8 +1,6 @@
 require 'chefspec'
 require 'chefspec/berkshelf'
 
-ChefSpec::Coverage.start! { add_filter 'osl-ceph' }
-
 # rubocop:disable MutableConstant
 CENTOS_7 = {
   platform: 'centos',
@@ -14,7 +12,7 @@ ALL_PLATFORMS = [
 ].freeze
 
 RSpec.configure do |config|
-  config.log_level = :fatal
+  config.log_level = :warn
 end
 
 shared_context 'chef_server' do |platform, arch|
