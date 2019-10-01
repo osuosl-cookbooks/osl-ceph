@@ -4,7 +4,7 @@ require 'chefspec/berkshelf'
 # rubocop:disable MutableConstant
 CENTOS_7 = {
   platform: 'centos',
-  version: '7.4.1708',
+  version: '7',
 }
 
 ALL_PLATFORMS = [
