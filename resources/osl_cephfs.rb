@@ -40,7 +40,7 @@ action :umount do
   mount new_resource.name do
     fstype 'ceph'
     device mons
-    options "_netdev,name=#{client_name},secretfile=/etc/ceph/ceph.client.#{new_resource.client_name}.secret"
+    options "_netdev,name=#{new_resource.client_name},secretfile=/etc/ceph/ceph.client.#{new_resource.client_name}.secret"
     dump 0
     pass 0
     action [:umount, :disable]
