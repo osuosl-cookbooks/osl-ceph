@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+3.1.0 (2019-10-10)
+------------------
+- Chef 14 Fixes
+
 3.0.0 (2019-05-09)
 ------------------
 - Update to Mimic release
