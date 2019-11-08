@@ -13,6 +13,6 @@ depends          'ceph-chef', '~> 1.1.27'
 depends          'firewall'
 depends          'git'
 depends          'osl-nrpe'
-depends          'systemd', '< 3.0.0'
+depends          'systemd'
 
 supports         'centos', '~> 7.0'

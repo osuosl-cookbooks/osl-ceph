@@ -8,12 +8,11 @@ describe 'osl-ceph::mgr' do
         expect { chef_run }.to_not raise_error
       end
       it do
-        expect(chef_run).to create_systemd_service('ceph-mgr@')
+        expect(chef_run).to create_systemd_service_drop_in('ceph-mgr@')
           .with(
-            restart_sec: 10,
-            start_limit_burst: 5,
-            override: 'ceph-mgr@',
-            drop_in: true
+            service_restart_sec: 10,
+            unit_start_limit_burst: 5,
+            override: 'ceph-mgr@.service'
           )
       end
     end

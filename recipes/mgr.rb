@@ -15,11 +15,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-systemd_service 'ceph-mgr@' do
-  restart_sec 10
-  start_limit_burst 5
-  override 'ceph-mgr@'
-  drop_in true
+systemd_service_drop_in 'ceph-mgr@' do
+  service_restart_sec 10
+  unit_start_limit_burst 5
+  override 'ceph-mgr@.service'
 end
 
 include_recipe 'osl-ceph'
