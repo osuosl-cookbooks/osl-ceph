@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+3.2.0 (2019-11-08)
+------------------
+- Update to using systemd_service_drop_in
+
 3.1.0 (2019-10-10)
 ------------------
 - Chef 14 Fixes
