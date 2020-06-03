@@ -21,7 +21,7 @@ osl_cephfs '/mnt/bar' do
 end
 
 osl_cephfs 'umount /mnt/bar' do
-  name '/mnt/bar'
+  name '/mnt/bar' # rubocop:disable ChefCorrectness/ResourceSetsNameProperty
   key 'AQB3sfxaorsvKhAAkS7kVr01tZQNT1u0mhS1oQ=='
   subdir '/bar'
   client_name 'cephfs'

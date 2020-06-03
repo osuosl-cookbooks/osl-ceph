@@ -92,7 +92,6 @@ file snakeoil_file_path => [
   'test/integration/data_bags/certificates',
   'test/integration/encrypted_data_bag_secret',
 ] do
-
   encrypted_data_bag_secret = Chef::EncryptedDataBagItem.load_secret(
     encrypted_data_bag_secret_path
   )
@@ -112,14 +111,11 @@ task snakeoil: snakeoil_file_path
 desc 'Create an Encrypted Databag Secret'
 task secret_file: encrypted_data_bag_secret_path
 
-desc 'Run RubocCop (cookstyle) tests'
-task :style do
-  run_command('cookstyle')
-end
-
-desc 'Run FoodCritic (lint) tests'
-task :lint do
-  run_command('foodcritic --epic-fail any .')
+require 'cookstyle'
+require 'rubocop/rake_task'
+desc 'Run RuboCop (cookstyle) tests'
+RuboCop::RakeTask.new(:style) do |task|
+  task.options << '--display-cop-names'
 end
 
 desc 'Run RSpec (unit) tests'
@@ -160,6 +156,6 @@ desc 'Blow everything away'
 task clean: [:destroy_all]
 
 desc 'Run all tests'
-task test: [:style, :lint, :unit]
+task test: [:style, :unit]
 
 task default: :test
