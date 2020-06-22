@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+3.3.0 (2020-06-22)
+------------------
+- Chef 15 fixes
+
 3.2.1 (2019-12-19)
 ------------------
 - Chef 14 post-migration fixes
