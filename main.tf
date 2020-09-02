@@ -45,6 +45,7 @@ resource "openstack_compute_instance_v2" "node1" {
                 }
             }
         EOF
+        client_options  = ["chef_license 'accept'"]
         run_list        = [ "role[ceph]", "role[ceph_mon]", "role[ceph_mgr]", "role[ceph_osd]", "role[ceph_mds]" ]
         node_name       = "node1"
         secret_key      = "${file("test/integration/encrypted_data_bag_secret")}"
@@ -79,6 +80,7 @@ resource "openstack_compute_instance_v2" "node2" {
                 }
             }
         EOF
+        client_options  = ["chef_license 'accept'"]
         run_list        = [ "role[ceph]", "role[ceph_mon]", "role[ceph_mgr]", "role[ceph_osd]", "role[ceph_mds]" ]
         node_name       = "node2"
         secret_key      = "${file("test/integration/encrypted_data_bag_secret")}"
@@ -115,6 +117,7 @@ resource "openstack_compute_instance_v2" "node3" {
                 }
             }
         EOF
+        client_options  = ["chef_license 'accept'"]
         run_list        = [
             "role[ceph]",
             "role[ceph_mon]",
@@ -148,6 +151,7 @@ resource "openstack_compute_instance_v2" "cephfs_client" {
         uuid = "${data.openstack_networking_network_v2.network.id}"
     }
     provisioner "chef" {
+        client_options  = ["chef_license 'accept'"]
         run_list        = [
             "role[ceph]",
             "recipe[ceph_test::mds]"
