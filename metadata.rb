@@ -8,7 +8,7 @@ source_url       'https://github.com/osuosl-cookbooks/osl-ceph'
 description      'Installs/Configures osl-ceph'
 version          '3.3.0'
 
-depends          'ceph-chef', '~> 2.0.0'
+depends          'ceph-chef', '~> 3.0.0'
 depends          'firewall'
 depends          'git'
 depends          'osl-nrpe'
