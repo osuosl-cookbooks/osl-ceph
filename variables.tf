@@ -1,5 +1,5 @@
 variable "chef_version" {
-    default = "14.14.14"
+    default = "16"
 }
 variable "centos_atomic_image" {
     default = "CentOS Atomic 7.1902"

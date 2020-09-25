@@ -1,7 +1,8 @@
 resource_name :osl_cephfs
+provides :osl_cephfs
 default_action :mount
 
-property :key, String, required: true
+property :key, String, required: [:mount]
 property :client_name, String, default: 'admin'
 property :subdir, String, default: '/'
 
