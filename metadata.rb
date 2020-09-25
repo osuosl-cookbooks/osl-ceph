@@ -6,7 +6,7 @@ chef_version     '>= 14.0'
 issues_url       'https://github.com/osuosl-cookbooks/osl-ceph/issues'
 source_url       'https://github.com/osuosl-cookbooks/osl-ceph'
 description      'Installs/Configures osl-ceph'
-version          '3.3.0'
+version          '3.4.0'
 
 depends          'ceph-chef', '~> 3.0.0'
 depends          'firewall'
