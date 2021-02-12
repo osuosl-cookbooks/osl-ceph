@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+3.4.1 (2021-02-12)
+------------------
+- Implement workaround for mount bug in Chef
+
 3.4.0 (2020-09-25)
 ------------------
 - Update to chef 16
