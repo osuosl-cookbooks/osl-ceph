@@ -7,8 +7,12 @@ describe 'ceph_test::mds' do
         mon_node = stub_node('mon', p) do |node|
           node.automatic['fqdn'] = 'ceph-mon.example.org'
           node.automatic['roles'] = 'search-ceph-mon'
+          node.automatic['tags'] = %w(ceph-admin ceph-mon ceph-mds)
         end
-        ChefSpec::ServerRunner.new(p.dup.merge(step_into: %w(osl_cephfs))) do |_node, server|
+        ChefSpec::ServerRunner.new(p.dup.merge(step_into: %w(osl_cephfs))) do |node, server|
+          node.automatic['ceph']['mon']['role'] = 'search-ceph-mon'
+          node.automatic['ceph']['network']['public']['cidr'] = %w(10.0.0.0/24)
+          node.automatic['ceph']['network']['cluster']['cidr'] = %w(10.0.0.0/24)
           server.create_node(mon_node)
           server.create_data_bag(
             'ceph',
@@ -50,7 +54,7 @@ describe 'ceph_test::mds' do
         expect(chef_run).to mount_mount('/mnt/ceph')
           .with(
             fstype: 'ceph',
-            device: ':/',
+            device: '10.0.0.2:6789://',
             options: ['_netdev', 'name=cephfs', 'secretfile=/etc/ceph/ceph.client.cephfs.secret'],
             dump: 0,
             pass: 0
@@ -60,7 +64,7 @@ describe 'ceph_test::mds' do
         expect(chef_run).to enable_mount('/mnt/ceph')
           .with(
             fstype: 'ceph',
-            device: ':/',
+            device: '10.0.0.2:6789://',
             options: ['_netdev', 'name=cephfs', 'secretfile=/etc/ceph/ceph.client.cephfs.secret'],
             dump: 0,
             pass: 0
@@ -92,7 +96,7 @@ describe 'ceph_test::mds' do
         expect(chef_run).to mount_mount('/mnt/foo')
           .with(
             fstype: 'ceph',
-            device: ':/foo',
+            device: '10.0.0.2:6789:/foo',
             options: ['_netdev', 'name=cephfs', 'secretfile=/etc/ceph/ceph.client.cephfs.secret'],
             dump: 0,
             pass: 0
@@ -102,7 +106,7 @@ describe 'ceph_test::mds' do
         expect(chef_run).to enable_mount('/mnt/foo')
           .with(
             fstype: 'ceph',
-            device: ':/foo',
+            device: '10.0.0.2:6789:/foo',
             options: ['_netdev', 'name=cephfs', 'secretfile=/etc/ceph/ceph.client.cephfs.secret'],
             dump: 0,
             pass: 0
@@ -134,7 +138,7 @@ describe 'ceph_test::mds' do
         expect(chef_run).to mount_mount('/mnt/bar')
           .with(
             fstype: 'ceph',
-            device: ':/bar',
+            device: '10.0.0.2:6789:/bar',
             options: ['_netdev', 'name=cephfs', 'secretfile=/etc/ceph/ceph.client.cephfs.secret'],
             dump: 0,
             pass: 0
@@ -144,7 +148,7 @@ describe 'ceph_test::mds' do
         expect(chef_run).to enable_mount('/mnt/bar')
           .with(
             fstype: 'ceph',
-            device: ':/bar',
+            device: '10.0.0.2:6789:/bar',
             options: ['_netdev', 'name=cephfs', 'secretfile=/etc/ceph/ceph.client.cephfs.secret'],
             dump: 0,
             pass: 0
@@ -169,7 +173,7 @@ describe 'ceph_test::mds' do
         expect(chef_run).to umount_mount('/mnt/bar')
           .with(
             fstype: 'ceph',
-            device: ':/bar',
+            device: '10.0.0.2:6789:/bar',
             options: ['_netdev', 'name=cephfs', 'secretfile=/etc/ceph/ceph.client.cephfs.secret'],
             dump: 0,
             pass: 0
@@ -179,7 +183,7 @@ describe 'ceph_test::mds' do
         expect(chef_run).to disable_mount('/mnt/bar')
           .with(
             fstype: 'ceph',
-            device: ':/bar',
+            device: '10.0.0.2:6789:/bar',
             options: ['_netdev', 'name=cephfs', 'secretfile=/etc/ceph/ceph.client.cephfs.secret'],
             dump: 0,
             pass: 0
