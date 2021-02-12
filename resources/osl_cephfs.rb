@@ -20,7 +20,10 @@ action :mount do
     recursive true
   end
 
-  mons = ceph_chef_mon_addresses.sort.join(',') + ':' + new_resource.subdir
+  # TODO: Workaround https://github.com/chef/chef/issues/10764
+  subdir = new_resource.subdir.match?('^/$') ? '//' : new_resource.subdir
+
+  mons = ceph_chef_mon_addresses.sort.join(',') + ':' + subdir
   mount new_resource.name do
     fstype 'ceph'
     device mons
