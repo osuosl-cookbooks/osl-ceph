@@ -30,7 +30,8 @@ if node['kernel']['machine'] == 'ppc64le'
     'http://ftp.osuosl.org/pub/osl/repos/yum/RPM-GPG-KEY-osuosl'
 end
 
-include_recipe 'firewall::ceph'
+osl_firewall_ceph 'osl-ceph'
+
 include_recipe 'ceph-chef'
 include_recipe 'ceph-chef::repo'
 

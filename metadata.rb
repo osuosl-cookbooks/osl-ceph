@@ -9,8 +9,8 @@ description      'Installs/Configures osl-ceph'
 version          '3.5.0'
 
 depends          'ceph-chef', '~> 3.0.0'
-depends          'firewall'
 depends          'git'
+depends          'osl-firewall'
 depends          'osl-nrpe'
 depends          'systemd'
 

@@ -15,9 +15,9 @@ various parts of this cookbook in multiple nodes, similar to that in production.
 
 ## Prereqs
 
-- ChefDK 2.5.3
+- Chef Workstation
 - Terraform
-- kitchen-terraform
+- `kitchen-terraform`
 - OpenStack cluster
 
 Ensure you have the following in your ``.bashrc`` (or similar):
