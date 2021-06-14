@@ -1,5 +1,6 @@
 resource_name :ceph_keyring
 provides :ceph_keyring
+unified_mode true
 default_action :create
 
 property :key, String, required: [:create]
