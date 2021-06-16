@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+4.1.0 (2021-06-16)
+------------------
+- Enable unified_mode on custom resource
+
 4.0.0 (2021-05-25)
 ------------------
 - Update to new osl-firewall resources
