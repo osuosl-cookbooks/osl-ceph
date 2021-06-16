@@ -1,5 +1,6 @@
 resource_name :osl_cephfs
 provides :osl_cephfs
+unified_mode true
 default_action :mount
 
 property :key, String, required: [:mount]
