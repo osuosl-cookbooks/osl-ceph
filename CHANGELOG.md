@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+4.2.0 (2021-07-14)
+------------------
+- Use osl_systemd_unit_drop_in resource instead of systemd cookbook
+
 4.1.0 (2021-06-16)
 ------------------
 - Enable unified_mode on custom resource
