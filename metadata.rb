@@ -9,7 +9,7 @@ description      'Installs/Configures osl-ceph'
 version          '4.2.0'
 
 depends          'base'
-depends          'ceph-chef', '~> 3.0.0'
+depends          'ceph-chef', '~> 4.0.0'
 depends          'git'
 depends          'osl-firewall'
 depends          'osl-nrpe'
