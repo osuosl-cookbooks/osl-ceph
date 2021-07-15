@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+4.3.0 (2021-07-15)
+------------------
+- Bump ceph-chef version
+
 4.2.0 (2021-07-14)
 ------------------
 - Use osl_systemd_unit_drop_in resource instead of systemd cookbook
