@@ -1,3 +1,7 @@
+provider "openstack" {
+    version = "~> 1.43.0"
+}
+
 resource "openstack_compute_instance_v2" "chef_zero" {
     name            = "chef-zero"
     image_name      = "${var.centos_atomic_image}"
