@@ -6,6 +6,7 @@ default_action :mount
 property :key, String, required: [:enable, :mount]
 property :client_name, String, default: 'admin'
 property :subdir, String, default: '/'
+property :options, String
 
 action :enable do
   file "ceph.client secret for #{new_resource.name}" do
@@ -28,7 +29,7 @@ action :enable do
   mount new_resource.name do
     fstype 'ceph'
     device mons
-    options "_netdev,name=#{new_resource.client_name},secretfile=/etc/ceph/ceph.client.#{new_resource.client_name}.secret"
+    options [mount_opts, new_resource.options].join(',')
     dump 0
     pass 0
     action :enable
@@ -45,7 +46,7 @@ action :mount do
   mount new_resource.name do
     fstype 'ceph'
     device mons
-    options "_netdev,name=#{new_resource.client_name},secretfile=/etc/ceph/ceph.client.#{new_resource.client_name}.secret"
+    options [mount_opts, new_resource.options].join(',')
     dump 0
     pass 0
     action :mount
@@ -62,9 +63,15 @@ action :umount do
   mount new_resource.name do
     fstype 'ceph'
     device mons
-    options "_netdev,name=#{new_resource.client_name},secretfile=/etc/ceph/ceph.client.#{new_resource.client_name}.secret"
+    options [mount_opts, new_resource.options].join(',')
     dump 0
     pass 0
     action [:umount, :disable]
+  end
+end
+
+action_class do
+  def mount_opts
+    "_netdev,name=#{new_resource.client_name},secretfile=/etc/ceph/ceph.client.#{new_resource.client_name}.secret"
   end
 end
