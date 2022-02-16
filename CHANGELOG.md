@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+4.5.0 (2022-02-16)
+------------------
+- Add options property to osl_cephfs resource
+
 4.4.0 (2022-02-16)
 ------------------
 - Add :enable action to osl_cephfs
