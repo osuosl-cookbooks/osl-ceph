@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+4.4.0 (2022-02-16)
+------------------
+- Add :enable action to osl_cephfs
+
 4.3.0 (2021-07-15)
 ------------------
 - Bump ceph-chef version
