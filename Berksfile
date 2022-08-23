@@ -7,6 +7,7 @@ cookbook 'ceph-chef', git: 'git@github.com:osuosl-cookbooks/ceph-chef'
 cookbook 'osl-firewall', git: 'git@github.com:osuosl-cookbooks/osl-firewall'
 cookbook 'osl-nrpe', git: 'git@github.com:osuosl-cookbooks/osl-nrpe'
 cookbook 'osl-repos', git: 'git@github.com:osuosl-cookbooks/osl-repos'
+cookbook 'osl-resources', git: 'git@github.com:osuosl-cookbooks/osl-resources', branch: 'main'
 cookbook 'osl-selinux', git: 'git@github.com:osuosl-cookbooks/osl-selinux'
 
 cookbook 'ceph_test', path: 'test/cookbooks/ceph_test'
