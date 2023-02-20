@@ -2,7 +2,7 @@
 # Cookbook:: osl-ceph
 # Recipe:: default
 #
-# Copyright:: 2017-2022, Oregon State University
+# Copyright:: 2017-2023, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ end
 
 osl_firewall_ceph 'osl-ceph'
 
+include_recipe 'osl-repos::epel'
 include_recipe 'ceph-chef'
 include_recipe 'ceph-chef::repo'
 
