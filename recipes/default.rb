@@ -32,6 +32,7 @@ end
 
 osl_firewall_ceph 'osl-ceph'
 
+include_recipe 'osl-repos::epel'
 include_recipe 'ceph-chef'
 include_recipe 'ceph-chef::repo'
 

@@ -12,6 +12,7 @@ depends          'ceph-chef', '~> 4.0.0'
 depends          'git'
 depends          'osl-firewall'
 depends          'osl-nrpe'
+depends          'osl-repos'
 depends          'osl-resources'
 
 supports         'centos', '~> 7.0'
