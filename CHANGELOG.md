@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+4.7.0 (2023-02-20)
+------------------
+- EPEL fixes
+
 4.6.0 (2022-08-23)
 ------------------
 - Replace base with osl-resources
