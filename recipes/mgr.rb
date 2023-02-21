@@ -20,8 +20,6 @@ osl_systemd_unit_drop_in 'ceph-mgr@' do
   content({
     'Service' => {
       'RestartSec' => 10,
-    },
-    'Unit' => {
       'StartLimitBurst' => 5,
     },
   })

@@ -14,8 +14,6 @@ describe 'osl-ceph::mgr' do
             content: {
               'Service' => {
                 'RestartSec' => 10,
-              },
-              'Unit' => {
                 'StartLimitBurst' => 5,
               },
             }
