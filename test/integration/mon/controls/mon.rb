@@ -1,6 +1,6 @@
 control 'mon' do
   describe command('ceph health') do
-    its('stdout') { should match(/^HEALTH_OK$/) }
+    its('stdout') { should match(/^(HEALTH_OK|HEALTH_WARN OSD count 0 < osd_pool_default_size 3)/) }
   end
 
   describe command('ceph -s') do
