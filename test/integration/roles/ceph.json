@@ -1,0 +1,33 @@
+{
+  "env_run_lists": {},
+  "run_list": [
+    "recipe[osl-ceph]"
+  ],
+  "chef_type": "role",
+  "default_attributes": {},
+  "override_attributes": {
+    "osl-ceph": {
+      "cluster": {
+        "fsid": "78acef73-54bf-481d-ad7c-130571ea6750",
+        "mon_initial_members": [
+          "node1"
+        ],
+        "mon_host": [
+          "10.1.2.10",
+          "10.1.2.11",
+          "10.1.2.12"
+        ],
+        "public_network": [
+          "10.1.2.0/24"
+        ],
+        "cluster_network": [
+          "10.1.2.0/24"
+        ]
+      },
+      "data_bag_item": "cluster"
+    }
+  },
+  "json_class": "Chef::Role",
+  "description": "Ceph Role",
+  "name": "ceph"
+}

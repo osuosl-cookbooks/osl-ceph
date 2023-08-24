@@ -13,3 +13,6 @@ variable "ssh_user_name" {
 variable "network" {
     default = "backend"
 }
+variable "chef_version" {
+    default = "17"
+}

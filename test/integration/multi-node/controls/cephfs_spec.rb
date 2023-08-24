@@ -4,10 +4,14 @@ control 'cephfs_client' do
     its('mode') { should cmp '0600' }
   end
 
-  %w(/mnt/ceph /mnt/bar /mnt/foo).each do |d|
+  %w(/mnt/ceph /mnt/ceph/bar /mnt/foo).each do |d|
     describe file(d) do
       it { should be_directory }
     end
+  end
+
+  describe file '/mnt/bar' do
+    it { should_not exist }
   end
 
   describe mount('/mnt/ceph') do

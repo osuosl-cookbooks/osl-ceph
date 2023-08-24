@@ -135,9 +135,8 @@ resource "openstack_compute_instance_v2" "node1" {
         command = <<EOF
             knife bootstrap -c test/chef-config/knife.rb \
                 centos@${openstack_compute_instance_v2.node1.network.0.fixed_ip_v4} \
-                --bootstrap-version 17 -y -N node1 \
-                --secret-file test/integration/encrypted_data_bag_secret --sudo \
-                -r 'recipe[ceph_test::multinode_cluster]'
+                --bootstrap-version ${var.chef_version} -y -N node1 --sudo \
+                -r 'role[ceph],role[ceph_mon],role[ceph_mgr],role[ceph_osd],role[ceph_mds]'
             EOF
         environment = {
             CHEF_SERVER = "${openstack_compute_instance_v2.chef_zero.network.0.fixed_ip_v4}"
@@ -168,9 +167,8 @@ resource "openstack_compute_instance_v2" "node2" {
         command = <<EOF
             knife bootstrap -c test/chef-config/knife.rb \
                 centos@${openstack_compute_instance_v2.node2.network.0.fixed_ip_v4} \
-                --bootstrap-version 17 -y -N node2 \
-                --secret-file test/integration/encrypted_data_bag_secret --sudo \
-                -r 'recipe[ceph_test::multinode_cluster]'
+                --bootstrap-version ${var.chef_version} -y -N node2 --sudo \
+                -r 'role[ceph],role[ceph_mon],role[ceph_mgr],role[ceph_osd],role[ceph_mds]'
             EOF
         environment = {
             CHEF_SERVER = "${openstack_compute_instance_v2.chef_zero.network.0.fixed_ip_v4}"
@@ -202,9 +200,8 @@ resource "openstack_compute_instance_v2" "node3" {
         command = <<EOF
             knife bootstrap -c test/chef-config/knife.rb \
                 centos@${openstack_compute_instance_v2.node3.network.0.fixed_ip_v4} \
-                --bootstrap-version 17 -y -N node3 \
-                --secret-file test/integration/encrypted_data_bag_secret --sudo \
-                -r 'recipe[ceph_test::multinode_cluster],recipe[ceph_test::multinode_cephfs]'
+                --bootstrap-version ${var.chef_version} -y -N node3 --sudo \
+                -r 'role[ceph],role[ceph_mon],role[ceph_mgr],role[ceph_osd],role[ceph_mds],recipe[ceph_test::multinode_cephfs]'
             EOF
         environment = {
             CHEF_SERVER = "${openstack_compute_instance_v2.chef_zero.network.0.fixed_ip_v4}"
@@ -236,8 +233,7 @@ resource "openstack_compute_instance_v2" "cephfs_client" {
         command = <<EOF
             knife bootstrap -c test/chef-config/knife.rb \
                 centos@${openstack_compute_instance_v2.cephfs_client.network.0.fixed_ip_v4} \
-                --bootstrap-version 17 -y -N cephfs_client \
-                --secret-file test/integration/encrypted_data_bag_secret --sudo \
+                --bootstrap-version ${var.chef_version} -y -N cephfs_client --sudo \
                 -r 'recipe[ceph_test::multinode_client]'
             EOF
         environment = {
