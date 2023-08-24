@@ -11,109 +11,121 @@ driver_config:
   server_name: node1
 
 provisioner:
-  name: chef_zero
+  name: chef_infra
+  enforce_idempotency: true
+  multiple_converge: 2
   deprecations_as_errors: true
   roles_path: test/integration/roles
   data_bags_path: test/integration/data_bags
   encrypted_data_bag_secret_key_path: test/integration/encrypted_data_bag_secret
-  attributes:
-    yum:
-      epel:
-        baseurl: http://epel.osuosl.org/7/$basearch
-        gpgkey: http://epel.osuosl.org/RPM-GPG-KEY-EPEL-7
-    ceph:
-      fsid-secret: ae3f1d03-bacd-4a90-b869-1a4fabb107f2
-      keyring:
-        mon: '/etc/ceph/$cluster.mon.keyring'
 
 suites:
   - name: default
     run_list:
       - recipe[osl-ceph]
-      - recipe[ceph_test::ceph_keyring]
+    verifier:
+      inputs:
+        firewall: false
+  - name: config
+    run_list:
+      - recipe[ceph_test::default]
+    verifier:
+      inspec_tests:
+        - test/integration/default
+      controls:
+        - default
+        - config
+      inputs:
+        firewall: false
+        keyring: true
   - name: mon
     run_list:
-      - role[ceph]
-      - role[ceph_mon]
+      - recipe[ceph_test::mon]
+    verifier:
+      inspec_tests:
+        - test/integration/default
+        - test/integration/config
+      controls:
+        - default
+        - config
+        - mon
+  - name: mon_keys
+    run_list:
+      - recipe[ceph_test::mon_keys]
+    verifier:
+      inspec_tests:
+        - test/integration/default
+        - test/integration/config
+        - test/integration/mon
+      controls:
+        - default
+        - config
+        - mon
+        - mon_keys
   - name: mgr
     run_list:
-      - role[ceph]
-      - role[ceph_mon]
-      - role[ceph_mgr]
+      - recipe[ceph_test::mgr]
+    verifier:
+      inspec_tests:
+        - test/integration/default
+        - test/integration/config
+        - test/integration/mon
+      controls:
+        - default
+        - config
+        - mon
+        - mgr
   - name: mds
     run_list:
-      - role[ceph]
-      - role[ceph_mon]
-      - role[ceph_mgr]
-      - role[ceph_osd]
-      - recipe[ceph_test::pool_setup]
-      - role[ceph_mds]
-      - recipe[ceph_test::mds_setup]
       - recipe[ceph_test::mds]
+    verifier:
+      inspec_tests:
+        - test/integration/default
+        - test/integration/config
+        - test/integration/mon
+        - test/integration/osd
+      controls:
+        - config
+        - default
+        - mds
+        - mgr
+        - mon
+        - osd
   - name: osd
     run_list:
-      - role[ceph]
-      - role[ceph_mon]
-      - role[ceph_mgr]
-      - role[ceph_osd]
-      - recipe[ceph_test::pool_setup]
+      - recipe[ceph_test::osd]
+    verifier:
+      inspec_tests:
+        - test/integration/default
+        - test/integration/config
+        - test/integration/mon
+        - test/integration/mgr
+      controls:
+        - default
+        - config
+        - mon
+        - mgr
   - name: monitoring
     run_list:
-      - role[ceph]
-      - role[ceph_mon]
-      - role[ceph_mgr]
-      - role[ceph_osd]
-      - recipe[ceph_test::pool_setup]
+      - recipe[ceph_test::mds]
       - recipe[osl-ceph::monitoring]
       - recipe[ceph_test::monitoring]
+    verifier:
+      inspec_tests:
+        - test/integration/default
+        - test/integration/config
+        - test/integration/mon
+        - test/integration/osd
+        - test/integration/nagios
+      controls:
+        - config
+        - default
+        - mds
+        - mgr
+        - mon
+        - monitoring
+        - nagios
+        - osd
   - name: nagios
     run_list:
       - recipe[osl-ceph::nagios]
-  - name: multi-node
-    driver:
-      name: terraform
-      command_timeout: 1800
-    provisioner: terraform
-    verifier:
-      name: terraform
-      systems:
-        - name: ceph_nodes
-          backend: ssh
-          hosts_output: ceph_nodes
-          sudo: true
-          user: centos
-          controls:
-            - ceph_nodes
-          hostnames: ceph_nodes
-        - name: node1
-          backend: ssh
-          hosts_output: node1
-          sudo: true
-          user: centos
-          controls:
-            - node1
-          hostnames: node1
-        - name: node2
-          backend: ssh
-          hosts_output: node2
-          sudo: true
-          user: centos
-          controls:
-            - node2
-          hostnames: node2
-        - name: node3
-          backend: ssh
-          hosts_output: node3
-          sudo: true
-          user: centos
-          controls:
-            - node3
-          hostnames: node3
-        - name: cephfs_client
-          backend: ssh
-          hosts_output: cephfs_client
-          sudo: true
-          user: centos
-          controls:
-            - cephfs_client
-          hostnames: cephfs_client

@@ -1,1 +1,0 @@
-../osd/osd_spec.rb

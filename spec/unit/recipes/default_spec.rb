@@ -1,34 +1,35 @@
 require_relative '../../spec_helper'
 
 describe 'osl-ceph::default' do
-  ALL_PLATFORMS.each do |p|
-    context "#{p[:platform]} #{p[:version]}" do
-      include_context 'chef_server', p
-      it 'converges successfully' do
-        expect { chef_run }.to_not raise_error
-      end
-      it do
-        expect(chef_run).to create_yum_repository('ceph').with(baseurl: /mimic/)
-      end
-      it do
-        expect(chef_run).to create_directory('Set /etc/ceph owner/group')
-          .with(
-            owner: 'ceph',
-            group: 'ceph',
-            path: '/etc/ceph',
-            mode:  '0750'
-          )
-      end
-      context 'ppc64le' do
-        include_context 'chef_server', p, 'ppc64le'
-        it do
-          expect(chef_run).to create_yum_repository('ceph')
-            .with(
-              baseurl: 'http://ftp.osuosl.org/pub/osl/repos/yum/$releasever/ceph-mimic/ppc64le',
-              gpgkey: 'http://ftp.osuosl.org/pub/osl/repos/yum/RPM-GPG-KEY-osuosl'
-            )
-        end
-      end
+  platform 'centos', '7'
+  cached(:subject) { chef_run }
+
+  it 'converges successfully' do
+    expect { chef_run }.to_not raise_error
+  end
+
+  it { is_expected.to install_osl_ceph_install 'default' }
+  it { is_expected.to_not create_osl_ceph_config 'default' }
+
+  context 'cluster defined' do
+    cached(:subject) { chef_run }
+
+    override_attributes['osl-ceph']['cluster'] = {
+      fsid: '92d28eec-abc3-42c2-8332-8b0d8232ca9f',
+      mon_initial_members: %w(node1),
+      mon_host: %w(192.168.1.100),
+      public_network: %w(192.168.1.0/24),
+      cluster_network: %w(192.168.1.0/24),
+    }
+
+    it do
+      is_expected.to create_osl_ceph_config('default').with(
+        fsid: '92d28eec-abc3-42c2-8332-8b0d8232ca9f',
+        mon_initial_members: %w(node1),
+        mon_host: %w(192.168.1.100),
+        public_network: %w(192.168.1.0/24),
+        cluster_network: %w(192.168.1.0/24)
+      )
     end
   end
 end
