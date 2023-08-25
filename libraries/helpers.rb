@@ -34,7 +34,7 @@ module OslCeph
         ceph_auth.run_command
         ceph_auth.error!
 
-        ceph_auth.stdout.match(/#{name}/)
+        ceph_auth.stdout.match(/^#{name}$/)
       end
 
       def ceph_fsid
