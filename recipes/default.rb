@@ -18,13 +18,13 @@
 
 osl_ceph_install 'default'
 
-# If a cluster attribute is defined, create a config
-cluster = node['osl-ceph']['cluster']
+# If a config attribute is defined, create a config
+config = node['osl-ceph']['config']
 
 osl_ceph_config 'default' do
-  fsid cluster['fsid']
-  mon_initial_members cluster['mon_initial_members']
-  mon_host cluster['mon_host']
-  public_network cluster['public_network']
-  cluster_network cluster['cluster_network']
-end unless cluster.empty?
+  fsid config['fsid']
+  mon_initial_members config['mon_initial_members']
+  mon_host config['mon_host']
+  public_network config['public_network']
+  cluster_network config['cluster_network']
+end unless config.empty?

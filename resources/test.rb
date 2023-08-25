@@ -5,6 +5,7 @@ unified_mode true
 
 property :cephfs, [true, false], default: false
 property :osd_size, String, default: '1G'
+property :config, Hash
 
 action :start do
   osl_ceph_install 'test' do
@@ -14,16 +15,27 @@ action :start do
     osd true
   end
 
-  osl_ceph_config 'test' do
-    fsid 'ae3f1d03-bacd-4a90-b869-1a4fabb107f2'
-    mon_initial_members [node['hostname']]
-    mon_host [node['ipaddress']]
-    public_network %w(
-      10.1.100.0/23
-    )
-    cluster_network %w(
-      10.1.100.0/23
-    )
+  if new_resource.config
+    osl_ceph_config 'test' do
+      fsid new_resource.config['fsid']
+      mon_initial_members new_resource.config['mon_initial_members']
+      mon_host new_resource.config['mon_host']
+      public_network new_resource.config['public_network']
+      cluster_network new_resource.config['cluster_network']
+      client_options new_resource.config['client_options'] if new_resource.config['client_options']
+    end
+  else
+    osl_ceph_config 'test' do
+      fsid 'ae3f1d03-bacd-4a90-b869-1a4fabb107f2'
+      mon_initial_members [node['hostname']]
+      mon_host [node['ipaddress']]
+      public_network %w(
+        10.1.100.0/23
+      )
+      cluster_network %w(
+        10.1.100.0/23
+      )
+    end
   end
 
   osl_ceph_mon 'test'
@@ -37,7 +49,7 @@ action :start do
   # This allows us to make ceph happy on a single node for testing
   execute 'update crush map' do
     cwd '/var/tmp'
-    command <<-EOC
+    command <<~EOC
       crushtool -c crush_map_decompressed -o new_crush_map_compressed
       ceph osd setcrushmap -i new_crush_map_compressed
       touch /var/tmp/new_crush_map_compressed.done
@@ -59,7 +71,7 @@ action :start do
   end
 
   if new_resource.cephfs
-    osl_ceph_mds 'mds'
+    osl_ceph_mds 'test'
 
     execute 'create cephfs' do
       command <<~EOC

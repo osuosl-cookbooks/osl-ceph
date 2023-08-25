@@ -38,11 +38,19 @@ module OslCeph
       end
 
       def ceph_fsid
-        File.read('/etc/ceph/ceph.conf')[/^fsid = (.*)/, 1]
+        begin
+          File.read('/etc/ceph/ceph.conf')[/^fsid = (.*)/, 1]
+        rescue
+          nil
+        end
       end
 
       def ceph_mon_addresses
-        File.read('/etc/ceph/ceph.conf')[/^mon host = (.*)/, 1].split(',')
+        begin
+          File.read('/etc/ceph/ceph.conf')[/^mon host = (.*)/, 1].split(',')
+        rescue
+          nil
+        end
       end
 
       private
@@ -72,7 +80,7 @@ module OslCeph
       end
 
       def ceph_keyname
-        new_resource.keyname || "client.#{@new_resource.name}.#{node['hostname']}"
+        new_resource.keyname || "client.#{new_resource.name}.#{node['hostname']}"
       end
 
       def ceph_key

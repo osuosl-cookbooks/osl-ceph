@@ -7,7 +7,7 @@
   "default_attributes": {},
   "override_attributes": {
     "osl-ceph": {
-      "cluster": {
+      "config": {
         "fsid": "78acef73-54bf-481d-ad7c-130571ea6750",
         "mon_initial_members": [
           "node1"

@@ -10,6 +10,7 @@ property :key_name, [String, nil]
 property :key_filename, [String, nil]
 property :owner, String, default: 'ceph'
 property :group, String, default: 'ceph'
+property :mode, String, default: '0640'
 property :chef_dir, String, default: '/etc/ceph'
 
 action :create do
@@ -21,7 +22,7 @@ action :create do
     sensitive true
     owner new_resource.owner
     group new_resource.group
-    mode '0600'
+    mode new_resource.mode
   end
 end
 

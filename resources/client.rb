@@ -8,11 +8,11 @@ default_action :add
 property :as_keyring, [true, false], default: true
 property :caps, Hash, default: { 'mon' => 'allow r', 'osd' => 'allow r' }
 property :filename, String
-property :group, String, default: 'root'
+property :group, String, default: 'ceph'
 property :keyname, String
 property :key, String, sensitive: true
-property :mode, [Integer, String], default: '0644'
-property :owner, String, default: 'root'
+property :mode, [Integer, String], default: '0640'
+property :owner, String, default: 'ceph'
 
 action :add do
   unless ceph_auth_exists?(ceph_keyname)

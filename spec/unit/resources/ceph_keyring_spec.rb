@@ -48,7 +48,7 @@ describe 'osl_ceph_keyring' do
         sensitive: true,
         owner: 'ceph',
         group: 'ceph',
-        mode: '0600'
+        mode: '0640'
       )
   end
   it do
@@ -58,7 +58,7 @@ describe 'osl_ceph_keyring' do
         sensitive: true,
         owner: 'nobody',
         group: 'nobody',
-        mode: '0600'
+        mode: '0640'
       )
   end
   it do
