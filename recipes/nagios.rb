@@ -15,9 +15,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-include_recipe 'osl-ceph'
+
+osl_ceph_install 'nagios'
+
 include_recipe 'osl-nrpe'
-include_recipe 'git'
+include_recipe 'osl-git'
 
 ceph_nagios = ::File.join(Chef::Config[:file_cache_path], 'ceph-nagios')
 

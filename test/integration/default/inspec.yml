@@ -1,0 +1,4 @@
+name: default
+inputs:
+  - name: firewall
+    value: true

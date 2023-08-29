@@ -1,0 +1,30 @@
+[global]
+auth client required = cephx
+auth cluster required = cephx
+auth service required = cephx
+cluster network = <%= @cluster_network %>
+fsid = <%= @fsid %>
+keyring = /etc/ceph/$cluster.$name.keyring
+max open files = 131072
+mon host = <%= @mon_host %>
+mon initial members = <%= @mon_initial_members %>
+mon pg warn max per osd = 0
+public network = <%= @public_network %>
+
+[mon]
+keyring = /etc/ceph/$cluster.$name.keyring
+
+[mds]
+keyring = /var/lib/ceph/mds/$cluster-$id/keyring
+mds cache size = 250000
+
+[osd]
+keyring = /var/lib/ceph/osd/$cluster-$id/keyring
+
+[client]
+<% @client_options.each do |l| -%>
+<%= l %>
+<% end -%>
+
+[client.admin]
+keyring = /etc/ceph/$cluster.client.admin.keyring

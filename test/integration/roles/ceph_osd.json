@@ -2,7 +2,7 @@
   "env_run_lists": {},
   "run_list": [
     "recipe[osl-ceph::osd]",
-    "recipe[ceph_test::osd]"
+    "recipe[ceph_test::multinode_osd]"
   ],
   "chef_type": "role",
   "override_attributes": {},

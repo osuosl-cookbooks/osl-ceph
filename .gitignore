@@ -25,3 +25,8 @@ Policyfile.lock.json
 terraform.*
 test/chef-config/*.pem
 /cookbooks/
+
+# kitchen-terraform
+.terraform/
+terraform.*
+.terraform.lock.hcl

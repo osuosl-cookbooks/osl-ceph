@@ -1,0 +1,61 @@
+---
+provisioner:
+  name: terraform
+
+driver:
+  name: terraform
+  command_timeout: 3600
+
+transport:
+  command_timeout: 3600
+
+platforms:
+  - name: centos-7
+
+verifier:
+  name: terraform
+  systems:
+    - name: ceph_nodes
+      backend: ssh
+      hosts_output: ceph_nodes
+      sudo: true
+      user: centos
+      controls:
+        - ceph_nodes
+      hostnames: ceph_nodes
+    - name: node1
+      backend: ssh
+      hosts_output: node1
+      sudo: true
+      user: centos
+      controls:
+        - node1
+      hostnames: node1
+    - name: node2
+      backend: ssh
+      hosts_output: node2
+      sudo: true
+      user: centos
+      controls:
+        - node2
+      hostnames: node2
+    - name: node3
+      backend: ssh
+      hosts_output: node3
+      sudo: true
+      user: centos
+      controls:
+        - node3
+      hostnames: node3
+    - name: cephfs_client
+      backend: ssh
+      hosts_output: cephfs_client
+      sudo: true
+      user: centos
+      controls:
+        - cephfs_client
+      hostnames: cephfs_client
+
+suites:
+  - name: multi-node
+    driver: terraform

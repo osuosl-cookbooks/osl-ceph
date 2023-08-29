@@ -1,18 +1,33 @@
-provider "openstack" {
-    version = "~> 1.43.0"
+resource "openstack_networking_network_v2" "ceph_network" {
+    name                  = "osl_ceph_network"
+    admin_state_up        = "true"
+}
+
+resource "openstack_networking_subnet_v2" "ceph_subnet" {
+    network_id      = openstack_networking_network_v2.ceph_network.id
+    cidr            = "10.1.2.0/24"
+    enable_dhcp     = "false"
+    no_gateway      = "true"
+}
+
+resource "openstack_networking_port_v2" "chef_zero" {
+    name            = "chef_zero"
+    admin_state_up  = true
+    network_id      = data.openstack_networking_network_v2.network.id
 }
 
 resource "openstack_compute_instance_v2" "chef_zero" {
     name            = "chef-zero"
-    image_name      = "${var.centos_atomic_image}"
+    image_name      = var.centos_atomic_image
     flavor_name     = "m1.small"
-    key_pair        = "${var.ssh_key_name}"
+    key_pair        = var.ssh_key_name
     security_groups = ["default"]
     connection {
-        user = "centos"
+        user = var.ssh_user_name
+        host = openstack_networking_port_v2.chef_zero.all_fixed_ips.0
     }
     network {
-        uuid = "${data.openstack_networking_network_v2.network.id}"
+        port = openstack_networking_port_v2.chef_zero.id
     }
     provisioner "remote-exec" {
         inline = [
@@ -29,144 +44,201 @@ resource "openstack_compute_instance_v2" "chef_zero" {
     }
 }
 
+resource "openstack_networking_port_v2" "node1" {
+    name            = "node1"
+    admin_state_up  = true
+    network_id      = data.openstack_networking_network_v2.network.id
+}
+
+resource "openstack_networking_port_v2" "node2" {
+    name            = "node2"
+    admin_state_up  = true
+    network_id      = data.openstack_networking_network_v2.network.id
+}
+
+resource "openstack_networking_port_v2" "node3" {
+    name            = "node3"
+    admin_state_up  = true
+    network_id      = data.openstack_networking_network_v2.network.id
+}
+
+resource "openstack_networking_port_v2" "cephfs_client" {
+    name            = "cephfs_client"
+    admin_state_up  = true
+    network_id      = data.openstack_networking_network_v2.network.id
+}
+
+resource "openstack_networking_port_v2" "node1_ceph" {
+    name                  = "node1_ceph"
+    admin_state_up        = true
+    port_security_enabled = false
+    network_id            = openstack_networking_network_v2.ceph_network.id
+    fixed_ip {
+        subnet_id = openstack_networking_subnet_v2.ceph_subnet.id
+        ip_address = "10.1.2.10"
+    }
+}
+
+resource "openstack_networking_port_v2" "node2_ceph" {
+    name                  = "node2_ceph"
+    admin_state_up        = true
+    port_security_enabled = false
+    network_id            = openstack_networking_network_v2.ceph_network.id
+    fixed_ip {
+        subnet_id = openstack_networking_subnet_v2.ceph_subnet.id
+        ip_address = "10.1.2.11"
+    }
+}
+
+resource "openstack_networking_port_v2" "node3_ceph" {
+    name                  = "node3_ceph"
+    admin_state_up        = true
+    port_security_enabled = false
+    network_id            = openstack_networking_network_v2.ceph_network.id
+    fixed_ip {
+        subnet_id = openstack_networking_subnet_v2.ceph_subnet.id
+        ip_address = "10.1.2.12"
+    }
+}
+
+resource "openstack_networking_port_v2" "cephfs_client_ceph" {
+    name                  = "cephfs_client_ceph"
+    admin_state_up        = true
+    port_security_enabled = false
+    network_id            = openstack_networking_network_v2.ceph_network.id
+    fixed_ip {
+        subnet_id = openstack_networking_subnet_v2.ceph_subnet.id
+        ip_address = "10.1.2.20"
+    }
+}
+
 resource "openstack_compute_instance_v2" "node1" {
     name            = "node1"
-    image_name      = "${var.centos_image}"
+    image_name      = var.os_image
     flavor_name     = "m1.large"
-    key_pair        = "${var.ssh_key_name}"
+    key_pair        = var.ssh_key_name
     security_groups = ["default"]
     connection {
-        user = "centos"
+        user = var.ssh_user_name
+        host = openstack_networking_port_v2.node1.all_fixed_ips.0
     }
     network {
-        uuid = "${data.openstack_networking_network_v2.network.id}"
+        port = openstack_networking_port_v2.node1.id
     }
-    provisioner "chef" {
-        attributes_json = <<EOF
-            {
-                "ceph_test": {
-                    "nodes": [ "node1", "node2", "node3" ]
-                }
-            }
-        EOF
-        client_options  = ["chef_license 'accept'"]
-        run_list        = [ "role[ceph]", "role[ceph_mon]", "role[ceph_mgr]", "role[ceph_osd]", "role[ceph_mds]" ]
-        node_name       = "node1"
-        secret_key      = "${file("test/integration/encrypted_data_bag_secret")}"
-        server_url      = "http://${openstack_compute_instance_v2.chef_zero.network.0.fixed_ip_v4}:8889"
-        recreate_client = true
-        user_name       = "fakeclient"
-        user_key        = "${file("test/chef-config/fakeclient.pem")}"
-        version         = "${var.chef_version}"
+    network {
+        port = openstack_networking_port_v2.node1_ceph.id
+    }
+    provisioner "remote-exec" {
+        inline = ["echo online"]
+    }
+    provisioner "local-exec" {
+        command = <<EOF
+            knife bootstrap -c test/chef-config/knife.rb \
+                centos@${openstack_compute_instance_v2.node1.network.0.fixed_ip_v4} \
+                --bootstrap-version ${var.chef_version} -y -N node1 --sudo \
+                -r 'role[ceph],role[ceph_mon],role[ceph_mgr],role[ceph_osd],role[ceph_mds]'
+            EOF
+        environment = {
+            CHEF_SERVER = "${openstack_compute_instance_v2.chef_zero.network.0.fixed_ip_v4}"
+        }
     }
 }
 
 resource "openstack_compute_instance_v2" "node2" {
     name            = "node2"
-    image_name      = "${var.centos_image}"
+    image_name      = var.os_image
     flavor_name     = "m1.large"
-    key_pair        = "${var.ssh_key_name}"
+    key_pair        = var.ssh_key_name
     security_groups = ["default"]
     connection {
-        user = "centos"
+        user = var.ssh_user_name
+        host = openstack_networking_port_v2.node2.all_fixed_ips.0
     }
     network {
-        uuid = "${data.openstack_networking_network_v2.network.id}"
+        port = openstack_networking_port_v2.node2.id
     }
-    provisioner "chef" {
-        attributes_json = <<EOF
-            {
-                "osl-ceph": {
-                    "filesystem-osd-ids": [ 3, 4, 5 ]
-                },
-                "ceph_test": {
-                    "nodes": [ "node1", "node2", "node3" ]
-                }
-            }
-        EOF
-        client_options  = ["chef_license 'accept'"]
-        run_list        = [ "role[ceph]", "role[ceph_mon]", "role[ceph_mgr]", "role[ceph_osd]", "role[ceph_mds]" ]
-        node_name       = "node2"
-        secret_key      = "${file("test/integration/encrypted_data_bag_secret")}"
-        server_url      = "http://${openstack_compute_instance_v2.chef_zero.network.0.fixed_ip_v4}:8889"
-        recreate_client = true
-        user_name       = "fakeclient"
-        user_key        = "${file("test/chef-config/fakeclient.pem")}"
-        version         = "${var.chef_version}"
+    network {
+        port = openstack_networking_port_v2.node2_ceph.id
     }
-    depends_on = [ "openstack_compute_instance_v2.node1" ]
+    provisioner "remote-exec" {
+        inline = ["echo online"]
+    }
+    provisioner "local-exec" {
+        command = <<EOF
+            knife bootstrap -c test/chef-config/knife.rb \
+                centos@${openstack_compute_instance_v2.node2.network.0.fixed_ip_v4} \
+                --bootstrap-version ${var.chef_version} -y -N node2 --sudo \
+                -r 'role[ceph],role[ceph_mon],role[ceph_mgr],role[ceph_osd],role[ceph_mds]'
+            EOF
+        environment = {
+            CHEF_SERVER = "${openstack_compute_instance_v2.chef_zero.network.0.fixed_ip_v4}"
+        }
+    }
+    depends_on = [ openstack_compute_instance_v2.node1 ]
 }
 
 resource "openstack_compute_instance_v2" "node3" {
     name            = "node3"
-    image_name      = "${var.centos_image}"
+    image_name      = var.os_image
     flavor_name     = "m1.large"
-    key_pair        = "${var.ssh_key_name}"
+    key_pair        = var.ssh_key_name
     security_groups = ["default"]
     connection {
-        user = "centos"
+        user = var.ssh_user_name
+        host = openstack_networking_port_v2.node3.all_fixed_ips.0
     }
     network {
-        uuid = "${data.openstack_networking_network_v2.network.id}"
+        port = openstack_networking_port_v2.node3.id
     }
-    provisioner "chef" {
-        attributes_json = <<EOF
-            {
-                "osl-ceph": {
-                    "filesystem-osd-ids": [ 6, 7, 8 ]
-                },
-                "ceph_test": {
-                    "pg_num": 128,
-                    "nodes": [ "node1", "node2", "node3" ]
-                }
-            }
-        EOF
-        client_options  = ["chef_license 'accept'"]
-        run_list        = [
-            "role[ceph]",
-            "role[ceph_mon]",
-            "role[ceph_mgr]",
-            "role[ceph_osd]",
-            "role[ceph_mds]",
-            "recipe[ceph_test::pool_setup]",
-            "recipe[ceph_test::mds_setup]"
-        ]
-        node_name       = "node3"
-        secret_key      = "${file("test/integration/encrypted_data_bag_secret")}"
-        server_url      = "http://${openstack_compute_instance_v2.chef_zero.network.0.fixed_ip_v4}:8889"
-        recreate_client = true
-        user_name       = "fakeclient"
-        user_key        = "${file("test/chef-config/fakeclient.pem")}"
-        version         = "${var.chef_version}"
+    network {
+        port = openstack_networking_port_v2.node3_ceph.id
     }
-    depends_on = [ "openstack_compute_instance_v2.node2" ]
+    provisioner "remote-exec" {
+        inline = ["echo online"]
+    }
+    provisioner "local-exec" {
+        command = <<EOF
+            knife bootstrap -c test/chef-config/knife.rb \
+                centos@${openstack_compute_instance_v2.node3.network.0.fixed_ip_v4} \
+                --bootstrap-version ${var.chef_version} -y -N node3 --sudo \
+                -r 'role[ceph],role[ceph_mon],role[ceph_mgr],role[ceph_osd],role[ceph_mds],recipe[ceph_test::multinode_cephfs]'
+            EOF
+        environment = {
+            CHEF_SERVER = "${openstack_compute_instance_v2.chef_zero.network.0.fixed_ip_v4}"
+        }
+    }
+    depends_on = [ openstack_compute_instance_v2.node2 ]
 }
 
 resource "openstack_compute_instance_v2" "cephfs_client" {
     name            = "cephfs_client"
-    image_name      = "${var.centos_image}"
+    image_name      = var.os_image
     flavor_name     = "m1.small"
-    key_pair        = "${var.ssh_key_name}"
+    key_pair        = var.ssh_key_name
     security_groups = ["default"]
     connection {
-        user = "centos"
+        user = var.ssh_user_name
+        host = openstack_networking_port_v2.cephfs_client.all_fixed_ips.0
     }
     network {
-        uuid = "${data.openstack_networking_network_v2.network.id}"
+        port = openstack_networking_port_v2.cephfs_client.id
     }
-    provisioner "chef" {
-        client_options  = ["chef_license 'accept'"]
-        run_list        = [
-            "role[ceph]",
-            "recipe[ceph_test::mds]"
-        ]
-        node_name       = "cephfs_client"
-        secret_key      = "${file("test/integration/encrypted_data_bag_secret")}"
-        server_url      = "http://${openstack_compute_instance_v2.chef_zero.network.0.fixed_ip_v4}:8889"
-        recreate_client = true
-        user_name       = "fakeclient"
-        user_key        = "${file("test/chef-config/fakeclient.pem")}"
-        version         = "${var.chef_version}"
+    network {
+        port = openstack_networking_port_v2.cephfs_client_ceph.id
     }
-    depends_on = [ "openstack_compute_instance_v2.node3" ]
+    provisioner "remote-exec" {
+        inline = ["echo online"]
+    }
+    provisioner "local-exec" {
+        command = <<EOF
+            knife bootstrap -c test/chef-config/knife.rb \
+                centos@${openstack_compute_instance_v2.cephfs_client.network.0.fixed_ip_v4} \
+                --bootstrap-version ${var.chef_version} -y -N cephfs_client --sudo \
+                -r 'recipe[ceph_test::multinode_client]'
+            EOF
+        environment = {
+            CHEF_SERVER = "${openstack_compute_instance_v2.chef_zero.network.0.fixed_ip_v4}"
+        }
+    }
+    depends_on = [ openstack_compute_instance_v2.node3 ]
 }

@@ -1,0 +1,4 @@
+name: config
+inputs:
+  - name: keyring
+    value: false

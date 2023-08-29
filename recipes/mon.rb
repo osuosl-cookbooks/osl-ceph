@@ -16,10 +16,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 include_recipe 'osl-ceph'
-include_recipe 'ceph-chef::mon'
-include_recipe 'ceph-chef::mon_start'
 
-delete_resource(:cookbook_file, '/etc/systemd/system/ceph-mon@.service')
-delete_resource(:execute, 'change-ceph-conf-perm')
-tag(node['ceph']['admin']['tag'])
-tag(node['ceph']['mon']['tag'])
+osl_ceph_install 'mon' do
+  mon true
+end
+
+if node['osl-ceph']['data_bag_item']
+  secrets = data_bag_item('ceph', node['osl-ceph']['data_bag_item'])
+
+  osl_ceph_mon 'mon' do
+    mon_key secrets['mon_key']
+    admin_key secrets['admin_key']
+    bootstrap_key secrets['bootstrap_key']
+    generate_monmap false
+  end
+end

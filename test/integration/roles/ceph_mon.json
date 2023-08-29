@@ -1,6 +1,7 @@
 {
   "env_run_lists": {},
   "run_list": [
+    "recipe[ceph_test::multinode_network]",
     "recipe[osl-ceph::mon]"
   ],
   "chef_type": "role",

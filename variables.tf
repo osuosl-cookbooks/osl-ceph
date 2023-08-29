@@ -1,10 +1,7 @@
-variable "chef_version" {
-    default = "16"
-}
 variable "centos_atomic_image" {
     default = "CentOS Atomic 7.1902"
 }
-variable "centos_image" {
+variable "os_image" {
     default = "CentOS 7.9"
 }
 variable "ssh_key_name" {
@@ -14,5 +11,8 @@ variable "ssh_user_name" {
     default = "centos"
 }
 variable "network" {
-    default = "vlan42"
+    default = "backend"
+}
+variable "chef_version" {
+    default = "17"
 }

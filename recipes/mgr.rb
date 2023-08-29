@@ -15,16 +15,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-osl_systemd_unit_drop_in 'ceph-mgr@' do
-  unit_name 'ceph-mgr@.service'
-  content({
-    'Service' => {
-      'RestartSec' => 10,
-      'StartLimitBurst' => 5,
-    },
-  })
+include_recipe 'osl-ceph'
+
+osl_ceph_install 'mgr' do
+  mgr true
 end
 
-include_recipe 'osl-ceph'
-include_recipe 'ceph-chef::mgr'
-delete_resource(:execute, 'change-ceph-conf-perm')
+osl_ceph_mgr 'mgr'
