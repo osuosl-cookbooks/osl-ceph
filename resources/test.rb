@@ -6,6 +6,7 @@ unified_mode true
 property :cephfs, [true, false], default: false
 property :osd_size, String, default: '1G'
 property :config, Hash
+property :create_config, [true, false], default: true
 
 action :start do
   osl_ceph_install 'test' do
@@ -36,7 +37,7 @@ action :start do
         10.1.100.0/23
       )
     end
-  end
+  end if new_resource.create_config
 
   osl_ceph_mon 'test'
 

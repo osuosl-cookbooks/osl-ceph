@@ -27,4 +27,5 @@ osl_ceph_config 'default' do
   mon_host config['mon_host']
   public_network config['public_network']
   cluster_network config['cluster_network']
+  client_options config['client_options'] if config['client_options']
 end unless config.empty?

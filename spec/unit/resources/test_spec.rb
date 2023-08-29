@@ -118,4 +118,16 @@ describe 'osl_ceph_test' do
       end
     end
   end
+
+  context 'create_config' do
+    cached(:subject) { chef_run }
+
+    recipe do
+      osl_ceph_test 'default' do
+        create_config false
+      end
+    end
+
+    it { is_expected.to_not create_osl_ceph_config('test') }
+  end
 end

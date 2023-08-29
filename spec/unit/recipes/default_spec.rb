@@ -20,6 +20,7 @@ describe 'osl-ceph::default' do
       mon_host: %w(192.168.1.100),
       public_network: %w(192.168.1.0/24),
       cluster_network: %w(192.168.1.0/24),
+      client_options: ['foo bar = foo'],
     }
 
     it do
@@ -28,7 +29,8 @@ describe 'osl-ceph::default' do
         mon_initial_members: %w(node1),
         mon_host: %w(192.168.1.100),
         public_network: %w(192.168.1.0/24),
-        cluster_network: %w(192.168.1.0/24)
+        cluster_network: %w(192.168.1.0/24),
+        client_options: ['foo bar = foo']
       )
     end
   end
