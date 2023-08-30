@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+5.0.2 (2023-08-30)
+------------------
+- nagios: Set a branch to use for the ceph-nagios-plugins repository
+
 5.0.1 (2023-08-30)
 ------------------
 - Fix typo in parameter name in keyring resource
