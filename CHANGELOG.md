@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+5.0.1 (2023-08-30)
+------------------
+- Fix typo in parameter name in keyring resource
+
 5.0.0 (2023-08-29)
 ------------------
 - Major refactor into a resource driven cookbook
