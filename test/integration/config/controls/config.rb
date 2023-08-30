@@ -24,14 +24,14 @@ control 'config' do
     describe file('/etc/ceph/ceph.client.test.keyring') do
       its('owner') { should eq 'ceph' }
       its('group') { should eq 'ceph' }
-      its('mode') { should cmp '0600' }
+      its('mode') { should cmp '0640' }
       its('content') { should match(/\[client.test\]\n\tkey = AQB3sfxaorsvKhAAkS7kVr01tZQNT1u0mhS1oQ==\n/) }
     end
 
     describe file('/tmp/test2-filename') do
       its('owner') { should eq 'nobody' }
       its('group') { should eq 'nobody' }
-      its('mode') { should cmp '0600' }
+      its('mode') { should cmp '0640' }
       its('content') { should match(/\[test2-name\]\n\tkey = AQB3sfxaorsvKhAAkS7kVr01tZQNT1u0mhS1oQ==\n/) }
     end
 

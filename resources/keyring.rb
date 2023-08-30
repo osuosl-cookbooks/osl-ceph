@@ -11,13 +11,13 @@ property :key_filename, [String, nil]
 property :owner, String, default: 'ceph'
 property :group, String, default: 'ceph'
 property :mode, String, default: '0640'
-property :chef_dir, String, default: '/etc/ceph'
+property :ceph_dir, String, default: '/etc/ceph'
 
 action :create do
   key_name = new_resource.key_name.nil? ? "client.#{new_resource.name}" : new_resource.key_name
   key_filename = new_resource.key_filename.nil? ? "ceph.client.#{new_resource.name}.keyring" : new_resource.key_filename
 
-  file "#{new_resource.chef_dir}/#{key_filename}" do
+  file "#{new_resource.ceph_dir}/#{key_filename}" do
     content "[#{key_name}]\n\tkey = #{new_resource.key}\n"
     sensitive true
     owner new_resource.owner
@@ -28,7 +28,7 @@ end
 
 action :delete do
   key_filename = new_resource.key_filename.nil? ? "ceph.client.#{new_resource.name}.keyring" : new_resource.key_filename
-  file "#{new_resource.chef_dir}/#{key_filename}" do
+  file "#{new_resource.ceph_dir}/#{key_filename}" do
     sensitive true
     action :delete
   end
