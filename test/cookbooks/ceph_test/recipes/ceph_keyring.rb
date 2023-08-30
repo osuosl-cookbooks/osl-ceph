@@ -8,7 +8,7 @@ osl_ceph_keyring 'test2' do
   key_filename 'test2-filename'
   owner 'nobody'
   group 'nobody'
-  chef_dir '/tmp'
+  ceph_dir '/tmp'
 end
 
 osl_ceph_keyring 'delete' do
