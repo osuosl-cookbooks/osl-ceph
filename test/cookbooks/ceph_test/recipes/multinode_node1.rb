@@ -1,11 +1,3 @@
-include_recipe 'ceph_test::default'
-
-osl_ceph_install 'mon' do
-  mon true
-end
-
-osl_ceph_mon 'mon'
-
 # Mute these warnings:
 #   HEALTH_WARN mon is allowing insecure global_id reclaim
 # https://docs.ceph.com/en/latest/security/CVE-2021-20288/

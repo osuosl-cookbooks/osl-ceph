@@ -1,3 +1,10 @@
+mount_opts =
+  if os.release.to_i >= 8
+    ['rw', 'relatime', 'seclabel', 'name=cephfs', 'secret=<hidden>', 'acl', '_netdev']
+  else
+    ['rw', 'relatime', 'name=cephfs', 'secret=<hidden>', 'acl', 'wsize=16777216']
+  end
+
 control 'cephfs_client' do
   describe file('/etc/ceph/ceph.client.cephfs.secret') do
     its('content') { should match /^AQB3sfxaorsvKhAAkS7kVr01tZQNT1u0mhS1oQ==$/ }
@@ -18,14 +25,14 @@ control 'cephfs_client' do
     it { should be_mounted }
     its('device') { should match '10.1.2.10,10.1.2.11,10.1.2.12:/' }
     its('type') { should eq 'ceph' }
-    its('options') { should eq ['rw', 'relatime', 'name=cephfs', 'secret=<hidden>', 'acl', 'wsize=16777216'] }
+    its('options') { should eq mount_opts }
   end
 
   describe mount('/mnt/foo') do
     it { should be_mounted }
     its('device') { should match '10.1.2.10,10.1.2.11,10.1.2.12:/foo' }
     its('type') { should eq 'ceph' }
-    its('options') { should eq ['rw', 'relatime', 'name=cephfs', 'secret=<hidden>', 'acl', 'wsize=16777216'] }
+    its('options') { should eq mount_opts }
   end
 
   describe mount('/mnt/bar') do

@@ -9,7 +9,7 @@ when 'cephfs-client'
   ip = '10.1.2.20'
 end
 
-secondary_interface = node['network']['default_interface'] == 'eth0' ? 'eth1' : 'ens3'
+secondary_interface = node['network']['default_interface'] == 'eth0' ? 'eth1' : 'ens4'
 
 osl_ifconfig ip do
   onboot 'yes'

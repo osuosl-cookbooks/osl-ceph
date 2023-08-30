@@ -7,6 +7,13 @@ control 'mon' do
     its('stdout') { should match(/mon: 1 daemons, quorum node1/) }
   end
 
+  # v2 msgr2 port
+  describe port('3300') do
+    it { should be_listening }
+    its('processes') { should include 'ceph-mon' }
+  end
+
+  # v1 legacy port
   describe port('6789') do
     it { should be_listening }
     its('processes') { should include 'ceph-mon' }

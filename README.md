@@ -1,12 +1,12 @@
 # osl-ceph Cookbook
 
-OSL wrapper cookbook for upstream [ceph-chef cookbooks](https://github.com/ceph/ceph-chef/). Also includes support for
-ppc64le compute nodes.
+Cookbook for managing Ceph nodes and clients
 
 ## Supported Platforms
 
-- Ceph Luminous Release
+- Ceph Nautilus Release
 - CentOS 7
+- AlmaLinux 8
 
 # Multi-host test integration
 
@@ -53,10 +53,10 @@ manually. To see what their IP addresses are, just run ``terraform output`` whic
 
 ``` bash
 # You can run the following commands to login to each node
-$ ssh centos@$(terraform output node1)
-$ ssh centos@$(terraform output node2)
-$ ssh centos@$(terraform output node3)
-$ ssh centos@$(terraform output cephfs_client)
+$ ssh centos@$(terraform output -raw node1)
+$ ssh centos@$(terraform output -raw node2)
+$ ssh centos@$(terraform output -raw node3)
+$ ssh centos@$(terraform output -raw cephfs_client)
 
 # Or you can look at the IPs for all for all of the nodes at once
 $ terraform output
@@ -117,12 +117,12 @@ All of these nodes are configured using a Chef Server which is a container runni
 chef-zero server by doing the following:
 
 ``` bash
-$ CHEF_SERVER="$(terraform output chef_zero)" knife node list -c test/chef-config/knife.rb
+$ CHEF_SERVER="$(terraform output -raw chef_zero)" knife node list -c test/chef-config/knife.rb
 cephfs_client
 node1
 node2
 node3
-$ CHEF_SERVER="$(terraform output chef_zero)" knife node edit -c test/chef-config/knife.rb
+$ CHEF_SERVER="$(terraform output -raw chef_zero)" knife node edit -c test/chef-config/knife.rb
 ```
 
 In addition, on any node that has been deployed, you can re-run ``chef-client`` like you normally would on a production

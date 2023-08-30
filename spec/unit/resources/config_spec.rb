@@ -57,7 +57,7 @@ describe 'osl_ceph_config' do
        public network = 192.168.1.0/24
 
        [mon]
-       keyring = /etc/ceph/$cluster.$name.keyring
+       keyring = /var/lib/ceph/mon/$cluster-$id/keyring
 
        [mds]
        keyring = /var/lib/ceph/mds/$cluster-$id/keyring
@@ -124,7 +124,7 @@ describe 'osl_ceph_config' do
          public network = 192.168.1.0/24,192.168.2.0/24
 
          [mon]
-         keyring = /etc/ceph/$cluster.$name.keyring
+         keyring = /var/lib/ceph/mon/$cluster-$id/keyring
 
          [mds]
          keyring = /var/lib/ceph/mds/$cluster-$id/keyring

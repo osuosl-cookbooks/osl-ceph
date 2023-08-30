@@ -13,7 +13,7 @@ ruby_block 'wait for ceph mds cluster' do
     puts ''
     loop do
       ceph_health = `ceph -s`
-      break if %r{mds: cephfs-1/1/1 up  \{0=node[0-9]=up:active\}} =~ ceph_health
+      break if /mds: cephfs:.*=up:active\}/ =~ ceph_health
       puts 'Ceph MDS not ready ...'
       sleep(1)
     end

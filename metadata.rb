@@ -14,4 +14,5 @@ depends          'osl-nrpe'
 depends          'osl-repos'
 depends          'osl-resources'
 
+supports         'almalinux', '~> 8.0'
 supports         'centos', '~> 7.0'

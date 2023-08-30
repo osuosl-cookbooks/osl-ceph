@@ -1,12 +1,12 @@
 control 'ceph_nodes' do
   describe package('ceph-common') do
     it { should be_installed }
-    its('version') { should cmp < '14.0.0' }
+    its('version') { should cmp < '15.0.0' }
   end
 
   describe command('ceph --version') do
     its('exit_status') { should eq 0 }
-    its('stdout') { should include 'mimic' }
+    its('stdout') { should include 'nautilus' }
   end
 
   describe file('/etc/ceph') do
@@ -26,15 +26,15 @@ control 'ceph_nodes' do
 
   describe command('ceph -s') do
     its('stdout') { should match(/mon: 3 daemons, quorum node[0-9],node[0-9],node[0-9]/) }
-    its('stdout') { should match(/mgr: node[0-9]\(active\), standbys: node[0-9], node[0-9]/) }
+    its('stdout') { should match(/mgr: node[0-9]\(active,.* standbys: node[0-9], node[0-9]/) }
   end
 
   describe command('ceph osd stat') do
-    its('stdout') { should match(/^9 osds: 9 up, 9 in;/) }
+    its('stdout') { should match(/^9 osds: 9 up.* 9 in/) }
   end
 
   describe command('ceph mds stat') do
-    its('stdout') { should match(%(^cephfs-1/1/1 up  {0=node[0-9]=up:active}, 2 up:standby$)) }
+    its('stdout') { should match(/^cephfs:1 {0=node[0-9]=up:active} 2 up:standby$/) }
   end
 
   describe port('6789') do
