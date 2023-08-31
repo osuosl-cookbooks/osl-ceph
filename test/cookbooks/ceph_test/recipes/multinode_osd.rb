@@ -1,12 +1,14 @@
-# Create fake OSD disks using files
-%w(0 1 2).each do |i|
-  execute "create osd#{i}" do
+# Add OSDs
+%w(
+  sdb
+  sdc
+  sdd
+).each do |d|
+  execute "create osd on #{d}" do
     command <<~EOC
-      dd if=/dev/zero of=/root/osd#{i} bs=1G count=1
-      vgcreate osd#{i} $(losetup --show -f /root/osd#{i})
-      lvcreate -n osd#{i} -l 100%FREE osd#{i}
-      ceph-volume lvm create --bluestore --data osd#{i}/osd#{i}
+      ceph-volume lvm create --bluestore --data /dev/#{d}
+      touch /root/#{d}.done
     EOC
-    not_if "vgs osd#{i}"
+    creates "/root/#{d}.done"
   end
 end
