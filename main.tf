@@ -112,6 +112,42 @@ resource "openstack_networking_port_v2" "cephfs_client_ceph" {
     }
 }
 
+resource "openstack_blockstorage_volume_v2" "node1_volumes" {
+  count = 3
+  name  = format("node1-%02d", count.index + 1)
+  size  = 1
+}
+
+resource "openstack_blockstorage_volume_v2" "node2_volumes" {
+  count = 3
+  name  = format("node2-%02d", count.index + 1)
+  size  = 1
+}
+
+resource "openstack_blockstorage_volume_v2" "node3_volumes" {
+  count = 3
+  name  = format("node3-%02d", count.index + 1)
+  size  = 1
+}
+
+resource "openstack_compute_volume_attach_v2" "node1_attachments" {
+    count       = 3
+    instance_id = openstack_compute_instance_v2.node1.id
+    volume_id   = "${openstack_blockstorage_volume_v2.node1_volumes.*.id[count.index]}"
+}
+
+resource "openstack_compute_volume_attach_v2" "node2_attachments" {
+    count       = 3
+    instance_id = openstack_compute_instance_v2.node2.id
+    volume_id   = "${openstack_blockstorage_volume_v2.node2_volumes.*.id[count.index]}"
+}
+
+resource "openstack_compute_volume_attach_v2" "node3_attachments" {
+    count       = 3
+    instance_id = openstack_compute_instance_v2.node3.id
+    volume_id   = "${openstack_blockstorage_volume_v2.node3_volumes.*.id[count.index]}"
+}
+
 resource "openstack_compute_instance_v2" "node1" {
     name            = "node1"
     image_name      = var.os_image
@@ -127,20 +163,6 @@ resource "openstack_compute_instance_v2" "node1" {
     }
     network {
         port = openstack_networking_port_v2.node1_ceph.id
-    }
-    provisioner "remote-exec" {
-        inline = ["echo online"]
-    }
-    provisioner "local-exec" {
-        command = <<EOF
-            knife bootstrap -c test/chef-config/knife.rb \
-                centos@${openstack_compute_instance_v2.node1.network.0.fixed_ip_v4} \
-                --bootstrap-version ${var.chef_version} -y -N node1 --sudo \
-                -r 'role[ceph],role[ceph_mon],role[ceph_mgr],role[ceph_osd],role[ceph_mds]'
-            EOF
-        environment = {
-            CHEF_SERVER = "${openstack_compute_instance_v2.chef_zero.network.0.fixed_ip_v4}"
-        }
     }
 }
 
@@ -160,21 +182,6 @@ resource "openstack_compute_instance_v2" "node2" {
     network {
         port = openstack_networking_port_v2.node2_ceph.id
     }
-    provisioner "remote-exec" {
-        inline = ["echo online"]
-    }
-    provisioner "local-exec" {
-        command = <<EOF
-            knife bootstrap -c test/chef-config/knife.rb \
-                centos@${openstack_compute_instance_v2.node2.network.0.fixed_ip_v4} \
-                --bootstrap-version ${var.chef_version} -y -N node2 --sudo \
-                -r 'role[ceph],role[ceph_mon],role[ceph_mgr],role[ceph_osd],role[ceph_mds]'
-            EOF
-        environment = {
-            CHEF_SERVER = "${openstack_compute_instance_v2.chef_zero.network.0.fixed_ip_v4}"
-        }
-    }
-    depends_on = [ openstack_compute_instance_v2.node1 ]
 }
 
 resource "openstack_compute_instance_v2" "node3" {
@@ -193,9 +200,46 @@ resource "openstack_compute_instance_v2" "node3" {
     network {
         port = openstack_networking_port_v2.node3_ceph.id
     }
-    provisioner "remote-exec" {
-        inline = ["echo online"]
+}
+
+resource "null_resource" "node1" {
+    provisioner "local-exec" {
+        command = <<EOF
+            knife bootstrap -c test/chef-config/knife.rb \
+                centos@${openstack_compute_instance_v2.node1.network.0.fixed_ip_v4} \
+                --bootstrap-version ${var.chef_version} -y -N node1 --sudo \
+                -r 'role[ceph],role[ceph_mon],role[ceph_mgr],role[ceph_osd],role[ceph_mds]'
+            EOF
+        environment = {
+            CHEF_SERVER = "${openstack_compute_instance_v2.chef_zero.network.0.fixed_ip_v4}"
+        }
     }
+    depends_on = [
+        openstack_compute_instance_v2.node1,
+        openstack_compute_volume_attach_v2.node1_attachments
+    ]
+}
+
+resource "null_resource" "node2" {
+    provisioner "local-exec" {
+        command = <<EOF
+            knife bootstrap -c test/chef-config/knife.rb \
+                centos@${openstack_compute_instance_v2.node2.network.0.fixed_ip_v4} \
+                --bootstrap-version ${var.chef_version} -y -N node2 --sudo \
+                -r 'role[ceph],role[ceph_mon],role[ceph_mgr],role[ceph_osd],role[ceph_mds]'
+            EOF
+        environment = {
+            CHEF_SERVER = "${openstack_compute_instance_v2.chef_zero.network.0.fixed_ip_v4}"
+        }
+    }
+    depends_on = [
+        openstack_compute_instance_v2.node2,
+        openstack_compute_volume_attach_v2.node2_attachments,
+        null_resource.node1
+    ]
+}
+
+resource "null_resource" "node3" {
     provisioner "local-exec" {
         command = <<EOF
             knife bootstrap -c test/chef-config/knife.rb \
@@ -207,8 +251,13 @@ resource "openstack_compute_instance_v2" "node3" {
             CHEF_SERVER = "${openstack_compute_instance_v2.chef_zero.network.0.fixed_ip_v4}"
         }
     }
-    depends_on = [ openstack_compute_instance_v2.node2 ]
+    depends_on = [
+        openstack_compute_instance_v2.node3,
+        openstack_compute_volume_attach_v2.node3_attachments,
+        null_resource.node2
+    ]
 }
+
 
 resource "openstack_compute_instance_v2" "cephfs_client" {
     name            = "cephfs_client"
@@ -240,5 +289,5 @@ resource "openstack_compute_instance_v2" "cephfs_client" {
             CHEF_SERVER = "${openstack_compute_instance_v2.chef_zero.network.0.fixed_ip_v4}"
         }
     }
-    depends_on = [ openstack_compute_instance_v2.node3 ]
+    depends_on = [ null_resource.node3 ]
 }
