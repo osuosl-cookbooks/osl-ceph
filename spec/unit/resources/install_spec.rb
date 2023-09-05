@@ -13,8 +13,8 @@ describe 'osl_ceph_install' do
 
   it do
     is_expected.to create_yum_repository('ceph').with(
-      description: 'Ceph mimic',
-      baseurl: 'https://download.ceph.com/rpm-mimic/el$releasever/$basearch',
+      description: 'Ceph nautilus',
+      baseurl: 'https://download.ceph.com/rpm-nautilus/el$releasever/$basearch',
       gpgkey: 'https://download.ceph.com/keys/release.asc'
     )
   end
@@ -28,8 +28,8 @@ describe 'osl_ceph_install' do
 
     it do
       is_expected.to create_yum_repository('ceph').with(
-        description: 'Ceph mimic',
-        baseurl: 'https://ftp.osuosl.org/pub/osl/repos/yum/$releasever/ceph-mimic/$basearch',
+        description: 'Ceph nautilus',
+        baseurl: 'https://ftp.osuosl.org/pub/osl/repos/yum/$releasever/ceph-nautilus/$basearch',
         gpgkey: 'https://ftp.osuosl.org/pub/osl/repos/yum/RPM-GPG-KEY-osuosl'
       )
     end

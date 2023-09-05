@@ -1,6 +1,6 @@
 control 'osd' do
   describe command('ceph osd stat') do
-    its('stdout') { should match(/^3 osds: 3 up, 3 in;/) }
+    its('stdout') { should match(/^3 osds: 3 up.*, 3 in/) }
   end
 
   describe command('ss -tpln') do

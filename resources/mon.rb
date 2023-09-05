@@ -27,8 +27,7 @@ action :start do
 
   execute 'create admin keyring' do
     command <<~EOC
-      ceph-authtool --create-keyring #{admin_keyring} \
-        #{admin_key} -n client.admin --set-uid=0 \
+      ceph-authtool --create-keyring #{admin_keyring} #{admin_key} -n client.admin \
         --cap mon 'allow *' --cap osd 'allow *' --cap mds 'allow *' --cap mgr 'allow *'
     EOC
     sensitive true

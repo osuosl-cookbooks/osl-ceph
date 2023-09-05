@@ -9,9 +9,6 @@ driver:
 transport:
   command_timeout: 3600
 
-platforms:
-  - name: centos-7
-
 verifier:
   name: terraform
   systems:
@@ -56,6 +53,56 @@ verifier:
         - cephfs_client
       hostnames: cephfs_client
 
+platforms:
+  - name: centos-7
+  - name: almalinux-8
+    driver:
+      variables:
+        os_image: "AlmaLinux 8"
+        ssh_user_name: "almalinux"
+    verifier:
+      name: terraform
+      systems:
+        - name: ceph_nodes
+          backend: ssh
+          hosts_output: ceph_nodes
+          sudo: true
+          user: almalinux
+          controls:
+            - ceph_nodes
+          hostnames: ceph_nodes
+        - name: node1
+          backend: ssh
+          hosts_output: node1
+          sudo: true
+          user: almalinux
+          controls:
+            - node1
+          hostnames: node1
+        - name: node2
+          backend: ssh
+          hosts_output: node2
+          sudo: true
+          user: almalinux
+          controls:
+            - node2
+          hostnames: node2
+        - name: node3
+          backend: ssh
+          hosts_output: node3
+          sudo: true
+          user: almalinux
+          controls:
+            - node3
+          hostnames: node3
+        - name: cephfs_client
+          backend: ssh
+          hosts_output: cephfs_client
+          sudo: true
+          user: almalinux
+          controls:
+            - cephfs_client
+          hostnames: cephfs_client
+
 suites:
   - name: multi-node
-    driver: terraform

@@ -1,6 +1,13 @@
+mount_opts =
+  if os.release.to_i >= 8
+    ['rw', 'relatime', 'seclabel', 'name=cephfs', 'secret=<hidden>', 'acl', '_netdev']
+  else
+    ['rw', 'relatime', 'name=cephfs', 'secret=<hidden>', 'acl', 'wsize=16777216']
+  end
+
 control 'mds' do
   describe command('ceph mds stat') do
-    its('stdout') { should match(%(^cephfs-1/1/1 up  {0=node1=up:active}$)) }
+    its('stdout') { should match(%(cephfs:1 {0=node1=up:active})) }
   end
 
   describe command('ss -tpln') do
@@ -28,14 +35,14 @@ control 'mds' do
     it { should be_mounted }
     its('device') { should match '10.1.100.*:/' }
     its('type') { should eq 'ceph' }
-    its('options') { should eq ['rw', 'relatime', 'name=cephfs', 'secret=<hidden>', 'acl', 'wsize=16777216'] }
+    its('options') { should eq mount_opts }
   end
 
   describe mount('/mnt/foo') do
     it { should be_mounted }
     its('device') { should match '10.1.100.*:/foo' }
     its('type') { should eq 'ceph' }
-    its('options') { should eq ['rw', 'relatime', 'name=cephfs', 'secret=<hidden>', 'acl', 'wsize=16777216'] }
+    its('options') { should eq mount_opts }
   end
 
   describe mount('/mnt/bar') do

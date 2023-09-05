@@ -12,7 +12,7 @@ mon pg warn max per osd = 0
 public network = <%= @public_network %>
 
 [mon]
-keyring = /etc/ceph/$cluster.$name.keyring
+keyring = /var/lib/ceph/mon/$cluster-$id/keyring
 
 [mds]
 keyring = /var/lib/ceph/mds/$cluster-$id/keyring

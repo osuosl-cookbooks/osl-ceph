@@ -4,13 +4,13 @@ control 'default' do
   %w(ceph-common ceph-selinux).each do |p|
     describe package p do
       it { should be_installed }
-      its('version') { should cmp < '14.0.0' }
+      its('version') { should cmp < '15.0.0' }
     end
   end
 
   describe command('ceph --version') do
     its('exit_status') { should eq 0 }
-    its('stdout') { should include 'mimic' }
+    its('stdout') { should include 'nautilus' }
   end
 
   describe yum.repo('ceph') do

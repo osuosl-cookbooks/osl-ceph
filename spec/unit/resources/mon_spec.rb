@@ -26,7 +26,7 @@ describe 'osl_ceph_mon' do
 
   it do
     is_expected.to run_execute('create admin keyring').with(
-      command: "ceph-authtool --create-keyring /etc/ceph/ceph.client.admin.keyring   --gen-key -n client.admin --set-uid=0   --cap mon 'allow *' --cap osd 'allow *' --cap mds 'allow *' --cap mgr 'allow *'\n",
+      command: "ceph-authtool --create-keyring /etc/ceph/ceph.client.admin.keyring --gen-key -n client.admin   --cap mon 'allow *' --cap osd 'allow *' --cap mds 'allow *' --cap mgr 'allow *'\n",
       sensitive: true,
       creates: '/var/lib/ceph/mon/ceph-Fauxhai/done'
     )
@@ -135,7 +135,7 @@ describe 'osl_ceph_mon' do
 
     it do
       is_expected.to run_execute('create admin keyring').with(
-        command: "ceph-authtool --create-keyring /etc/ceph/ceph.client.admin.keyring   --add-key=AQBkf+Zkw67WNBAAzK7M8SnedPLkYXIanbWNCg== -n client.admin --set-uid=0   --cap mon 'allow *' --cap osd 'allow *' --cap mds 'allow *' --cap mgr 'allow *'\n",
+        command: "ceph-authtool --create-keyring /etc/ceph/ceph.client.admin.keyring --add-key=AQBkf+Zkw67WNBAAzK7M8SnedPLkYXIanbWNCg== -n client.admin   --cap mon 'allow *' --cap osd 'allow *' --cap mds 'allow *' --cap mgr 'allow *'\n",
         sensitive: true,
         creates: '/var/lib/ceph/mon/ceph-Fauxhai/done'
       )

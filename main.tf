@@ -23,7 +23,7 @@ resource "openstack_compute_instance_v2" "chef_zero" {
     key_pair        = var.ssh_key_name
     security_groups = ["default"]
     connection {
-        user = var.ssh_user_name
+        user = "centos"
         host = openstack_networking_port_v2.chef_zero.all_fixed_ips.0
     }
     network {
@@ -204,11 +204,11 @@ resource "openstack_compute_instance_v2" "node3" {
 
 resource "null_resource" "node1" {
     provisioner "local-exec" {
-        command = <<EOF
+        command = <<-EOF
             knife bootstrap -c test/chef-config/knife.rb \
-                centos@${openstack_compute_instance_v2.node1.network.0.fixed_ip_v4} \
+                ${var.ssh_user_name}@${openstack_compute_instance_v2.node1.network.0.fixed_ip_v4} \
                 --bootstrap-version ${var.chef_version} -y -N node1 --sudo \
-                -r 'role[ceph],role[ceph_mon],role[ceph_mgr],role[ceph_osd],role[ceph_mds]'
+                -r 'role[ceph],role[ceph_mon],role[ceph_mgr],role[ceph_osd],role[ceph_mds],recipe[ceph_test::multinode_node1]'
             EOF
         environment = {
             CHEF_SERVER = "${openstack_compute_instance_v2.chef_zero.network.0.fixed_ip_v4}"
@@ -222,9 +222,9 @@ resource "null_resource" "node1" {
 
 resource "null_resource" "node2" {
     provisioner "local-exec" {
-        command = <<EOF
+        command = <<-EOF
             knife bootstrap -c test/chef-config/knife.rb \
-                centos@${openstack_compute_instance_v2.node2.network.0.fixed_ip_v4} \
+                ${var.ssh_user_name}@${openstack_compute_instance_v2.node2.network.0.fixed_ip_v4} \
                 --bootstrap-version ${var.chef_version} -y -N node2 --sudo \
                 -r 'role[ceph],role[ceph_mon],role[ceph_mgr],role[ceph_osd],role[ceph_mds]'
             EOF
@@ -241,9 +241,9 @@ resource "null_resource" "node2" {
 
 resource "null_resource" "node3" {
     provisioner "local-exec" {
-        command = <<EOF
+        command = <<-EOF
             knife bootstrap -c test/chef-config/knife.rb \
-                centos@${openstack_compute_instance_v2.node3.network.0.fixed_ip_v4} \
+                ${var.ssh_user_name}@${openstack_compute_instance_v2.node3.network.0.fixed_ip_v4} \
                 --bootstrap-version ${var.chef_version} -y -N node3 --sudo \
                 -r 'role[ceph],role[ceph_mon],role[ceph_mgr],role[ceph_osd],role[ceph_mds],recipe[ceph_test::multinode_cephfs]'
             EOF
@@ -262,7 +262,7 @@ resource "null_resource" "node3" {
 resource "openstack_compute_instance_v2" "cephfs_client" {
     name            = "cephfs_client"
     image_name      = var.os_image
-    flavor_name     = "m1.small"
+    flavor_name     = "m1.medium"
     key_pair        = var.ssh_key_name
     security_groups = ["default"]
     connection {
@@ -279,9 +279,9 @@ resource "openstack_compute_instance_v2" "cephfs_client" {
         inline = ["echo online"]
     }
     provisioner "local-exec" {
-        command = <<EOF
+        command = <<-EOF
             knife bootstrap -c test/chef-config/knife.rb \
-                centos@${openstack_compute_instance_v2.cephfs_client.network.0.fixed_ip_v4} \
+                ${var.ssh_user_name}@${openstack_compute_instance_v2.cephfs_client.network.0.fixed_ip_v4} \
                 --bootstrap-version ${var.chef_version} -y -N cephfs_client --sudo \
                 -r 'recipe[ceph_test::multinode_client]'
             EOF
