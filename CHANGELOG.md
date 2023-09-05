@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+6.0.0 (2023-09-05)
+------------------
+- Update to Nautilus release
+
 5.0.2 (2023-08-30)
 ------------------
 - nagios: Set a branch to use for the ceph-nagios-plugins repository
