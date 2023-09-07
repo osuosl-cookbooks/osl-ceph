@@ -19,6 +19,14 @@ describe 'osl_ceph_install' do
     )
   end
 
+  it do
+    is_expected.to create_yum_repository('ceph-noarch').with(
+      description: 'Ceph noarch nautilus',
+      baseurl: 'https://download.ceph.com/rpm-nautilus/el$releasever/noarch',
+      gpgkey: 'https://download.ceph.com/keys/release.asc'
+    )
+  end
+
   it { is_expected.to install_package(%w(ceph-common ceph-selinux)) }
   it { is_expected.to_not accept_osl_firewall_ceph 'osl-ceph' }
 
@@ -57,7 +65,7 @@ describe 'osl_ceph_install' do
       end
     end
 
-    it { is_expected.to install_package(%w(ceph-common ceph-mgr ceph-selinux)) }
+    it { is_expected.to install_package(%w(ceph-common ceph-mgr ceph-mgr-dashboard ceph-mgr-diskprediction-cloud ceph-mgr-diskprediction-local ceph-selinux)) }
     it { is_expected.to accept_osl_firewall_ceph 'osl-ceph' }
   end
 
@@ -99,7 +107,7 @@ describe 'osl_ceph_install' do
       end
     end
 
-    it { is_expected.to install_package(%w(ceph-common ceph-mds ceph-mgr ceph-mon ceph-osd ceph-selinux)) }
+    it { is_expected.to install_package(%w(ceph-common ceph-mds ceph-mgr ceph-mgr-dashboard ceph-mgr-diskprediction-cloud ceph-mgr-diskprediction-local ceph-mon ceph-osd ceph-selinux)) }
     it { is_expected.to accept_osl_firewall_ceph 'osl-ceph' }
   end
 end

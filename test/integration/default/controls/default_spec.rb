@@ -18,6 +18,11 @@ control 'default' do
     it { should be_enabled }
   end
 
+  describe yum.repo('ceph-noarch') do
+    it { should exist }
+    it { should be_enabled }
+  end
+
   describe iptables do
     if firewall
       it { should have_rule('-N ceph') }
