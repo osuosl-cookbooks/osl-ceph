@@ -22,7 +22,14 @@ module OslCeph
       def ceph_packages
         packages = %w(ceph-common ceph-selinux)
         packages.push('ceph-mds') if new_resource.mds
-        packages.push('ceph-mgr') if new_resource.mgr
+
+        if new_resource.mgr
+          packages.push('ceph-mgr')
+          packages.push('ceph-mgr-dashboard')
+          packages.push('ceph-mgr-diskprediction-cloud')
+          packages.push('ceph-mgr-diskprediction-local')
+        end
+
         packages.push('ceph-mon') if new_resource.mon
         packages.push('ceph-osd') if new_resource.osd
 

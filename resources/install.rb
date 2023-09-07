@@ -18,6 +18,12 @@ action :install do
     gpgkey ceph_yum_gpgkey
   end
 
+  yum_repository 'ceph-noarch' do
+    description "Ceph noarch #{new_resource.release}"
+    baseurl "https://download.ceph.com/rpm-#{new_resource.release}/el$releasever/noarch"
+    gpgkey ceph_yum_gpgkey
+  end
+
   package ceph_packages
 
   osl_firewall_ceph 'osl-ceph' if new_resource.mds || new_resource.mgr || new_resource.mon || new_resource.osd

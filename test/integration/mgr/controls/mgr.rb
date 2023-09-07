@@ -3,6 +3,17 @@ control 'mgr' do
     its('stdout') { should match(/mgr: node1\(active/) }
   end
 
+  %w(
+    ceph-mgr
+    ceph-mgr-dashboard
+    ceph-mgr-diskprediction-cloud
+    ceph-mgr-diskprediction-local
+  ).each do |p|
+    describe package p do
+      it { should be_installed }
+    end
+  end
+
   describe command('ss -tpln') do
     its('stdout') { should include 'ceph-mgr' }
   end
