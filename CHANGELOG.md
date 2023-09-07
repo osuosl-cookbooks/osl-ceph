@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+6.0.1 (2023-09-07)
+------------------
+- Add mgr dashboard package
+
 6.0.0 (2023-09-05)
 ------------------
 - Update to Nautilus release
