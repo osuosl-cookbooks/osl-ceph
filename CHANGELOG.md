@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+6.1.0 (2023-10-06)
+------------------
+- osl_ceph_test: add ipaddress parameter
+
 6.0.1 (2023-09-07)
 ------------------
 - Add mgr dashboard package
