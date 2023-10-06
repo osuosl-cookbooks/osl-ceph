@@ -4,9 +4,10 @@ default_action :start
 unified_mode true
 
 property :cephfs, [true, false], default: false
-property :osd_size, String, default: '1G'
 property :config, Hash
 property :create_config, [true, false], default: true
+property :ipaddress, String, default: lazy { node['ipaddress'] }
+property :osd_size, String, default: '1G'
 
 action :start do
   osl_ceph_install 'test' do
@@ -39,7 +40,9 @@ action :start do
     end
   end if new_resource.create_config
 
-  osl_ceph_mon 'test'
+  osl_ceph_mon 'test' do
+    ipaddress new_resource.ipaddress
+  end
 
   # Mute these warnings:
   #   HEALTH_WARN mon is allowing insecure global_id reclaim
