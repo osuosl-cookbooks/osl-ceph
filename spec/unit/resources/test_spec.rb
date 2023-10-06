@@ -34,7 +34,7 @@ describe 'osl_ceph_test' do
     )
   end
 
-  it { is_expected.to start_osl_ceph_mon 'test' }
+  it { is_expected.to start_osl_ceph_mon('test').with(ipaddress: '10.0.0.2') }
   it { is_expected.to start_osl_ceph_mgr 'test' }
   it { is_expected.to_not start_osl_ceph_mds 'test' }
   it { is_expected.to create_template('/var/tmp/crush_map_decompressed').with(cookbook: 'osl-ceph') }
@@ -129,5 +129,17 @@ describe 'osl_ceph_test' do
     end
 
     it { is_expected.to_not create_osl_ceph_config('test') }
+  end
+
+  context 'ipaddress' do
+    cached(:subject) { chef_run }
+
+    recipe do
+      osl_ceph_test 'default' do
+        ipaddress '192.168.100.1'
+      end
+    end
+
+    it { is_expected.to start_osl_ceph_mon('test').with(ipaddress: '192.168.100.1') }
   end
 end
