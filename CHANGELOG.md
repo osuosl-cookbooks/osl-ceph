@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+6.1.1 (2023-12-11)
+------------------
+- Also check for fsid in attributes
+
 6.1.0 (2023-10-06)
 ------------------
 - osl_ceph_test: add ipaddress parameter
