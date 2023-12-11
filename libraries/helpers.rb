@@ -48,7 +48,11 @@ module OslCeph
         begin
           File.read('/etc/ceph/ceph.conf')[/^fsid = (.*)/, 1]
         rescue
-          nil
+          if node['osl-ceph']['config'].empty?
+            nil
+          else
+            node['osl-ceph']['config']['fsid']
+          end
         end
       end
 
