@@ -24,6 +24,10 @@ suites:
     verifier:
       inputs:
         firewall: false
+  - name: rbdmap
+    run_list:
+      - recipe[osl-ceph]
+      - recipe[ceph_test::rbdmap]
   - name: config
     run_list:
       - recipe[ceph_test::default]
