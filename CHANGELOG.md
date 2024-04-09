@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+6.2.1 (2024-04-09)
+------------------
+- Add bootstrap-osd keyring
+
 6.2.0 (2024-03-22)
 ------------------
 - Add osl_ceph_rbdmap resource
