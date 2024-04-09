@@ -21,6 +21,14 @@ osl_ceph_install 'osd' do
   osd true
 end
 
+if node['osl-ceph']['data_bag_item']
+  secrets = data_bag_item('ceph', node['osl-ceph']['data_bag_item'])
+
+  osl_ceph_keyring 'bootstrap-osd' do
+    key secrets['bootstrap_key']
+  end
+end
+
 service 'ceph-osd.target' do
   action [:enable, :start]
 end
