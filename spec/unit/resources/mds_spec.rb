@@ -1,7 +1,7 @@
 require_relative '../../spec_helper'
 
 describe 'osl_ceph_mds' do
-  platform 'centos', '7'
+  platform 'almalinux', '8'
   cached(:subject) { chef_run }
   step_into :osl_ceph_mds
 

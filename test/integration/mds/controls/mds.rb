@@ -1,9 +1,4 @@
-mount_opts =
-  if os.release.to_i >= 8
-    ['rw', 'relatime', 'seclabel', 'name=cephfs', 'secret=<hidden>', 'acl', '_netdev']
-  else
-    ['rw', 'relatime', 'name=cephfs', 'secret=<hidden>', 'acl', 'wsize=16777216']
-  end
+mount_opts = ['rw', 'relatime', 'seclabel', 'name=cephfs', 'secret=<hidden>', 'acl', '_netdev']
 
 control 'mds' do
   describe command('ceph mds stat') do
