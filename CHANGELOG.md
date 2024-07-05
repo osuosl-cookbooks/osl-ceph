@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+6.3.0 (2024-07-05)
+------------------
+- Remove support for CentOS 7
+
 6.2.1 (2024-04-09)
 ------------------
 - Add bootstrap-osd keyring
