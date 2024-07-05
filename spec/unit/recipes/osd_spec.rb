@@ -1,7 +1,7 @@
 require_relative '../../spec_helper'
 
 describe 'osl-ceph::osd' do
-  platform 'centos', '7'
+  platform 'almalinux', '8'
   cached(:subject) { chef_run }
 
   it 'converges successfully' do
