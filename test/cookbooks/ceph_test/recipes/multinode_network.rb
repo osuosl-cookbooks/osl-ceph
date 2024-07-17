@@ -11,9 +11,8 @@ end
 
 secondary_interface = node['network']['default_interface'] == 'eth0' ? 'eth1' : 'ens4'
 
-osl_ifconfig ip do
-  onboot 'yes'
+osl_ifconfig secondary_interface do
+  ipv4addr ip
   mask '255.255.255.0'
   network '10.1.2.0'
-  device secondary_interface
 end
