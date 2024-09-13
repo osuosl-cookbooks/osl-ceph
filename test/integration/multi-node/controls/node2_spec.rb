@@ -2,6 +2,7 @@ control 'node2' do
   %w(
     ceph-mon@node2.service
     ceph-mds@node2.service
+    ceph-radosgw@rgw.node2.service
   ).each do |s|
     describe service(s) do
       it { should be_installed }

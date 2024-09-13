@@ -27,6 +27,7 @@ control 'ceph_nodes' do
   describe command('ceph -s') do
     its('stdout') { should match(/mon: 3 daemons, quorum node[0-9],node[0-9],node[0-9]/) }
     its('stdout') { should match(/mgr: node[0-9]\(active,.* standbys: node[0-9], node[0-9]/) }
+    its('stdout') { should match(/rgw: 3 daemons active \(node[0-9], node[0-9], node[0-9]\)/) }
   end
 
   describe command('ceph osd stat') do
@@ -45,6 +46,7 @@ control 'ceph_nodes' do
   describe command('ss -tpln') do
     its('stdout') { should include 'ceph-osd' }
     its('stdout') { should include 'ceph-mds' }
+    its('stdout') { should include 'radosgw' }
   end
 
   %w(
@@ -52,6 +54,7 @@ control 'ceph_nodes' do
     ceph-mgr.target
     ceph-mon.target
     ceph-osd.target
+    ceph-radosgw.target
   ).each do |s|
     describe service(s) do
       it { should be_installed }

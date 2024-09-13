@@ -32,6 +32,7 @@ describe 'osl_ceph_config' do
           mon_initial_members: 'node1',
           mon_host: '192.168.1.100',
           public_network: '192.168.1.0/24',
+          radosgw: false,
           cluster_network: '192.168.1.0/24',
           client_options: [
             'admin socket = /var/run/ceph/$cluster-$type.$id.asok',
@@ -100,6 +101,7 @@ describe 'osl_ceph_config' do
             mon_initial_members: 'node1,node2,node3',
             mon_host: '192.168.1.100,192.168.1.101,192.168.1.102',
             public_network: '192.168.1.0/24,192.168.2.0/24',
+            radosgw: false,
             cluster_network: '192.168.1.0/24,192.168.2.0/24',
             client_options: [
               'admin socket = /var/run/ceph/guests/$cluster-$type.$id.$pid.$cctid.asok',

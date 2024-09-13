@@ -113,3 +113,9 @@ action :start do
     action :delete
   end
 end
+
+action :restart do
+  service "ceph-mon@#{node['hostname']}.service" do
+    action :restart
+  end
+end

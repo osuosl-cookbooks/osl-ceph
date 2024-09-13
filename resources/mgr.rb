@@ -26,3 +26,9 @@ action :start do
     action [:enable, :start]
   end
 end
+
+action :restart do
+  service "ceph-mgr@#{node['hostname']}.service" do
+    action :restart
+  end
+end

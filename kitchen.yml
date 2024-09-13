@@ -107,11 +107,31 @@ suites:
         - config
         - mon
         - mgr
+  - name: radosgw
+    run_list:
+      - recipe[ceph_test::radosgw]
+    verifier:
+      inspec_tests:
+        - test/integration/default
+        - test/integration/config
+        - test/integration/mon
+        - test/integration/mgr
+        - test/integration/radosgw
+      controls:
+        - default
+        - config
+        - mon
+        - mgr
+        - radosgw
   - name: monitoring
     run_list:
       - recipe[ceph_test::mds]
+      - recipe[osl-ceph::radosgw]
       - recipe[osl-ceph::monitoring]
       - recipe[ceph_test::monitoring]
+    attributes:
+      ceph_test:
+        radosgw: true
     verifier:
       inspec_tests:
         - test/integration/default
@@ -119,6 +139,7 @@ suites:
         - test/integration/mon
         - test/integration/osd
         - test/integration/nagios
+        - test/integration/radosgw
       controls:
         - config
         - default
@@ -128,6 +149,7 @@ suites:
         - monitoring
         - nagios
         - osd
+        - radosgw
   - name: nagios
     run_list:
       - recipe[osl-ceph::nagios]

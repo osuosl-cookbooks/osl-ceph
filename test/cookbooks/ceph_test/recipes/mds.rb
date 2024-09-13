@@ -1,5 +1,6 @@
 osl_ceph_test 'mds' do
   cephfs true
+  radosgw node['ceph_test']['radosgw']
 end
 
 ceph_chef_client 'cephfs' do

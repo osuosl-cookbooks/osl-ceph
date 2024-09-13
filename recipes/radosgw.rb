@@ -1,8 +1,8 @@
 #
 # Cookbook:: osl-ceph
-# Recipe:: mgr
+# Recipe:: radosgw
 #
-# Copyright:: 2018-2024, Oregon State University
+# Copyright:: 2024, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@
 # limitations under the License.
 include_recipe 'osl-ceph'
 
-osl_ceph_install 'mgr' do
-  mgr true
+osl_ceph_install 'rados' do
+  radosgw true
 end
 
-osl_ceph_mgr 'mgr' do
+osl_ceph_radosgw 'radosgw' do
   subscribes :restart, 'osl_ceph_config[default]'
 end

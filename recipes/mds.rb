@@ -21,4 +21,6 @@ osl_ceph_install 'mds' do
   mds true
 end
 
-osl_ceph_mds 'mds'
+osl_ceph_mds 'mds' do
+  subscribes :restart, 'osl_ceph_config[default]'
+end
