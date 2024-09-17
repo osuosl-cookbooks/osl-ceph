@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+6.4.0 (2024-09-17)
+------------------
+- Add radosgw support
+
 6.3.0 (2024-07-05)
 ------------------
 - Remove support for CentOS 7
