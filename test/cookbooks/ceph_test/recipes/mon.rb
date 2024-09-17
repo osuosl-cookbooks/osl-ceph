@@ -4,7 +4,9 @@ osl_ceph_install 'mon' do
   mon true
 end
 
-osl_ceph_mon 'mon'
+osl_ceph_mon 'mon' do
+  subscribes :restart, 'osl_ceph_config[default]'
+end
 
 # Mute these warnings:
 #   HEALTH_WARN mon is allowing insecure global_id reclaim

@@ -4,6 +4,7 @@ default_action :start
 unified_mode true
 
 property :cephfs, [true, false], default: false
+property :radosgw, [true, false], default: false
 property :config, Hash
 property :create_config, [true, false], default: true
 property :ipaddress, String, default: lazy { node['ipaddress'] }
@@ -14,6 +15,7 @@ action :start do
     mds new_resource.cephfs
     mgr true
     mon true
+    radosgw new_resource.radosgw
     osd true
   end
 
@@ -25,6 +27,7 @@ action :start do
       public_network new_resource.config['public_network']
       cluster_network new_resource.config['cluster_network']
       client_options new_resource.config['client_options'] if new_resource.config['client_options']
+      radosgw new_resource.radosgw
     end
   else
     osl_ceph_config 'test' do
@@ -37,11 +40,13 @@ action :start do
       cluster_network %w(
         10.1.100.0/23
       )
+      radosgw new_resource.radosgw
     end
   end if new_resource.create_config
 
   osl_ceph_mon 'test' do
     ipaddress new_resource.ipaddress
+    subscribes :restart, 'osl_ceph_config[test]'
   end
 
   # Mute these warnings:
@@ -67,7 +72,9 @@ action :start do
     creates '/root/enable_msgr2'
   end
 
-  osl_ceph_mgr 'test'
+  osl_ceph_mgr 'test' do
+    subscribes :restart, 'osl_ceph_config[test]'
+  end
 
   template '/var/tmp/crush_map_decompressed' do
     cookbook 'osl-ceph'
@@ -98,7 +105,9 @@ action :start do
   end
 
   if new_resource.cephfs
-    osl_ceph_mds 'test'
+    osl_ceph_mds 'test' do
+      subscribes :restart, 'osl_ceph_config[test]'
+    end
 
     execute 'create cephfs' do
       command <<~EOC

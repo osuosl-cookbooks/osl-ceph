@@ -8,6 +8,7 @@ property :mds, [true, false], default: false
 property :mgr, [true, false], default: false
 property :mon, [true, false], default: false
 property :osd, [true, false], default: false
+property :radosgw, [true, false], default: false
 
 action :install do
   osl_repos_epel 'ceph'
@@ -26,5 +27,7 @@ action :install do
 
   package ceph_packages
 
-  osl_firewall_ceph 'osl-ceph' if new_resource.mds || new_resource.mgr || new_resource.mon || new_resource.osd
+  if new_resource.mds || new_resource.mgr || new_resource.mon || new_resource.osd || new_resource.radosgw
+    osl_firewall_ceph 'osl-ceph'
+  end
 end

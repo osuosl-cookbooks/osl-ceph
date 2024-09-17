@@ -29,5 +29,6 @@ if node['osl-ceph']['data_bag_item']
     admin_key secrets['admin_key']
     bootstrap_key secrets['bootstrap_key']
     generate_monmap false
+    subscribes :restart, 'osl_ceph_config[default]'
   end
 end

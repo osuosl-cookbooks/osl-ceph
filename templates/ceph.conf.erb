@@ -28,3 +28,18 @@ keyring = /var/lib/ceph/osd/$cluster-$id/keyring
 
 [client.admin]
 keyring = /etc/ceph/$cluster.client.admin.keyring
+<% if @radosgw -%>
+
+[client.rgw.<%= node['hostname'] %>]
+host = <%= node['hostname'] %>
+keyring = /var/lib/ceph/radosgw/ceph-<%= node['hostname'] %>/keyring
+rgw_cache_enabled = true
+rgw_cache_lru_size = 5000
+rgw_dns_name = <%= node['fqdn'] %>
+rgw_enable_ops_log = true
+rgw_enable_usage_log = true
+rgw frontends = "beast port=8080"
+rgw_max_concurrent_requests = 4096
+rgw_num_reqs_per_thread = 500
+rgw_thread_pool_size = 512
+<% end -%>

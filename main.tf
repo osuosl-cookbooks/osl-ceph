@@ -112,19 +112,19 @@ resource "openstack_networking_port_v2" "cephfs_client_ceph" {
     }
 }
 
-resource "openstack_blockstorage_volume_v2" "node1_volumes" {
+resource "openstack_blockstorage_volume_v3" "node1_volumes" {
   count = 3
   name  = format("node1-%02d", count.index + 1)
   size  = 1
 }
 
-resource "openstack_blockstorage_volume_v2" "node2_volumes" {
+resource "openstack_blockstorage_volume_v3" "node2_volumes" {
   count = 3
   name  = format("node2-%02d", count.index + 1)
   size  = 1
 }
 
-resource "openstack_blockstorage_volume_v2" "node3_volumes" {
+resource "openstack_blockstorage_volume_v3" "node3_volumes" {
   count = 3
   name  = format("node3-%02d", count.index + 1)
   size  = 1
@@ -133,19 +133,19 @@ resource "openstack_blockstorage_volume_v2" "node3_volumes" {
 resource "openstack_compute_volume_attach_v2" "node1_attachments" {
     count       = 3
     instance_id = openstack_compute_instance_v2.node1.id
-    volume_id   = "${openstack_blockstorage_volume_v2.node1_volumes.*.id[count.index]}"
+    volume_id   = "${openstack_blockstorage_volume_v3.node1_volumes.*.id[count.index]}"
 }
 
 resource "openstack_compute_volume_attach_v2" "node2_attachments" {
     count       = 3
     instance_id = openstack_compute_instance_v2.node2.id
-    volume_id   = "${openstack_blockstorage_volume_v2.node2_volumes.*.id[count.index]}"
+    volume_id   = "${openstack_blockstorage_volume_v3.node2_volumes.*.id[count.index]}"
 }
 
 resource "openstack_compute_volume_attach_v2" "node3_attachments" {
     count       = 3
     instance_id = openstack_compute_instance_v2.node3.id
-    volume_id   = "${openstack_blockstorage_volume_v2.node3_volumes.*.id[count.index]}"
+    volume_id   = "${openstack_blockstorage_volume_v3.node3_volumes.*.id[count.index]}"
 }
 
 resource "openstack_compute_instance_v2" "node1" {
@@ -208,7 +208,7 @@ resource "null_resource" "node1" {
             knife bootstrap -c test/chef-config/knife.rb \
                 ${var.ssh_user_name}@${openstack_compute_instance_v2.node1.network.0.fixed_ip_v4} \
                 --bootstrap-version ${var.chef_version} -y -N node1 --sudo \
-                -r 'role[ceph],role[ceph_mon],role[ceph_mgr],role[ceph_osd],role[ceph_mds],recipe[ceph_test::multinode_node1]'
+                -r 'role[ceph],role[ceph_mon],role[ceph_mgr],role[ceph_osd],role[ceph_mds],role[ceph_radosgw],recipe[ceph_test::multinode_node1]'
             EOF
         environment = {
             CHEF_SERVER = "${openstack_compute_instance_v2.chef_zero.network.0.fixed_ip_v4}"
@@ -226,7 +226,7 @@ resource "null_resource" "node2" {
             knife bootstrap -c test/chef-config/knife.rb \
                 ${var.ssh_user_name}@${openstack_compute_instance_v2.node2.network.0.fixed_ip_v4} \
                 --bootstrap-version ${var.chef_version} -y -N node2 --sudo \
-                -r 'role[ceph],role[ceph_mon],role[ceph_mgr],role[ceph_osd],role[ceph_mds]'
+                -r 'role[ceph],role[ceph_mon],role[ceph_mgr],role[ceph_osd],role[ceph_mds],role[ceph_radosgw]'
             EOF
         environment = {
             CHEF_SERVER = "${openstack_compute_instance_v2.chef_zero.network.0.fixed_ip_v4}"
@@ -245,7 +245,7 @@ resource "null_resource" "node3" {
             knife bootstrap -c test/chef-config/knife.rb \
                 ${var.ssh_user_name}@${openstack_compute_instance_v2.node3.network.0.fixed_ip_v4} \
                 --bootstrap-version ${var.chef_version} -y -N node3 --sudo \
-                -r 'role[ceph],role[ceph_mon],role[ceph_mgr],role[ceph_osd],role[ceph_mds],recipe[ceph_test::multinode_cephfs]'
+                -r 'role[ceph],role[ceph_mon],role[ceph_mgr],role[ceph_osd],role[ceph_mds],role[ceph_radosgw],recipe[ceph_test::multinode_cephfs]'
             EOF
         environment = {
             CHEF_SERVER = "${openstack_compute_instance_v2.chef_zero.network.0.fixed_ip_v4}"

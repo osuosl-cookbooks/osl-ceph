@@ -32,6 +32,7 @@ module OslCeph
 
         packages.push('ceph-mon') if new_resource.mon
         packages.push('ceph-osd') if new_resource.osd
+        packages.push('ceph-radosgw') if new_resource.radosgw
 
         packages.sort
       end

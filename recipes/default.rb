@@ -28,4 +28,5 @@ osl_ceph_config 'default' do
   public_network config['public_network']
   cluster_network config['cluster_network']
   client_options config['client_options'] if config['client_options']
+  radosgw config['radosgw'] if config['radosgw']
 end unless config.empty?

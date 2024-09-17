@@ -31,4 +31,5 @@ end
 
 service 'ceph-osd.target' do
   action [:enable, :start]
+  subscribes :restart, 'osl_ceph_config[default]'
 end
