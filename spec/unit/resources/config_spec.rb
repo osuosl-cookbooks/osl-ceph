@@ -28,15 +28,16 @@ describe 'osl_ceph_config' do
       owner: 'ceph',
       group: 'ceph',
       variables: {
-          fsid: 'e981973a-b299-45c6-a827-db03dd848a8c',
-          mon_initial_members: 'node1',
-          mon_host: '192.168.1.100',
-          public_network: '192.168.1.0/24',
-          radosgw: false,
           cluster_network: '192.168.1.0/24',
           client_options: [
             'admin socket = /var/run/ceph/$cluster-$type.$id.asok',
           ],
+          fsid: 'e981973a-b299-45c6-a827-db03dd848a8c',
+          mon_host: '192.168.1.100',
+          mon_initial_members: 'node1',
+          public_network: '192.168.1.0/24',
+          radosgw: false,
+          rgw_dns_name: 'fauxhai.local',
       },
       cookbook: 'osl-ceph'
     )
@@ -97,15 +98,16 @@ describe 'osl_ceph_config' do
         owner: 'ceph',
         group: 'ceph',
         variables: {
-            fsid: 'e981973a-b299-45c6-a827-db03dd848a8c',
-            mon_initial_members: 'node1,node2,node3',
-            mon_host: '192.168.1.100,192.168.1.101,192.168.1.102',
-            public_network: '192.168.1.0/24,192.168.2.0/24',
-            radosgw: false,
             cluster_network: '192.168.1.0/24,192.168.2.0/24',
             client_options: [
               'admin socket = /var/run/ceph/guests/$cluster-$type.$id.$pid.$cctid.asok',
             ],
+            fsid: 'e981973a-b299-45c6-a827-db03dd848a8c',
+            mon_host: '192.168.1.100,192.168.1.101,192.168.1.102',
+            mon_initial_members: 'node1,node2,node3',
+            public_network: '192.168.1.0/24,192.168.2.0/24',
+            radosgw: false,
+            rgw_dns_name: 'fauxhai.local',
         },
         cookbook: 'osl-ceph'
       )
