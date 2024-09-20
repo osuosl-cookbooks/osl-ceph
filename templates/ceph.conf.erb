@@ -35,7 +35,7 @@ host = <%= node['hostname'] %>
 keyring = /var/lib/ceph/radosgw/ceph-<%= node['hostname'] %>/keyring
 rgw_cache_enabled = true
 rgw_cache_lru_size = 5000
-rgw_dns_name = <%= node['fqdn'] %>
+rgw_dns_name = <%= @rgw_dns_name %>
 rgw_enable_ops_log = true
 rgw_enable_usage_log = true
 rgw frontends = "beast port=8080"

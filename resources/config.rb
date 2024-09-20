@@ -10,6 +10,7 @@ property :public_network, Array, required: true
 property :cluster_network, Array, required: true
 property :client_options, Array, default: ['admin socket = /var/run/ceph/$cluster-$type.$id.asok']
 property :radosgw, [true, false], default: false
+property :rgw_dns_name, String, default: lazy { node['fqdn'] }
 
 action :create do
   directory '/etc/ceph' do
@@ -22,13 +23,14 @@ action :create do
     owner 'ceph'
     group 'ceph'
     variables(
-      fsid: new_resource.fsid,
-      mon_initial_members: new_resource.mon_initial_members.join(','),
-      mon_host: new_resource.mon_host.join(','),
-      public_network: new_resource.public_network.join(','),
-      cluster_network: new_resource.cluster_network.join(','),
       client_options: new_resource.client_options,
-      radosgw: new_resource.radosgw
+      cluster_network: new_resource.cluster_network.join(','),
+      fsid: new_resource.fsid,
+      mon_host: new_resource.mon_host.join(','),
+      mon_initial_members: new_resource.mon_initial_members.join(','),
+      public_network: new_resource.public_network.join(','),
+      radosgw: new_resource.radosgw,
+      rgw_dns_name: new_resource.rgw_dns_name
     )
     cookbook 'osl-ceph'
   end
