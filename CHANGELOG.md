@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+6.5.0 (2024-09-20)
+------------------
+- Allow setting of rgw_dns_name to a static name
+
 6.4.0 (2024-09-17)
 ------------------
 - Add radosgw support
