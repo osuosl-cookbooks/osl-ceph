@@ -102,11 +102,13 @@ suites:
         - test/integration/config
         - test/integration/mon
         - test/integration/mgr
+        - test/integration/osd
       controls:
         - default
         - config
         - mon
         - mgr
+        - osd
   - name: radosgw
     run_list:
       - recipe[ceph_test::radosgw]
