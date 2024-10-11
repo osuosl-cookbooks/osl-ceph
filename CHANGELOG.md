@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+6.5.2 (2024-10-11)
+------------------
+- Start partprobe on boot before Ceph
+
 6.5.1 (2024-09-20)
 ------------------
 - Add rgw_dns_name to default recipe
