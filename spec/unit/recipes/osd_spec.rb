@@ -13,6 +13,38 @@ describe 'osl-ceph::osd' do
 
       it { is_expected.to include_recipe 'osl-ceph' }
       it { is_expected.to install_osl_ceph_install('osd').with(osd: true) }
+
+      it do
+        is_expected.to create_file('/usr/local/libexec/partprobe.sh').with(
+          content: <<~EOF
+            #!/bin/bash -ex
+            [ -d /dev/nvme ] && /usr/sbin/partprobe -s /dev/nvme/* || true
+          EOF
+        )
+      end
+
+      it do
+        is_expected.to create_systemd_unit('partprobe.service').with(
+          content: <<~EOF
+            [Unit]
+            Description=Run partprobe on devices before starting Ceph
+            After=local-fs.target lvm2-pvscan@.service
+            Before=ceph.target
+
+            [Service]
+            Type=oneshot
+            ExecStart=/usr/local/libexec/partprobe.sh
+            ExecStartPre=/sbin/udevadm settle
+            RemainAfterExit=yes
+
+            [Install]
+            WantedBy=multi-user.target
+          EOF
+        )
+      end
+
+      it { is_expected.to enable_service 'partprobe.service' }
+      it { is_expected.to start_service 'partprobe.service' }
       it { is_expected.to enable_service 'ceph-osd.target' }
       it { is_expected.to start_service 'ceph-osd.target' }
       it { is_expected.to_not create_osl_ceph_keyring 'bootstrap-osd' }

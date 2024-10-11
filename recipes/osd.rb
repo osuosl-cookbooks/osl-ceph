@@ -21,6 +21,39 @@ osl_ceph_install 'osd' do
   osd true
 end
 
+# Ensure NVMe LV's get scanned for partitions before ceph-osd starts. These DO NOT get scanned on boot because they are
+# logical volumes and OSDs will fail to start if they use them.
+file '/usr/local/libexec/partprobe.sh' do
+  content <<~EOF
+    #!/bin/bash -ex
+    [ -d /dev/nvme ] && /usr/sbin/partprobe -s /dev/nvme/* || true
+  EOF
+  mode '0750'
+end
+
+systemd_unit 'partprobe.service' do
+  content <<~EOF
+    [Unit]
+    Description=Run partprobe on devices before starting Ceph
+    After=local-fs.target lvm2-pvscan@.service
+    Before=ceph.target
+
+    [Service]
+    Type=oneshot
+    ExecStart=/usr/local/libexec/partprobe.sh
+    ExecStartPre=/sbin/udevadm settle
+    RemainAfterExit=yes
+
+    [Install]
+    WantedBy=multi-user.target
+  EOF
+  action :create
+end
+
+service 'partprobe.service' do
+  action [:enable, :start]
+end
+
 if node['osl-ceph']['data_bag_item']
   secrets = data_bag_item('ceph', node['osl-ceph']['data_bag_item'])
 
