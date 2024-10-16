@@ -1,6 +1,4 @@
 mount_opts = ['rw', 'relatime', 'seclabel', 'name=cephfs', 'secret=<hidden>', 'acl', '_netdev']
-docker = inspec.file('/.dockerenv').exist?
-vagrant = inspec.file('/home/vagrant').exist?
 
 control 'mds' do
   describe command('ceph mds stat') do

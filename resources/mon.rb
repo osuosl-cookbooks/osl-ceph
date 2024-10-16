@@ -43,6 +43,7 @@ action :start do
     creates "/var/lib/ceph/mon/ceph-#{node['hostname']}/done"
   end
 
+  # Docker has extra protections in place which are preventing the execution of the next resource
   execute 'Disable fs issue' do
     command 'sysctl -w fs.protected_regular=0'
     action :nothing
