@@ -10,7 +10,7 @@ property :ipaddress, String, default: lazy { node['ipaddress'] }
 property :mon_key, String, sensitive: true
 
 action :start do
-  mon_keyring = '/tmp/ceph.mon.keyring'
+  mon_keyring = '/var/tmp/ceph.mon.keyring'
   admin_keyring = '/etc/ceph/ceph.client.admin.keyring'
   bootstrap_keyring = '/var/lib/ceph/bootstrap-osd/ceph.keyring'
   mon_key = new_resource.mon_key ? "--add-key=#{new_resource.mon_key}" : '--gen-key'
@@ -43,10 +43,17 @@ action :start do
     creates "/var/lib/ceph/mon/ceph-#{node['hostname']}/done"
   end
 
+  execute 'Disable fs issue' do
+    command 'sysctl -w fs.protected_regular=0'
+    action :nothing
+  end
+
   execute 'import admin key' do
     command "ceph-authtool #{mon_keyring} --import-keyring #{admin_keyring}"
-    sensitive true
+    sensitive false
+    live_stream true
     creates "/var/lib/ceph/mon/ceph-#{node['hostname']}/done"
+    notifies :run, 'execute[Disable fs issue]', :before if docker?
   end
 
   execute 'import boostrap-osd key' do
