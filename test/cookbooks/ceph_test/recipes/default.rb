@@ -5,10 +5,12 @@ osl_ceph_config 'default' do
   mon_initial_members [node['hostname']]
   mon_host [node['ipaddress']]
   public_network %w(
-    10.1.100.0/23
+    10.0.0.0/8
+    172.16.0.0/12
   )
   cluster_network %w(
-    10.1.100.0/23
+    10.0.0.0/8
+    172.16.0.0/12
   )
 end
 

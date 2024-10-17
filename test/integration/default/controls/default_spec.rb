@@ -1,4 +1,5 @@
 firewall = input('firewall')
+docker = inspec.file('/.dockerenv').exist?
 
 control 'default' do
   %w(ceph-common ceph-selinux).each do |p|
@@ -29,5 +30,5 @@ control 'default' do
     else
       it { should_not have_rule('-N ceph') }
     end
-  end
+  end unless docker
 end

@@ -3,19 +3,28 @@ verifier:
   name: inspec
 
 driver:
-  name: openstack
-  flavor_ref: 'm1.large'
+  name: vagrant
+  hostname: node1
+  vm_hostname: node1
   user_data: userdata.txt
 
 driver_config:
   server_name: node1
 
+transport:
+  name: rsync
+
 provisioner:
   name: chef_infra
+  product_name: cinc
+  product_version: '18'
   enforce_idempotency: true
   multiple_converge: 2
   deprecations_as_errors: true
   data_bags_path: test/integration/data_bags
+
+platforms:
+  - name: almalinux-8
 
 suites:
   - name: default
