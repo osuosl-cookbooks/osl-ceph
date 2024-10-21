@@ -44,16 +44,14 @@ action :start do
   end
 
   # Docker has extra protections in place which are preventing the execution of the next resource
-  execute 'Disable fs issue' do
-    command 'sysctl -w fs.protected_regular=0'
-    action :nothing
-  end
+  sysctl 'fs.protected_regular' do
+    value 0
+  end if docker?
 
   execute 'import admin key' do
     command "ceph-authtool #{mon_keyring} --import-keyring #{admin_keyring}"
     sensitive true
     creates "/var/lib/ceph/mon/ceph-#{node['hostname']}/done"
-    notifies :run, 'execute[Disable fs issue]', :before if docker?
   end
 
   execute 'import boostrap-osd key' do
