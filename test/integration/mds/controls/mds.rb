@@ -28,14 +28,14 @@ control 'mds' do
 
   describe mount('/mnt/ceph') do
     it { should be_mounted }
-    its('device') { should match '(10.*.*.*|172.*.*.*):/' }
+    its('device') { should match '10.*.*.*:/' }
     its('type') { should eq 'ceph' }
     its('options') { should eq mount_opts }
   end
 
   describe mount('/mnt/foo') do
     it { should be_mounted }
-    its('device') { should match '(10.*.*.*|172.*.*.*):/foo' }
+    its('device') { should match '10.*.*.*:/foo' }
     its('type') { should eq 'ceph' }
     its('options') { should eq mount_opts }
   end
@@ -45,14 +45,14 @@ control 'mds' do
   end
 
   describe etc_fstab.where { mount_point == '/mnt/ceph' } do
-    its('device_name') { should match [%r{(10.*.*.*|172.*.*.*):/$}] }
+    its('device_name') { should match [%r{10.*.*.*:/$}] }
     its('file_system_type') { should eq ['ceph'] }
     its('mount_options') { should eq [['_netdev', 'name=cephfs', 'secretfile=/etc/ceph/ceph.client.cephfs.secret']] }
     its('dump_options') { should cmp 0 }
   end
 
   describe etc_fstab.where { mount_point == '/mnt/foo' } do
-    its('device_name') { should match [%r{(10.*.*.*|172.*.*.*):/foo}] }
+    its('device_name') { should match [%r{10.*.*.*:/foo}] }
     its('file_system_type') { should eq ['ceph'] }
     its('mount_options') { should eq [['_netdev', 'name=cephfs', 'secretfile=/etc/ceph/ceph.client.cephfs.secret']] }
     its('dump_options') { should cmp 0 }

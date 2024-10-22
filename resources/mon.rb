@@ -43,11 +43,6 @@ action :start do
     creates "/var/lib/ceph/mon/ceph-#{node['hostname']}/done"
   end
 
-  # Docker has extra protections in place which are preventing the execution of the next resource
-  sysctl 'fs.protected_regular' do
-    value 0
-  end if docker?
-
   execute 'import admin key' do
     command "ceph-authtool #{mon_keyring} --import-keyring #{admin_keyring}"
     sensitive true

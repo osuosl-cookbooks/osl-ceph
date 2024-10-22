@@ -18,7 +18,6 @@ execute 'disable global_id warnings' do
     touch /root/disable_global_id
   EOC
   creates '/root/disable_global_id'
-  live_stream true
 end
 
 # Enable v2 network protocol
@@ -30,5 +29,4 @@ execute 'enable msgr2' do
     touch /root/enable_msgr2
   EOC
   creates '/root/enable_msgr2'
-  live_stream true
 end
