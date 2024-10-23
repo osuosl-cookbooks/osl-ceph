@@ -29,8 +29,8 @@ describe 'osl_ceph_test' do
       fsid: 'ae3f1d03-bacd-4a90-b869-1a4fabb107f2',
       mon_initial_members: %w(Fauxhai),
       mon_host: %w(10.0.0.2),
-      public_network: %w(10.1.100.0/23),
-      cluster_network: %w(10.1.100.0/23)
+      public_network: %w(10.0.0.0/8),
+      cluster_network: %w(10.0.0.0/8)
     )
   end
 

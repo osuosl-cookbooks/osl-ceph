@@ -1,3 +1,4 @@
+vagrant = inspec.file('/home/vagrant').exist?
 keyring = input('keyring')
 
 control 'config' do
@@ -13,11 +14,12 @@ control 'config' do
   end
 
   describe ini '/etc/ceph/ceph.conf' do
-    its('global.cluster network') { should eq '10.1.100.0/23' }
+    its('global.cluster network') { should eq '10.0.0.0/8' }
     its('global.fsid') { should eq 'ae3f1d03-bacd-4a90-b869-1a4fabb107f2' }
-    its('global.mon host') { should match /10\.1\.100\.[0-9]+/ }
+    its('global.mon host') { should match /10\.1\.100\.[0-9]+/ } unless vagrant
+    its('global.mon host') { should match /10\.0\.[0-9]+\.[0-9]+/ } if vagrant
     its('global.mon initial members') { should eq 'node1' }
-    its('global.public network') { should eq '10.1.100.0/23' }
+    its('global.public network') { should eq '10.0.0.0/8' }
   end
 
   if keyring

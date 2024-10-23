@@ -3,6 +3,8 @@ osl_ceph_test 'mds' do
   radosgw node['ceph_test']['radosgw']
 end
 
+include_recipe 'osl-ceph::osd'
+
 ceph_chef_client 'cephfs' do
   keyname 'client.cephfs'
   caps(
