@@ -25,7 +25,7 @@ ceph_nagios = ::File.join(Chef::Config[:file_cache_path], 'ceph-nagios')
 
 git ceph_nagios do
   repository 'https://github.com/osuosl/ceph-nagios-plugins.git'
-  revision 'nautilus'
+  revision 'octopus'
   ignore_failure true
 end
 

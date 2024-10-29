@@ -1,12 +1,12 @@
 control 'ceph_nodes' do
   describe package('ceph-common') do
     it { should be_installed }
-    its('version') { should cmp < '15.0.0' }
+    its('version') { should cmp < '16.0.0' }
   end
 
   describe command('ceph --version') do
     its('exit_status') { should eq 0 }
-    its('stdout') { should include 'nautilus' }
+    its('stdout') { should include 'octopus' }
   end
 
   describe file('/etc/ceph') do

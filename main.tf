@@ -18,12 +18,12 @@ resource "openstack_networking_port_v2" "chef_zero" {
 
 resource "openstack_compute_instance_v2" "chef_zero" {
     name            = "chef-zero"
-    image_name      = var.centos_atomic_image
+    image_name      = var.docker_image
     flavor_name     = "m1.small"
     key_pair        = var.ssh_key_name
     security_groups = ["default"]
     connection {
-        user = "centos"
+        user = var.ssh_user_name
         host = openstack_networking_port_v2.chef_zero.all_fixed_ips.0
     }
     network {

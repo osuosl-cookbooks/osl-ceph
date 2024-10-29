@@ -14,7 +14,7 @@ describe 'osl-ceph::nagios' do
         is_expected.to sync_git("#{Chef::Config[:file_cache_path]}/ceph-nagios")
           .with(
             repository: 'https://github.com/osuosl/ceph-nagios-plugins.git',
-            revision: 'nautilus',
+            revision: 'octopus',
             ignore_failure: true
           )
       end

@@ -1,4 +1,5 @@
 include_recipe 'ceph_test::mon'
+include_recipe 'osl-repos::alma'
 
 osl_ceph_install 'mgr' do
   mgr true

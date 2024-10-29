@@ -3,7 +3,7 @@ provides :osl_ceph_install
 default_action :install
 unified_mode true
 
-property :release, String, default: 'nautilus'
+property :release, String, default: 'octopus'
 property :mds, [true, false], default: false
 property :mgr, [true, false], default: false
 property :mon, [true, false], default: false
@@ -11,6 +11,14 @@ property :osd, [true, false], default: false
 property :radosgw, [true, false], default: false
 
 action :install do
+  osl_repos_alma 'ceph' do
+    synergy true
+  end
+
+  edit_resource(:osl_repos_alma, 'default') do
+    synergy true
+  end
+
   osl_repos_epel 'ceph'
 
   yum_repository 'ceph' do
