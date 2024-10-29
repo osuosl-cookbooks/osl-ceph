@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+7.0.1 (2024-10-29)
+------------------
+- Move edit_resource to default recipe
+
 7.0.0 (2024-10-29)
 ------------------
 - Update to Octopus release
