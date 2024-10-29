@@ -18,6 +18,10 @@
 
 osl_ceph_install 'default'
 
+edit_resource(:osl_repos_alma, 'default') do
+  synergy true
+end
+
 # If a config attribute is defined, create a config
 config = node['osl-ceph']['config']
 

@@ -15,10 +15,6 @@ action :install do
     synergy true
   end
 
-  edit_resource(:osl_repos_alma, 'default') do
-    synergy true
-  end
-
   osl_repos_epel 'ceph'
 
   yum_repository 'ceph' do
