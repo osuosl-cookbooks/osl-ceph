@@ -10,3 +10,5 @@ osl_ceph_mon 'mon' do
   bootstrap_key 'AQBkf+Zk+GsrOxAA1xYwZeLRB5gLI42lmjGV+A=='
   generate_monmap false
 end
+
+include_recipe 'ceph_test::multinode_node1'

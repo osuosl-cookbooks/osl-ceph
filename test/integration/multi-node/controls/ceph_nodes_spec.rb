@@ -1,12 +1,12 @@
 control 'ceph_nodes' do
   describe package('ceph-common') do
     it { should be_installed }
-    its('version') { should cmp < '16.0.0' }
+    its('version') { should cmp < '17.0.0' }
   end
 
   describe command('ceph --version') do
     its('exit_status') { should eq 0 }
-    its('stdout') { should include 'octopus' }
+    its('stdout') { should include 'pacific' }
   end
 
   describe file('/etc/ceph') do
@@ -27,7 +27,7 @@ control 'ceph_nodes' do
   describe command('ceph -s') do
     its('stdout') { should match(/mon: 3 daemons, quorum node[0-9],node[0-9],node[0-9]/) }
     its('stdout') { should match(/mgr: node[0-9]\(active,.* standbys: node[0-9], node[0-9]/) }
-    its('stdout') { should match(/rgw: 3 daemons active \(node[0-9], node[0-9], node[0-9]\)/) }
+    its('stdout') { should match(/rgw: 3 daemons active \(3 hosts, 1 zones\)/) }
   end
 
   describe command('ceph osd stat') do
