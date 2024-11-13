@@ -34,4 +34,5 @@ osl_ceph_config 'default' do
   client_options config['client_options'] if config['client_options']
   radosgw config['radosgw'] if config['radosgw']
   rgw_dns_name config['rgw_dns_name'] if config['rgw_dns_name']
+  rgw_dns_s3website_name config['rgw_dns_s3website_name'] if config['rgw_dns_s3website_name']
 end unless config.empty?
