@@ -38,6 +38,7 @@ describe 'osl_ceph_config' do
           public_network: '192.168.1.0/24',
           radosgw: false,
           rgw_dns_name: 'fauxhai.local',
+          rgw_dns_s3website_name: 'fauxhai-website.local',
       },
       cookbook: 'osl-ceph'
     )
@@ -108,6 +109,7 @@ describe 'osl_ceph_config' do
             public_network: '192.168.1.0/24,192.168.2.0/24',
             radosgw: false,
             rgw_dns_name: 'fauxhai.local',
+            rgw_dns_s3website_name: 'fauxhai-website.local',
         },
         cookbook: 'osl-ceph'
       )

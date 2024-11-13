@@ -11,6 +11,7 @@ property :cluster_network, Array, required: true
 property :client_options, Array, default: ['admin socket = /var/run/ceph/$cluster-$type.$id.asok']
 property :radosgw, [true, false], default: false
 property :rgw_dns_name, String, default: lazy { node['fqdn'] }
+property :rgw_dns_s3website_name, String, default: lazy { "#{node['hostname'].downcase}-website.#{node['domain']}" }
 
 action :create do
   directory '/etc/ceph' do
@@ -30,7 +31,8 @@ action :create do
       mon_initial_members: new_resource.mon_initial_members.join(','),
       public_network: new_resource.public_network.join(','),
       radosgw: new_resource.radosgw,
-      rgw_dns_name: new_resource.rgw_dns_name
+      rgw_dns_name: new_resource.rgw_dns_name,
+      rgw_dns_s3website_name: new_resource.rgw_dns_s3website_name
     )
     cookbook 'osl-ceph'
   end
