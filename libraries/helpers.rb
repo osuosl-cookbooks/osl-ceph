@@ -26,7 +26,6 @@ module OslCeph
         if new_resource.mgr
           packages.push('ceph-mgr')
           packages.push('ceph-mgr-dashboard')
-          packages.push('ceph-mgr-diskprediction-cloud')
           packages.push('ceph-mgr-diskprediction-local')
         end
 

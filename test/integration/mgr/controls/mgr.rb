@@ -6,7 +6,6 @@ control 'mgr' do
   %w(
     ceph-mgr
     ceph-mgr-dashboard
-    ceph-mgr-diskprediction-cloud
     ceph-mgr-diskprediction-local
   ).each do |p|
     describe package p do

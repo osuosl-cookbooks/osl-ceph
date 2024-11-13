@@ -1,6 +1,6 @@
 control 'radosgw' do
   describe command('ceph -s') do
-    its('stdout') { should match(/rgw: 1 daemon active \(node1/) }
+    its('stdout') { should match(/rgw: 1 daemon active \(1 hosts, 1 zones\)/) }
   end
 
   describe package 'ceph-radosgw' do
