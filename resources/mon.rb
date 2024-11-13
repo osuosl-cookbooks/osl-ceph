@@ -10,7 +10,7 @@ property :ipaddress, String, default: lazy { node['ipaddress'] }
 property :mon_key, String, sensitive: true
 
 action :start do
-  mon_keyring = '/tmp/ceph.mon.keyring'
+  mon_keyring = '/var/lib/ceph/ceph.mon.keyring'
   admin_keyring = '/etc/ceph/ceph.client.admin.keyring'
   bootstrap_keyring = '/var/lib/ceph/bootstrap-osd/ceph.keyring'
   mon_key = new_resource.mon_key ? "--add-key=#{new_resource.mon_key}" : '--gen-key'

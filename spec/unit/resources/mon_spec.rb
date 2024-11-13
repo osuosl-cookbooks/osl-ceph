@@ -18,7 +18,7 @@ describe 'osl_ceph_mon' do
     is_expected.to run_execute('create mon keyring').with(
       user: 'ceph',
       group: 'ceph',
-      command: "ceph-authtool --create-keyring /tmp/ceph.mon.keyring --gen-key -n mon. --cap mon 'allow *'",
+      command: "ceph-authtool --create-keyring /var/lib/ceph/ceph.mon.keyring --gen-key -n mon. --cap mon 'allow *'",
       sensitive: true,
       creates: '/var/lib/ceph/mon/ceph-Fauxhai/done'
     )
@@ -42,7 +42,7 @@ describe 'osl_ceph_mon' do
 
   it do
     is_expected.to run_execute('import admin key').with(
-      command: 'ceph-authtool /tmp/ceph.mon.keyring --import-keyring /etc/ceph/ceph.client.admin.keyring',
+      command: 'ceph-authtool /var/lib/ceph/ceph.mon.keyring --import-keyring /etc/ceph/ceph.client.admin.keyring',
       sensitive: true,
       creates: '/var/lib/ceph/mon/ceph-Fauxhai/done'
     )
@@ -50,7 +50,7 @@ describe 'osl_ceph_mon' do
 
   it do
     is_expected.to run_execute('import boostrap-osd key').with(
-      command: 'ceph-authtool /tmp/ceph.mon.keyring --import-keyring /var/lib/ceph/bootstrap-osd/ceph.keyring',
+      command: 'ceph-authtool /var/lib/ceph/ceph.mon.keyring --import-keyring /var/lib/ceph/bootstrap-osd/ceph.keyring',
       sensitive: true,
       creates: '/var/lib/ceph/mon/ceph-Fauxhai/done'
     )
@@ -83,7 +83,7 @@ describe 'osl_ceph_mon' do
     is_expected.to run_execute('populate monitor map').with(
       user: 'ceph',
       group: 'ceph',
-      command: "ceph-mon --mkfs -i Fauxhai --monmap /etc/ceph/monmap --keyring /tmp/ceph.mon.keyring\ntouch /var/lib/ceph/mon/ceph-Fauxhai/done\n",
+      command: "ceph-mon --mkfs -i Fauxhai --monmap /etc/ceph/monmap --keyring /var/lib/ceph/ceph.mon.keyring\ntouch /var/lib/ceph/mon/ceph-Fauxhai/done\n",
       sensitive: true,
       creates: '/var/lib/ceph/mon/ceph-Fauxhai/done'
     )
@@ -91,7 +91,7 @@ describe 'osl_ceph_mon' do
 
   it { is_expected.to enable_service('ceph-mon@Fauxhai.service') }
   it { is_expected.to start_service('ceph-mon@Fauxhai.service') }
-  it { is_expected.to delete_file('/tmp/ceph.mon.keyring').with(sensitive: true) }
+  it { is_expected.to delete_file('/var/lib/ceph/ceph.mon.keyring').with(sensitive: true) }
 
   context 'set ipaddress' do
     cached(:subject) { chef_run }
@@ -127,7 +127,7 @@ describe 'osl_ceph_mon' do
       is_expected.to run_execute('create mon keyring').with(
         user: 'ceph',
         group: 'ceph',
-        command: "ceph-authtool --create-keyring /tmp/ceph.mon.keyring --add-key=AQBkf+ZkFIMSLxAAnYRXnc/CaUdHChGCxyH3IQ== -n mon. --cap mon 'allow *'",
+        command: "ceph-authtool --create-keyring /var/lib/ceph/ceph.mon.keyring --add-key=AQBkf+ZkFIMSLxAAnYRXnc/CaUdHChGCxyH3IQ== -n mon. --cap mon 'allow *'",
         sensitive: true,
         creates: '/var/lib/ceph/mon/ceph-Fauxhai/done'
       )
@@ -153,7 +153,7 @@ describe 'osl_ceph_mon' do
       is_expected.to run_execute('populate monitor map').with(
         user: 'ceph',
         group: 'ceph',
-        command: "ceph-mon --mkfs -i Fauxhai --keyring /tmp/ceph.mon.keyring\ntouch /var/lib/ceph/mon/ceph-Fauxhai/done\n",
+        command: "ceph-mon --mkfs -i Fauxhai --keyring /var/lib/ceph/ceph.mon.keyring\ntouch /var/lib/ceph/mon/ceph-Fauxhai/done\n",
         sensitive: true,
         creates: '/var/lib/ceph/mon/ceph-Fauxhai/done'
       )
