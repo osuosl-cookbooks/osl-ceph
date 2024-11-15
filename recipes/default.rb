@@ -16,6 +16,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+include_recipe 'osl-repos::alma'
+
 osl_ceph_install 'default'
 
 edit_resource(:osl_repos_alma, 'default') do
