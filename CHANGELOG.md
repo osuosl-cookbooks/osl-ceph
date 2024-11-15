@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+8.1.1 (2024-11-15)
+------------------
+- Fix idempotency issues in production
+
 8.1.0 (2024-11-13)
 ------------------
 - Add support for s3website and cname buckets
