@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+9.0.0 (2024-11-18)
+------------------
+- Update to Quincy release
+
 8.1.1 (2024-11-15)
 ------------------
 - Fix idempotency issues in production
