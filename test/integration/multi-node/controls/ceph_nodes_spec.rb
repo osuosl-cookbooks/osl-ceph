@@ -1,12 +1,12 @@
 control 'ceph_nodes' do
   describe package('ceph-common') do
     it { should be_installed }
-    its('version') { should cmp < '17.0.0' }
+    its('version') { should cmp < '18.0.0' }
   end
 
   describe command('ceph --version') do
     its('exit_status') { should eq 0 }
-    its('stdout') { should include 'pacific' }
+    its('stdout') { should include 'quincy' }
   end
 
   describe file('/etc/ceph') do

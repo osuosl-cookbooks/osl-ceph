@@ -1,4 +1,9 @@
-mount_opts = ['rw', 'relatime', 'seclabel', 'name=cephfs', 'secret=<hidden>', 'acl', '_netdev']
+case os.release.to_i
+when 8
+  mount_opts = ['rw', 'relatime', 'seclabel', 'name=cephfs', 'secret=<hidden>', 'fsid=78acef73-54bf-481d-ad7c-130571ea6750', 'acl', '_netdev']
+when 9
+  mount_opts = ['rw', 'relatime', 'seclabel', 'name=cephfs', 'secret=<hidden>', 'fsid=78acef73-54bf-481d-ad7c-130571ea6750', 'acl']
+end
 
 control 'cephfs_client' do
   describe file('/etc/ceph/ceph.client.cephfs.secret') do

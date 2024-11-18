@@ -13,16 +13,16 @@ describe 'osl_ceph_install' do
 
   it do
     is_expected.to create_yum_repository('ceph').with(
-      description: 'Ceph pacific',
-      baseurl: 'https://download.ceph.com/rpm-pacific/el$releasever/$basearch',
+      description: 'Ceph quincy',
+      baseurl: 'https://download.ceph.com/rpm-quincy/el$releasever/$basearch',
       gpgkey: 'https://download.ceph.com/keys/release.asc'
     )
   end
 
   it do
     is_expected.to create_yum_repository('ceph-noarch').with(
-      description: 'Ceph noarch pacific',
-      baseurl: 'https://download.ceph.com/rpm-pacific/el$releasever/noarch',
+      description: 'Ceph noarch quincy',
+      baseurl: 'https://download.ceph.com/rpm-quincy/el$releasever/noarch',
       gpgkey: 'https://download.ceph.com/keys/release.asc'
     )
   end
@@ -36,8 +36,8 @@ describe 'osl_ceph_install' do
 
     it do
       is_expected.to create_yum_repository('ceph').with(
-        description: 'Ceph pacific',
-        baseurl: 'https://ftp.osuosl.org/pub/osl/repos/yum/$releasever/ceph-pacific/$basearch',
+        description: 'Ceph quincy',
+        baseurl: 'https://ftp.osuosl.org/pub/osl/repos/yum/$releasever/ceph-quincy/$basearch',
         gpgkey: 'https://ftp.osuosl.org/pub/osl/repos/yum/RPM-GPG-KEY-osuosl'
       )
     end

@@ -19,7 +19,7 @@ resource "openstack_networking_port_v2" "chef_zero" {
 resource "openstack_compute_instance_v2" "chef_zero" {
     name            = "chef-zero"
     image_name      = var.docker_image
-    flavor_name     = "m1.small"
+    flavor_name     = "m1.medium"
     key_pair        = var.ssh_key_name
     security_groups = ["default"]
     connection {
@@ -278,6 +278,9 @@ resource "openstack_compute_instance_v2" "cephfs_client" {
     provisioner "remote-exec" {
         inline = ["echo online"]
     }
+}
+
+resource "null_resource" "cephfs_client" {
     provisioner "local-exec" {
         command = <<-EOF
             knife bootstrap -c test/chef-config/knife.rb \
@@ -289,5 +292,8 @@ resource "openstack_compute_instance_v2" "cephfs_client" {
             CHEF_SERVER = "${openstack_compute_instance_v2.chef_zero.network.0.fixed_ip_v4}"
         }
     }
-    depends_on = [ null_resource.node3 ]
+    depends_on = [
+        openstack_compute_instance_v2.cephfs_client,
+        null_resource.node3
+    ]
 }

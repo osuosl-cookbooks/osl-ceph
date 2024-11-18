@@ -1,4 +1,9 @@
-mount_opts = ['rw', 'relatime', 'seclabel', 'name=cephfs', 'secret=<hidden>', 'acl', '_netdev']
+case os.release.to_i
+when 8
+  mount_opts = ['rw', 'relatime', 'seclabel', 'name=cephfs', 'secret=<hidden>', 'fsid=ae3f1d03-bacd-4a90-b869-1a4fabb107f2', 'acl', '_netdev']
+when 9
+  mount_opts = ['rw', 'relatime', 'seclabel', 'name=cephfs', 'secret=<hidden>', 'fsid=ae3f1d03-bacd-4a90-b869-1a4fabb107f2', 'acl']
+end
 
 control 'mds' do
   describe command('ceph mds stat') do
