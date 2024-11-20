@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+9.0.1 (2024-11-20)
+------------------
+- Revert back to pacific on ppc64le
+
 9.0.0 (2024-11-18)
 ------------------
 - Update to Quincy release
