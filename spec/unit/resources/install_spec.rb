@@ -36,8 +36,8 @@ describe 'osl_ceph_install' do
 
     it do
       is_expected.to create_yum_repository('ceph').with(
-        description: 'Ceph pacific',
-        baseurl: 'https://ftp.osuosl.org/pub/osl/repos/yum/$releasever/ceph-pacific/$basearch',
+        description: 'Ceph quincy',
+        baseurl: 'https://ftp.osuosl.org/pub/osl/repos/yum/$releasever/ceph-quincy/$basearch',
         gpgkey: 'https://ftp.osuosl.org/pub/osl/repos/yum/RPM-GPG-KEY-osuosl'
       )
     end
