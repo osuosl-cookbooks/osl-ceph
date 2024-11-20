@@ -11,6 +11,14 @@ module OslCeph
         end
       end
 
+      def ceph_release
+        if node['kernel']['machine'] == 'ppc64le'
+          'pacific'
+        else
+          'quincy'
+        end
+      end
+
       def ceph_yum_gpgkey
         if node['kernel']['machine'] == 'ppc64le'
           'https://ftp.osuosl.org/pub/osl/repos/yum/RPM-GPG-KEY-osuosl'

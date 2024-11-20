@@ -3,7 +3,7 @@ provides :osl_ceph_install
 default_action :install
 unified_mode true
 
-property :release, String, default: 'quincy'
+property :release, String, default: lazy { ceph_release }
 property :mds, [true, false], default: false
 property :mgr, [true, false], default: false
 property :mon, [true, false], default: false
