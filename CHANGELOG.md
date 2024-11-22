@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+9.0.3 (2024-11-22)
+------------------
+- Install lvm2 when using the ceph_test resource
+
 9.0.2 (2024-11-20)
 ------------------
 - Revert "Revert back to pacific on ppc64le"
