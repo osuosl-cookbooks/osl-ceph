@@ -89,6 +89,8 @@ action :start do
     creates '/var/tmp/new_crush_map_compressed.done'
   end
 
+  package 'lvm2'
+
   # Create fake OSD disks using files
   %w(0 1 2).each do |i|
     execute "create osd#{i}" do
