@@ -46,7 +46,7 @@ describe 'osl_ceph_test' do
     )
   end
 
-  it { is_expected.to install_package 'lvm2' }
+  it { is_expected.to install_package %w(ceph-volume lvm2) }
 
   %w(0 1 2).each do |i|
     it do
