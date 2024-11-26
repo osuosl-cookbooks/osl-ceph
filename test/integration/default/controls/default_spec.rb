@@ -1,16 +1,17 @@
 firewall = input('firewall')
+rel = os.release.to_i
 
 control 'default' do
   %w(ceph-common ceph-selinux).each do |p|
     describe package p do
       it { should be_installed }
-      its('version') { should cmp < '18.0.0' }
+      its('version') { should cmp < '19.0.0' }
     end
   end
 
   describe command('ceph --version') do
     its('exit_status') { should eq 0 }
-    its('stdout') { should include 'quincy' }
+    its('stdout') { should include 'reef' }
   end
 
   describe yum.repo('ceph') do
@@ -19,8 +20,13 @@ control 'default' do
   end
 
   describe yum.repo('ceph-noarch') do
-    it { should exist }
-    it { should be_enabled }
+    if rel >= 9
+      it { should exist }
+      it { should be_enabled }
+    else
+      it { should_not exist }
+      it { should_not be_enabled }
+    end
   end
 
   describe iptables do
