@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+9.0.5 (2024-11-26)
+------------------
+- Temporary workaround for issue with upstream repo
+
 9.0.4 (2024-11-22)
 ------------------
 - Install ceph-volume in the ceph_test resource
