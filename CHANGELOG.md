@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+9.0.6 (2024-12-02)
+------------------
+- Switch to including osl-ceph instead of using osl_ceph_install
+
 9.0.5 (2024-11-26)
 ------------------
 - Temporary workaround for issue with upstream repo
