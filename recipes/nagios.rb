@@ -16,8 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-osl_ceph_install 'nagios'
-
+include_recipe 'osl-ceph'
 include_recipe 'osl-nrpe'
 include_recipe 'osl-git'
 
