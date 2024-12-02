@@ -11,7 +11,7 @@ property :osd, [true, false], default: false
 property :radosgw, [true, false], default: false
 
 action :install do
-  osl_repos_alma 'ceph' do
+  find_resource(:osl_repos_alma, 'default') do
     synergy true
   end
 
