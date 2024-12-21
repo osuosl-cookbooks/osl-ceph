@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+9.0.8 (2024-12-21)
+------------------
+- Remove ceph-mgr-diskprediction-local
+
 9.0.7 (2024-12-02)
 ------------------
 - Switch to using find_resource
