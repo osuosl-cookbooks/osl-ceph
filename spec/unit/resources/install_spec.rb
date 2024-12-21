@@ -65,7 +65,7 @@ describe 'osl_ceph_install' do
       end
     end
 
-    it { is_expected.to install_package(%w(ceph-common ceph-mgr ceph-mgr-dashboard ceph-mgr-diskprediction-local ceph-selinux)) }
+    it { is_expected.to install_package(%w(ceph-common ceph-mgr ceph-mgr-dashboard ceph-selinux)) }
     it { is_expected.to accept_osl_firewall_ceph 'osl-ceph' }
   end
 
@@ -107,7 +107,7 @@ describe 'osl_ceph_install' do
       end
     end
 
-    it { is_expected.to install_package(%w(ceph-common ceph-mds ceph-mgr ceph-mgr-dashboard ceph-mgr-diskprediction-local ceph-mon ceph-osd ceph-selinux)) }
+    it { is_expected.to install_package(%w(ceph-common ceph-mds ceph-mgr ceph-mgr-dashboard ceph-mon ceph-osd ceph-selinux)) }
     it { is_expected.to accept_osl_firewall_ceph 'osl-ceph' }
   end
 end
