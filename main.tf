@@ -19,7 +19,7 @@ resource "openstack_networking_port_v2" "chef_zero" {
 resource "openstack_compute_instance_v2" "chef_zero" {
     name            = "chef-zero"
     image_name      = var.docker_image
-    flavor_name     = "m1.medium"
+    flavor_name     = "m2.local.2c3m10d"
     key_pair        = var.ssh_key_name
     security_groups = ["default"]
     connection {
@@ -151,7 +151,7 @@ resource "openstack_compute_volume_attach_v2" "node3_attachments" {
 resource "openstack_compute_instance_v2" "node1" {
     name            = "node1"
     image_name      = var.os_image
-    flavor_name     = "m1.large"
+    flavor_name     = "m2.local.4c4m50d"
     key_pair        = var.ssh_key_name
     security_groups = ["default"]
     connection {
@@ -169,7 +169,7 @@ resource "openstack_compute_instance_v2" "node1" {
 resource "openstack_compute_instance_v2" "node2" {
     name            = "node2"
     image_name      = var.os_image
-    flavor_name     = "m1.large"
+    flavor_name     = "m2.local.4c4m50d"
     key_pair        = var.ssh_key_name
     security_groups = ["default"]
     connection {
@@ -187,7 +187,7 @@ resource "openstack_compute_instance_v2" "node2" {
 resource "openstack_compute_instance_v2" "node3" {
     name            = "node3"
     image_name      = var.os_image
-    flavor_name     = "m1.large"
+    flavor_name     = "m2.local.4c4m50d"
     key_pair        = var.ssh_key_name
     security_groups = ["default"]
     connection {
@@ -262,7 +262,7 @@ resource "null_resource" "node3" {
 resource "openstack_compute_instance_v2" "cephfs_client" {
     name            = "cephfs_client"
     image_name      = var.os_image
-    flavor_name     = "m1.medium"
+    flavor_name     = "m2.local.2c3m10d"
     key_pair        = var.ssh_key_name
     security_groups = ["default"]
     connection {
