@@ -3,6 +3,14 @@ module OslCeph
     module Helpers
       include Chef::Mixin::ShellOut
 
+      def ceph_release
+        if node['platform_version'].to_i >= 9 && arm?
+          '17.2.8'
+        else
+          '17.2.7'
+        end
+      end
+
       def ceph_yum_baseurl
         if node['kernel']['machine'] == 'ppc64le'
           "https://ftp.osuosl.org/pub/osl/repos/yum/$releasever/ceph-#{new_resource.release}/$basearch"
