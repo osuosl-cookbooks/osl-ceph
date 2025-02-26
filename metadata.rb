@@ -6,7 +6,7 @@ chef_version     '>= 16.0'
 issues_url       'https://github.com/osuosl-cookbooks/osl-ceph/issues'
 source_url       'https://github.com/osuosl-cookbooks/osl-ceph'
 description      'Installs/Configures osl-ceph'
-version          '9.0.8'
+version          '9.0.9'
 
 depends          'line'
 depends          'osl-git'

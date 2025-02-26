@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+9.0.9 (2025-02-26)
+------------------
+- Install 17.2.8 on aarch64 on EL9
+
 9.0.8 (2024-12-21)
 ------------------
 - Remove ceph-mgr-diskprediction-local
