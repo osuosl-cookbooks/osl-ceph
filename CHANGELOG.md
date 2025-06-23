@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+9.0.10 (2025-06-23)
+-------------------
+- Also check for nvme-1 and nvme-2 paths for partprobe
+
 9.0.9 (2025-02-26)
 ------------------
 - Install 17.2.8 on aarch64 on EL9
