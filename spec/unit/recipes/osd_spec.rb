@@ -19,6 +19,8 @@ describe 'osl-ceph::osd' do
           content: <<~EOF
             #!/bin/bash -ex
             [ -d /dev/nvme ] && /usr/sbin/partprobe -s /dev/nvme/* || true
+            [ -d /dev/nvme-1 ] && /usr/sbin/partprobe -s /dev/nvme-1/* || true
+            [ -d /dev/nvme-2 ] && /usr/sbin/partprobe -s /dev/nvme-2/* || true
           EOF
         )
       end
