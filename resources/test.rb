@@ -95,7 +95,7 @@ action :start do
   %w(0 1 2).each do |i|
     execute "create osd#{i}" do
       command <<~EOC
-        dd if=/dev/zero of=/root/osd#{i} bs=#{new_resource.osd_size} count=1
+        fallocate -l #{new_resource.osd_size} /root/osd#{i}
         vgcreate osd#{i} $(losetup --show -f /root/osd#{i})
         lvcreate -n osd#{i} -l 100%FREE osd#{i}
         ceph-volume lvm create --bluestore --data osd#{i}/osd#{i}
