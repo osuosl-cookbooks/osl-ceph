@@ -51,7 +51,7 @@ describe 'osl_ceph_test' do
   %w(0 1 2).each do |i|
     it do
       is_expected.to run_execute("create osd#{i}").with(
-        command: "dd if=/dev/zero of=/root/osd#{i} bs=1G count=1\nvgcreate osd#{i} $(losetup --show -f /root/osd#{i})\nlvcreate -n osd#{i} -l 100%FREE osd#{i}\nceph-volume lvm create --bluestore --data osd#{i}/osd#{i}\n"
+        command: "fallocate -l 1G /root/osd#{i}\nvgcreate osd#{i} $(losetup --show -f /root/osd#{i})\nlvcreate -n osd#{i} -l 100%FREE osd#{i}\nceph-volume lvm create --bluestore --data osd#{i}/osd#{i}\n"
       )
     end
   end
@@ -115,7 +115,7 @@ describe 'osl_ceph_test' do
     %w(0 1 2).each do |i|
       it do
         is_expected.to run_execute("create osd#{i}").with(
-          command: "dd if=/dev/zero of=/root/osd#{i} bs=10G count=1\nvgcreate osd#{i} $(losetup --show -f /root/osd#{i})\nlvcreate -n osd#{i} -l 100%FREE osd#{i}\nceph-volume lvm create --bluestore --data osd#{i}/osd#{i}\n"
+          command: "fallocate -l 10G /root/osd#{i}\nvgcreate osd#{i} $(losetup --show -f /root/osd#{i})\nlvcreate -n osd#{i} -l 100%FREE osd#{i}\nceph-volume lvm create --bluestore --data osd#{i}/osd#{i}\n"
         )
       end
     end
