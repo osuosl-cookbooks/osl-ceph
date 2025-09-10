@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+9.0.11 (2025-09-10)
+-------------------
+- Use fallocate instead of dd for fake osd disk creation
+
 9.0.10 (2025-06-23)
 -------------------
 - Also check for nvme-1 and nvme-2 paths for partprobe
