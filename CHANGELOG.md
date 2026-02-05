@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+10.0.0 (2026-02-05)
+-------------------
+- Update to Ceph Reef release
+
 9.0.11 (2025-09-10)
 -------------------
 - Use fallocate instead of dd for fake osd disk creation
