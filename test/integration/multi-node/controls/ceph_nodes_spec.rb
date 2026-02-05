@@ -1,12 +1,12 @@
 control 'ceph_nodes' do
   describe package('ceph-common') do
     it { should be_installed }
-    its('version') { should cmp < '18.0.0' }
+    its('version') { should cmp < '19.0.0' }
   end
 
   describe command('ceph --version') do
     its('exit_status') { should eq 0 }
-    its('stdout') { should include 'quincy' }
+    its('stdout') { should include 'reef' }
   end
 
   describe file('/etc/ceph') do
@@ -46,7 +46,7 @@ control 'ceph_nodes' do
   describe command('ss -tpln') do
     its('stdout') { should include 'ceph-osd' }
     its('stdout') { should include 'ceph-mds' }
-    its('stdout') { should include 'radosgw' }
+    its('stdout') { should include 'notif-worker0' }
   end
 
   %w(

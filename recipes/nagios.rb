@@ -2,7 +2,7 @@
 # Cookbook:: osl-ceph
 # Recipe:: nagios
 #
-# Copyright:: 2018-2025, Oregon State University
+# Copyright:: 2018-2026, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ ceph_nagios = ::File.join(Chef::Config[:file_cache_path], 'ceph-nagios')
 
 git ceph_nagios do
   repository 'https://github.com/osuosl/ceph-nagios-plugins.git'
-  revision 'quincy'
+  revision 'reef'
   ignore_failure true
 end
 

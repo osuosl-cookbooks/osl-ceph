@@ -13,18 +13,33 @@ describe 'osl_ceph_install' do
 
   it do
     is_expected.to create_yum_repository('ceph').with(
-      description: 'Ceph 17.2.7',
-      baseurl: 'https://download.ceph.com/rpm-17.2.7/el$releasever/$basearch',
-      gpgkey: 'https://download.ceph.com/keys/release.asc'
+      description: 'Ceph reef',
+      baseurl: 'https://ftp.osuosl.org/pub/osl/repos/yum/$releasever/ceph-reef/$basearch',
+      gpgkey: 'https://ftp.osuosl.org/pub/osl/repos/yum/RPM-GPG-KEY-osuosl'
     )
   end
 
-  it do
-    is_expected.to create_yum_repository('ceph-noarch').with(
-      description: 'Ceph noarch 17.2.7',
-      baseurl: 'https://download.ceph.com/rpm-17.2.7/el$releasever/noarch',
-      gpgkey: 'https://download.ceph.com/keys/release.asc'
-    )
+  it { is_expected.to remove_yum_repository 'ceph-noarch' }
+
+  context 'almalinux 9' do
+    platform 'almalinux', '9'
+    cached(:subject) { chef_run }
+
+    it do
+      is_expected.to create_yum_repository('ceph').with(
+        description: 'Ceph reef',
+        baseurl: 'https://download.ceph.com/rpm-reef/el$releasever/$basearch',
+        gpgkey: 'https://download.ceph.com/keys/release.asc'
+      )
+    end
+
+    it do
+      is_expected.to create_yum_repository('ceph-noarch').with(
+        description: 'Ceph noarch reef',
+        baseurl: 'https://download.ceph.com/rpm-reef/el$releasever/noarch',
+        gpgkey: 'https://download.ceph.com/keys/release.asc'
+      )
+    end
   end
 
   it { is_expected.to install_package(%w(ceph-common ceph-selinux)) }
@@ -36,11 +51,13 @@ describe 'osl_ceph_install' do
 
     it do
       is_expected.to create_yum_repository('ceph').with(
-        description: 'Ceph 17.2.7',
-        baseurl: 'https://ftp.osuosl.org/pub/osl/repos/yum/$releasever/ceph-17.2.7/$basearch',
+        description: 'Ceph reef',
+        baseurl: 'https://ftp.osuosl.org/pub/osl/repos/yum/$releasever/ceph-reef/$basearch',
         gpgkey: 'https://ftp.osuosl.org/pub/osl/repos/yum/RPM-GPG-KEY-osuosl'
       )
     end
+
+    it { is_expected.to remove_yum_repository 'ceph-noarch' }
   end
 
   context 'mds' do

@@ -3,16 +3,16 @@ module OslCeph
     module Helpers
       include Chef::Mixin::ShellOut
 
-      def ceph_release
-        if node['platform_version'].to_i >= 9 && arm?
-          '17.2.8'
+      def ceph_osuosl_repo
+        if node['kernel']['machine'] == 'ppc64le' || node['platform_version'].to_i == 8
+          true
         else
-          '17.2.7'
+          false
         end
       end
 
       def ceph_yum_baseurl
-        if node['kernel']['machine'] == 'ppc64le'
+        if ceph_osuosl_repo
           "https://ftp.osuosl.org/pub/osl/repos/yum/$releasever/ceph-#{new_resource.release}/$basearch"
         else
           "https://download.ceph.com/rpm-#{new_resource.release}/el$releasever/$basearch"
@@ -20,7 +20,7 @@ module OslCeph
       end
 
       def ceph_yum_gpgkey
-        if node['kernel']['machine'] == 'ppc64le'
+        if ceph_osuosl_repo
           'https://ftp.osuosl.org/pub/osl/repos/yum/RPM-GPG-KEY-osuosl'
         else
           'https://download.ceph.com/keys/release.asc'

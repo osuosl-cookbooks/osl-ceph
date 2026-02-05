@@ -3,7 +3,7 @@ provides :osl_ceph_install
 default_action :install
 unified_mode true
 
-property :release, String, default: lazy { ceph_release }
+property :release, String, default: 'reef'
 property :mds, [true, false], default: false
 property :mgr, [true, false], default: false
 property :mon, [true, false], default: false
@@ -27,6 +27,9 @@ action :install do
     description "Ceph noarch #{new_resource.release}"
     baseurl "https://download.ceph.com/rpm-#{new_resource.release}/el$releasever/noarch"
     gpgkey ceph_yum_gpgkey
+    if ceph_osuosl_repo
+      action :remove
+    end
   end
 
   package ceph_packages

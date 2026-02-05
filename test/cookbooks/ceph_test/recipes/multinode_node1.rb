@@ -18,3 +18,9 @@ execute 'enable msgr2' do
   EOC
   creates '/root/enable_msgr2'
 end
+
+# Enable mgr application on .mgr pool to silence HEALTH_WARN
+execute 'enable mgr application on .mgr pool' do
+  command 'ceph osd pool application enable .mgr mgr'
+  not_if 'ceph osd pool application get .mgr mgr'
+end
