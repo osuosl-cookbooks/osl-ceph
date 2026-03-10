@@ -11,6 +11,12 @@ describe 'osl_ceph_client' do
       id 'id'
     end
 
+    osl_ceph_rbdmap 'image_with_options' do
+      pool 'pool'
+      id 'id'
+      options 'queue_depth=64'
+    end
+
     osl_ceph_rbdmap 'delete' do
       pool 'pool'
       action :remove
@@ -21,6 +27,13 @@ describe 'osl_ceph_client' do
     is_expected.to edit_append_if_no_line('Create pool/image mapping').with(
       path: '/etc/ceph/rbdmap',
       line: 'pool/image id=id,keyring=/etc/ceph/ceph.client.id.keyring'
+    )
+  end
+
+  it do
+    is_expected.to edit_append_if_no_line('Create pool/image_with_options mapping').with(
+      path: '/etc/ceph/rbdmap',
+      line: 'pool/image_with_options id=id,keyring=/etc/ceph/ceph.client.id.keyring,options=queue_depth=64'
     )
   end
 
