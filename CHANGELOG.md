@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+10.1.0 (2026-03-10)
+-------------------
+- Add options property to osl_ceph_rbdmap resource
+
 10.0.0 (2026-02-05)
 -------------------
 - Update to Ceph Reef release
