@@ -60,6 +60,22 @@ describe 'osl_ceph_install' do
     it { is_expected.to remove_yum_repository 'ceph-noarch' }
   end
 
+  context 'ppc64le almalinux 9' do
+    platform 'almalinux', '9'
+    automatic_attributes['kernel']['machine'] = 'ppc64le'
+    cached(:subject) { chef_run }
+
+    it do
+      is_expected.to create_yum_repository('ceph').with(
+        description: 'Ceph reef',
+        baseurl: 'https://ftp.osuosl.org/pub/osl/repos/yum/$releasever/ceph-reef/$basearch',
+        gpgkey: 'https://ftp.osuosl.org/pub/osl/repos/yum/RPM-GPG-KEY-osuosl-2024'
+      )
+    end
+
+    it { is_expected.to remove_yum_repository 'ceph-noarch' }
+  end
+
   context 'mds' do
     cached(:subject) { chef_run }
 
