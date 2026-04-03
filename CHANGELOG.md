@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+10.1.2 (2026-04-03)
+-------------------
+- Fix ceph-mon mkfs permissions and error handling
+
 10.1.1 (2026-04-03)
 -------------------
 - Use RPM-GPG-KEY-osuosl-2024 for EL9+
