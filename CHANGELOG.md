@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+10.1.1 (2026-04-03)
+-------------------
+- Use RPM-GPG-KEY-osuosl-2024 for EL9+
+
 10.1.0 (2026-03-10)
 -------------------
 - Add options property to osl_ceph_rbdmap resource
