@@ -43,13 +43,27 @@ action :start do
     creates "/var/lib/ceph/mon/ceph-#{node['hostname']}/done"
   end
 
+  [
+    admin_keyring,
+    bootstrap_keyring,
+  ].each do |f|
+    file f do
+      owner 'ceph'
+      group 'ceph'
+    end
+  end
+
   execute 'import admin key' do
+    user 'ceph'
+    group 'ceph'
     command "ceph-authtool #{mon_keyring} --import-keyring #{admin_keyring}"
     sensitive true
     creates "/var/lib/ceph/mon/ceph-#{node['hostname']}/done"
   end
 
   execute 'import boostrap-osd key' do
+    user 'ceph'
+    group 'ceph'
     command "ceph-authtool #{mon_keyring} --import-keyring #{bootstrap_keyring}"
     sensitive true
     creates "/var/lib/ceph/mon/ceph-#{node['hostname']}/done"
@@ -76,27 +90,17 @@ action :start do
     only_if { new_resource.generate_monmap }
   end
 
-  [
-    admin_keyring,
-    bootstrap_keyring,
-  ].each do |f|
-    file f do
-      owner 'ceph'
-      group 'ceph'
-    end
-  end
-
   execute 'populate monitor map' do
     user 'ceph'
     group 'ceph'
     if new_resource.generate_monmap
       command <<~EOC
-        ceph-mon --mkfs -i #{node['hostname']} --monmap /etc/ceph/monmap --keyring #{mon_keyring}
+        ceph-mon --mkfs -i #{node['hostname']} --monmap /etc/ceph/monmap --keyring #{mon_keyring} && \
         touch /var/lib/ceph/mon/ceph-#{node['hostname']}/done
       EOC
     else
       command <<~EOC
-        ceph-mon --mkfs -i #{node['hostname']} --keyring #{mon_keyring}
+        ceph-mon --mkfs -i #{node['hostname']} --keyring #{mon_keyring} && \
         touch /var/lib/ceph/mon/ceph-#{node['hostname']}/done
       EOC
     end

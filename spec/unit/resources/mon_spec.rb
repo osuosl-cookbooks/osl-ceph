@@ -42,6 +42,8 @@ describe 'osl_ceph_mon' do
 
   it do
     is_expected.to run_execute('import admin key').with(
+      user: 'ceph',
+      group: 'ceph',
       command: 'ceph-authtool /var/lib/ceph/ceph.mon.keyring --import-keyring /etc/ceph/ceph.client.admin.keyring',
       sensitive: true,
       creates: '/var/lib/ceph/mon/ceph-Fauxhai/done'
@@ -50,6 +52,8 @@ describe 'osl_ceph_mon' do
 
   it do
     is_expected.to run_execute('import boostrap-osd key').with(
+      user: 'ceph',
+      group: 'ceph',
       command: 'ceph-authtool /var/lib/ceph/ceph.mon.keyring --import-keyring /var/lib/ceph/bootstrap-osd/ceph.keyring',
       sensitive: true,
       creates: '/var/lib/ceph/mon/ceph-Fauxhai/done'
@@ -83,7 +87,7 @@ describe 'osl_ceph_mon' do
     is_expected.to run_execute('populate monitor map').with(
       user: 'ceph',
       group: 'ceph',
-      command: "ceph-mon --mkfs -i Fauxhai --monmap /etc/ceph/monmap --keyring /var/lib/ceph/ceph.mon.keyring\ntouch /var/lib/ceph/mon/ceph-Fauxhai/done\n",
+      command: "ceph-mon --mkfs -i Fauxhai --monmap /etc/ceph/monmap --keyring /var/lib/ceph/ceph.mon.keyring && touch /var/lib/ceph/mon/ceph-Fauxhai/done\n",
       sensitive: true,
       creates: '/var/lib/ceph/mon/ceph-Fauxhai/done'
     )
@@ -153,7 +157,7 @@ describe 'osl_ceph_mon' do
       is_expected.to run_execute('populate monitor map').with(
         user: 'ceph',
         group: 'ceph',
-        command: "ceph-mon --mkfs -i Fauxhai --keyring /var/lib/ceph/ceph.mon.keyring\ntouch /var/lib/ceph/mon/ceph-Fauxhai/done\n",
+        command: "ceph-mon --mkfs -i Fauxhai --keyring /var/lib/ceph/ceph.mon.keyring && touch /var/lib/ceph/mon/ceph-Fauxhai/done\n",
         sensitive: true,
         creates: '/var/lib/ceph/mon/ceph-Fauxhai/done'
       )
