@@ -21,7 +21,11 @@ module OslCeph
 
       def ceph_yum_gpgkey
         if ceph_osuosl_repo
-          'https://ftp.osuosl.org/pub/osl/repos/yum/RPM-GPG-KEY-osuosl'
+          if node['platform_version'].to_i >= 9
+            'https://ftp.osuosl.org/pub/osl/repos/yum/RPM-GPG-KEY-osuosl-2024'
+          else
+            'https://ftp.osuosl.org/pub/osl/repos/yum/RPM-GPG-KEY-osuosl'
+          end
         else
           'https://download.ceph.com/keys/release.asc'
         end
