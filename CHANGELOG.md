@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+10.2.0 (2026-06-10)
+-------------------
+- Update documentation and improve test coverage
+
 10.1.2 (2026-04-03)
 -------------------
 - Fix ceph-mon mkfs permissions and error handling
