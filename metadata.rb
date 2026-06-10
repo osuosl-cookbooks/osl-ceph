@@ -5,7 +5,7 @@ license          'Apache-2.0'
 chef_version     '>= 16.0'
 issues_url       'https://github.com/osuosl-cookbooks/osl-ceph/issues'
 source_url       'https://github.com/osuosl-cookbooks/osl-ceph'
-description      'Installs/Configures osl-ceph'
+description      'Installs and configures Ceph storage nodes and clients'
 version          '10.1.2'
 
 depends          'line'

@@ -2,3 +2,4 @@ name: config
 inputs:
   - name: keyring
     value: false
+version: 0.1.0

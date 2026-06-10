@@ -25,4 +25,50 @@ describe 'osl_ceph_client' do
       sensitive: true
     )
   end
+
+  context 'as_keyring false' do
+    cached(:subject) { chef_run }
+
+    recipe do
+      osl_ceph_client 'test' do
+        key 'foo'
+        as_keyring false
+      end
+    end
+
+    it do
+      is_expected.to create_file('/etc/ceph/ceph.client.test.Fauxhai.secret').with(
+        content: 'foo',
+        owner: 'ceph',
+        group: 'ceph',
+        mode: '0640',
+        sensitive: true
+      )
+    end
+  end
+
+  context 'custom keyname, filename, owner, group and mode' do
+    cached(:subject) { chef_run }
+
+    recipe do
+      osl_ceph_client 'test' do
+        key 'foo'
+        keyname 'client.custom'
+        filename '/etc/ceph/custom.keyring'
+        owner 'nobody'
+        group 'nobody'
+        mode '0600'
+      end
+    end
+
+    it do
+      is_expected.to create_file('/etc/ceph/custom.keyring').with(
+        content: "[client.custom]\n\tkey = foo\n",
+        owner: 'nobody',
+        group: 'nobody',
+        mode: '0600',
+        sensitive: true
+      )
+    end
+  end
 end

@@ -1,4 +1,3 @@
-resource_name :osl_ceph_test
 provides :osl_ceph_test
 default_action :start
 unified_mode true

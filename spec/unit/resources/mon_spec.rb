@@ -76,9 +76,9 @@ describe 'osl_ceph_mon' do
   end
 
   %w(
-   /etc/ceph/ceph.client.admin.keyring
-   /var/lib/ceph/bootstrap-osd/ceph.keyring
-   /etc/ceph/monmap
+    /etc/ceph/ceph.client.admin.keyring
+    /var/lib/ceph/bootstrap-osd/ceph.keyring
+    /etc/ceph/monmap
   ).each do |f|
     it { is_expected.to create_file(f).with(owner: 'ceph', group: 'ceph') }
   end
@@ -165,5 +165,17 @@ describe 'osl_ceph_mon' do
 
     it { is_expected.to_not run_execute('generate monitor map') }
     it { is_expected.to_not create_file('/etc/ceph/monmap') }
+  end
+
+  context 'restart' do
+    cached(:subject) { chef_run }
+
+    recipe do
+      osl_ceph_mon 'default' do
+        action :restart
+      end
+    end
+
+    it { is_expected.to restart_service('ceph-mon@Fauxhai.service') }
   end
 end

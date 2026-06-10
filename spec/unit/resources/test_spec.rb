@@ -48,6 +48,20 @@ describe 'osl_ceph_test' do
 
   it { is_expected.to install_package %w(ceph-volume lvm2) }
 
+  it do
+    is_expected.to run_execute('disable global_id warnings').with(
+      command: "ceph config set mon auth_allow_insecure_global_id_reclaim false\ntouch /root/disable_global_id\n",
+      creates: '/root/disable_global_id'
+    )
+  end
+
+  it do
+    is_expected.to run_execute('enable msgr2').with(
+      command: "ceph mon enable-msgr2\ntouch /root/enable_msgr2\n",
+      creates: '/root/enable_msgr2'
+    )
+  end
+
   %w(0 1 2).each do |i|
     it do
       is_expected.to run_execute("create osd#{i}").with(
@@ -77,18 +91,31 @@ describe 'osl_ceph_test' do
     it { is_expected.to run_ruby_block 'wait for ceph mds cluster' }
   end
 
+  context 'radosgw' do
+    cached(:subject) { chef_run }
+
+    recipe do
+      osl_ceph_test 'default' do
+        radosgw true
+      end
+    end
+
+    it { is_expected.to install_osl_ceph_install('test').with(radosgw: true) }
+    it { is_expected.to create_osl_ceph_config('test').with(radosgw: true) }
+  end
+
   context 'config' do
     cached(:subject) { chef_run }
 
     recipe do
       osl_ceph_test 'default' do
         config({
-          'fsid' => '0fdfedf4-553a-405a-b65f-2e9f62bbfc22',
-          'mon_initial_members' => %w(node1),
-          'mon_host' => %w(10.0.0.1),
-          'public_network' => %w(10.0.0.0/24),
-          'cluster_network' => %w(10.0.0.0/24),
-        })
+                 'fsid' => '0fdfedf4-553a-405a-b65f-2e9f62bbfc22',
+                 'mon_initial_members' => %w(node1),
+                 'mon_host' => %w(10.0.0.1),
+                 'public_network' => %w(10.0.0.0/24),
+                 'cluster_network' => %w(10.0.0.0/24),
+               })
       end
     end
 

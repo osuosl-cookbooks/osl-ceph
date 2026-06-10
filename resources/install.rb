@@ -1,4 +1,3 @@
-resource_name :osl_ceph_install
 provides :osl_ceph_install
 default_action :install
 unified_mode true

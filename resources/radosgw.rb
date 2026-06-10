@@ -1,4 +1,3 @@
-resource_name :osl_ceph_radosgw
 provides :osl_ceph_radosgw
 default_action :start
 unified_mode true

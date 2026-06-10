@@ -1,4 +1,3 @@
-resource_name :osl_ceph_rbdmap
 provides :osl_ceph_rbdmap
 default_action :create
 unified_mode true

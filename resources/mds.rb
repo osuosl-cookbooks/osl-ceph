@@ -1,4 +1,3 @@
-resource_name :osl_ceph_mds
 provides :osl_ceph_mds
 default_action :start
 unified_mode true

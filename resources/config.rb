@@ -1,4 +1,3 @@
-resource_name :osl_ceph_config
 provides :osl_ceph_config
 default_action :create
 unified_mode true

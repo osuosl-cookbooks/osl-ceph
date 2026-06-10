@@ -28,17 +28,17 @@ describe 'osl_ceph_config' do
       owner: 'ceph',
       group: 'ceph',
       variables: {
-          cluster_network: '192.168.1.0/24',
-          client_options: [
-            'admin socket = /var/run/ceph/$cluster-$type.$id.asok',
-          ],
-          fsid: 'e981973a-b299-45c6-a827-db03dd848a8c',
-          mon_host: '192.168.1.100',
-          mon_initial_members: 'node1',
-          public_network: '192.168.1.0/24',
-          radosgw: false,
-          rgw_dns_name: 'fauxhai.local',
-          rgw_dns_s3website_name: 'fauxhai-website.local',
+        cluster_network: '192.168.1.0/24',
+        client_options: [
+          'admin socket = /var/run/ceph/$cluster-$type.$id.asok',
+        ],
+        fsid: 'e981973a-b299-45c6-a827-db03dd848a8c',
+        mon_host: '192.168.1.100',
+        mon_initial_members: 'node1',
+        public_network: '192.168.1.0/24',
+        radosgw: false,
+        rgw_dns_name: 'fauxhai.local',
+        rgw_dns_s3website_name: 'fauxhai-website.local',
       },
       cookbook: 'osl-ceph'
     )
@@ -99,17 +99,17 @@ describe 'osl_ceph_config' do
         owner: 'ceph',
         group: 'ceph',
         variables: {
-            cluster_network: '192.168.1.0/24,192.168.2.0/24',
-            client_options: [
-              'admin socket = /var/run/ceph/guests/$cluster-$type.$id.$pid.$cctid.asok',
-            ],
-            fsid: 'e981973a-b299-45c6-a827-db03dd848a8c',
-            mon_host: '192.168.1.100,192.168.1.101,192.168.1.102',
-            mon_initial_members: 'node1,node2,node3',
-            public_network: '192.168.1.0/24,192.168.2.0/24',
-            radosgw: false,
-            rgw_dns_name: 'fauxhai.local',
-            rgw_dns_s3website_name: 'fauxhai-website.local',
+          cluster_network: '192.168.1.0/24,192.168.2.0/24',
+          client_options: [
+            'admin socket = /var/run/ceph/guests/$cluster-$type.$id.$pid.$cctid.asok',
+          ],
+          fsid: 'e981973a-b299-45c6-a827-db03dd848a8c',
+          mon_host: '192.168.1.100,192.168.1.101,192.168.1.102',
+          mon_initial_members: 'node1,node2,node3',
+          public_network: '192.168.1.0/24,192.168.2.0/24',
+          radosgw: false,
+          rgw_dns_name: 'fauxhai.local',
+          rgw_dns_s3website_name: 'fauxhai-website.local',
         },
         cookbook: 'osl-ceph'
       )
@@ -144,6 +144,66 @@ describe 'osl_ceph_config' do
 
          [client.admin]
          keyring = /etc/ceph/$cluster.client.admin.keyring
+      EOF
+                                                                    )
+    end
+  end
+
+  context 'radosgw' do
+    cached(:subject) { chef_run }
+
+    recipe do
+      osl_ceph_config 'default' do
+        fsid 'e981973a-b299-45c6-a827-db03dd848a8c'
+        mon_initial_members %w(node1)
+        mon_host %w(192.168.1.100)
+        public_network %w(192.168.1.0/24)
+        cluster_network %w(192.168.1.0/24)
+        radosgw true
+        rgw_dns_name 'rgw.example.org'
+        rgw_dns_s3website_name 'rgw-website.example.org'
+      end
+    end
+
+    it do
+      is_expected.to create_template('/etc/ceph/ceph.conf').with(
+        owner: 'ceph',
+        group: 'ceph',
+        variables: {
+          cluster_network: '192.168.1.0/24',
+          client_options: [
+            'admin socket = /var/run/ceph/$cluster-$type.$id.asok',
+          ],
+          fsid: 'e981973a-b299-45c6-a827-db03dd848a8c',
+          mon_host: '192.168.1.100',
+          mon_initial_members: 'node1',
+          public_network: '192.168.1.0/24',
+          radosgw: true,
+          rgw_dns_name: 'rgw.example.org',
+          rgw_dns_s3website_name: 'rgw-website.example.org',
+        },
+        cookbook: 'osl-ceph'
+      )
+    end
+
+    it do
+      is_expected.to render_file('/etc/ceph/ceph.conf').with_content(<<~EOF
+         [client.rgw.Fauxhai]
+         host = Fauxhai
+         keyring = /var/lib/ceph/radosgw/ceph-Fauxhai/keyring
+         rgw cache enabled = true
+         rgw cache lru size = 5000
+         rgw dns name = rgw.example.org
+         rgw dns s3website name = rgw-website.example.org
+         rgw enable ops log = true
+         rgw enable static website = true
+         rgw enable usage log = true
+         rgw expose bucket = true
+         rgw frontends = "beast port=8080"
+         rgw max concurrent requests = 4096
+         rgw num reqs per thread = 500
+         rgw resolve cname = true
+         rgw thread pool size = 512
       EOF
                                                                     )
     end
