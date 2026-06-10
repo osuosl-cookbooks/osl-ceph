@@ -7,6 +7,17 @@ control 'radosgw' do
     it { should be_installed }
   end
 
+  describe ini '/etc/ceph/ceph.conf' do
+    its(['client.rgw.node1', 'host']) { should eq 'node1' }
+    its(['client.rgw.node1', 'keyring']) { should eq '/var/lib/ceph/radosgw/ceph-node1/keyring' }
+    its(['client.rgw.node1', 'rgw frontends']) { should eq '"beast port=8080"' }
+  end
+
+  describe file('/etc/ceph/ceph.rgw.node1.keyring') do
+    it { should be_symlink }
+    its('link_path') { should eq '/var/lib/ceph/radosgw/ceph-node1/keyring' }
+  end
+
   describe port 8080 do
     it { should be_listening }
     its('processes') { should include 'notif-worker0' }

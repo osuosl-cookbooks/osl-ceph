@@ -2,3 +2,4 @@ name: default
 inputs:
   - name: firewall
     value: true
+version: 0.1.0

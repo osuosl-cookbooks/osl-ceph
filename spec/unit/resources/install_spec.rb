@@ -128,6 +128,19 @@ describe 'osl_ceph_install' do
     it { is_expected.to accept_osl_firewall_ceph 'osl-ceph' }
   end
 
+  context 'radosgw' do
+    cached(:subject) { chef_run }
+
+    recipe do
+      osl_ceph_install 'default' do
+        radosgw true
+      end
+    end
+
+    it { is_expected.to install_package(%w(ceph-common ceph-radosgw ceph-selinux)) }
+    it { is_expected.to accept_osl_firewall_ceph 'osl-ceph' }
+  end
+
   context 'all' do
     cached(:subject) { chef_run }
 
@@ -137,10 +150,56 @@ describe 'osl_ceph_install' do
         mgr true
         mon true
         osd true
+        radosgw true
       end
     end
 
-    it { is_expected.to install_package(%w(ceph-common ceph-mds ceph-mgr ceph-mgr-dashboard ceph-mon ceph-osd ceph-selinux)) }
+    it { is_expected.to install_package(%w(ceph-common ceph-mds ceph-mgr ceph-mgr-dashboard ceph-mon ceph-osd ceph-radosgw ceph-selinux)) }
     it { is_expected.to accept_osl_firewall_ceph 'osl-ceph' }
+  end
+
+  context 'release' do
+    cached(:subject) { chef_run }
+
+    recipe do
+      osl_ceph_install 'default' do
+        release 'quincy'
+      end
+    end
+
+    it do
+      is_expected.to create_yum_repository('ceph').with(
+        description: 'Ceph quincy',
+        baseurl: 'https://ftp.osuosl.org/pub/osl/repos/yum/$releasever/ceph-quincy/$basearch',
+        gpgkey: 'https://ftp.osuosl.org/pub/osl/repos/yum/RPM-GPG-KEY-osuosl'
+      )
+    end
+  end
+
+  context 'release almalinux 9' do
+    platform 'almalinux', '9'
+    cached(:subject) { chef_run }
+
+    recipe do
+      osl_ceph_install 'default' do
+        release 'quincy'
+      end
+    end
+
+    it do
+      is_expected.to create_yum_repository('ceph').with(
+        description: 'Ceph quincy',
+        baseurl: 'https://download.ceph.com/rpm-quincy/el$releasever/$basearch',
+        gpgkey: 'https://download.ceph.com/keys/release.asc'
+      )
+    end
+
+    it do
+      is_expected.to create_yum_repository('ceph-noarch').with(
+        description: 'Ceph noarch quincy',
+        baseurl: 'https://download.ceph.com/rpm-quincy/el$releasever/noarch',
+        gpgkey: 'https://download.ceph.com/keys/release.asc'
+      )
+    end
   end
 end

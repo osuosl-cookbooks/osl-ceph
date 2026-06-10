@@ -1,157 +1,73 @@
 # osl-ceph Cookbook
 
-Cookbook for managing Ceph nodes and clients
+Installs and configures [Ceph](https://ceph.io/) nodes and clients at the OSU Open Source Lab. It manages
+the Ceph yum repositories, packages, `ceph.conf`, daemon bootstrapping (mon, mgr, mds, osd, radosgw),
+keyrings, CephFS mounts, RBD mappings and Nagios/NRPE monitoring.
 
-## Supported Platforms
+## Requirements
 
-- Ceph Nautilus Release
-- CentOS 7
-- AlmaLinux 8
+### Platforms
 
-# Multi-host test integration
+- AlmaLinux 8, 9
+- Ceph Reef release (default, configurable via `osl_ceph_install`)
 
-This cookbook utilizes [kitchen-terraform](https://github.com/newcontext-oss/kitchen-terraform) to test deploying
-various parts of this cookbook in multiple nodes, similar to that in production.
+### Chef
 
-## Prereqs
+- Chef 16.0+
 
-- Chef Workstation
-- Terraform
-- `kitchen-terraform`
-- OpenStack cluster
+### Cookbooks
 
-Ensure you have the following in your ``.bashrc`` (or similar):
+- `line`
+- `osl-git`
+- `osl-firewall`
+- `osl-nrpe`
+- `osl-repos`
+- `osl-resources`
 
-``` bash
-export TF_VAR_ssh_key_name="$OS_SSH_KEYPAIR"
-```
+## Attributes
 
-## Supported Deployments
+| Attribute                                                | Default                          | Description                                                              |
+| -------------------------------------------------------- | -------------------------------- | ------------------------------------------------------------------------ |
+| `node['osl-ceph']['config']`                              | `{}`                             | Cluster settings passed to `osl_ceph_config` by the default recipe (`fsid`, `mon_initial_members`, `mon_host`, `public_network`, `cluster_network`, optionally `client_options`, `radosgw`, `rgw_dns_name`, `rgw_dns_s3website_name`). No config is created when empty. |
+| `node['osl-ceph']['data_bag_item']`                       | `nil`                            | Item in the `ceph` data bag containing `mon_key`, `admin_key` and `bootstrap_key`, used by the `mon` and `osd` recipes |
+| `node['osl-ceph']['nrpe']['check_ceph_osd']['critical']`  | `1`                              | Critical threshold for the `check_ceph_osd` Nagios check                 |
 
-- Chef-zero node acting as a Chef Server
-- Three node ceph cluster
-	- Each node ceph node runs mon, mgr, mds and osd services
-- One cephfs client node
-  - The cephfs client node will mount cephfs from the ceph cluster
+## Recipes
+
+| Recipe        | Description                                                                                       |
+| ------------- | ------------------------------------------------------------------------------------------------- |
+| `default`     | Installs the Ceph client packages and creates `ceph.conf` from `node['osl-ceph']['config']`        |
+| `mds`         | Deploys a metadata server (CephFS)                                                                 |
+| `mgr`         | Deploys a manager daemon                                                                           |
+| `mon`         | Deploys a monitor using keys from the `ceph` data bag                                              |
+| `osd`         | Deploys an OSD node, including a partprobe workaround for NVMe logical volumes                     |
+| `radosgw`     | Deploys a RadosGW object gateway                                                                   |
+| `nagios`      | Installs the [ceph-nagios-plugins](https://github.com/osuosl/ceph-nagios-plugins) checks           |
+| `monitoring`  | Configures NRPE checks (`check_ceph_osd`, `check_ceph_mon`) using the `ceph/nagios` data bag item  |
+
+## Resources
+
+| Resource                                                | Description                                              |
+| ------------------------------------------------------- | -------------------------------------------------------- |
+| [osl\_ceph\_install](documentation/osl_ceph_install.md) | Configures Ceph yum repos and installs packages           |
+| [osl\_ceph\_config](documentation/osl_ceph_config.md)   | Manages `/etc/ceph/ceph.conf`                             |
+| [osl\_ceph\_mon](documentation/osl_ceph_mon.md)         | Bootstraps and runs a Ceph monitor                        |
+| [osl\_ceph\_mgr](documentation/osl_ceph_mgr.md)         | Sets up and runs a Ceph manager                           |
+| [osl\_ceph\_mds](documentation/osl_ceph_mds.md)         | Sets up and runs a Ceph metadata server                   |
+| [osl\_ceph\_radosgw](documentation/osl_ceph_radosgw.md) | Sets up and runs a Ceph object gateway                    |
+| [osl\_ceph\_keyring](documentation/osl_ceph_keyring.md) | Writes a keyring file from a known key                    |
+| [osl\_ceph\_client](documentation/osl_ceph_client.md)   | Creates a client auth entity and its keyring/secret file  |
+| [osl\_cephfs](documentation/osl_cephfs.md)              | Mounts a CephFS filesystem                                |
+| [osl\_ceph\_rbdmap](documentation/osl_ceph_rbdmap.md)   | Manages RBD image mappings in `/etc/ceph/rbdmap`          |
+| [osl\_ceph\_test](documentation/osl_ceph_test.md)       | Single-node test cluster (testing only)                   |
+
+`osl_ceph_keyring` and `osl_ceph_client` are also available under their backwards-compatible names
+`ceph_keyring` and `ceph_chef_client`.
 
 ## Testing
 
-First, generate some keys for chef-zero and then simply run the following suite.
-
-``` console
-# Only need to run this once
-$ chef exec rake create_key
-$ kitchen test multi-node
-```
-
-Be patient as this will take a while to converge all of the nodes (approximately 15 minutes).
-
-## Access the nodes
-
-Unfortunately, kitchen-terraform doesn't support using ``kitchen console`` so you will need to log into the nodes
-manually. To see what their IP addresses are, just run ``terraform output`` which will output all of the IPs.
-
-``` bash
-# You can run the following commands to login to each node
-$ ssh centos@$(terraform output -raw node1)
-$ ssh centos@$(terraform output -raw node2)
-$ ssh centos@$(terraform output -raw node3)
-$ ssh centos@$(terraform output -raw cephfs_client)
-
-# Or you can look at the IPs for all for all of the nodes at once
-$ terraform output
-ceph_nodes = [
-    10.1.100.3,
-    10.1.100.66,
-    10.1.100.45
-]
-cephfs_client = 10.1.100.8
-chef_zero = 10.1.100.43
-node1 = 10.1.100.3
-node2 = 10.1.100.66
-node3 = 10.1.100.45
-```
-
-## Running ceph commands
-
-Once you're logged into one of the nodes, you should be able to run the following commands:
-
-``` bash
-$ ceph -s
-  cluster:
-    id:     7964405e-3e4a-4aee-b5a8-bf5e4f816c5d
-    health: HEALTH_OK
-
-  services:
-    mon: 3 daemons, quorum node1,node3,node2
-    mgr: node1(active), standbys: node2, node3
-    mds: cephfs-1/1/1 up  {0=node2=up:active}, 2 up:standby
-    osd: 9 osds: 9 up, 9 in
-
-  data:
-    pools:   2 pools, 256 pgs
-    objects: 24 objects, 32.6KiB
-    usage:   9.04GiB used, 81.0GiB / 90GiB avail
-    pgs:     256 active+clean
-
-$ ceph osd tree
-ID CLASS WEIGHT  TYPE NAME      STATUS REWEIGHT PRI-AFF
--1       0.08817 root default
--3       0.02939     host node1
- 0   hdd 0.00980         osd.0      up  1.00000 1.00000
- 1   hdd 0.00980         osd.1      up  1.00000 1.00000
- 2   hdd 0.00980         osd.2      up  1.00000 1.00000
--5       0.02939     host node2
- 3   hdd 0.00980         osd.3      up  1.00000 1.00000
- 4   hdd 0.00980         osd.4      up  1.00000 1.00000
- 5   hdd 0.00980         osd.5      up  1.00000 1.00000
--7       0.02939     host node3
- 6   hdd 0.00980         osd.6      up  1.00000 1.00000
- 7   hdd 0.00980         osd.7      up  1.00000 1.00000
- 8   hdd 0.00980         osd.8      up  1.00000 1.00000
-```
-
-## Interacting with the chef-zero server
-
-All of these nodes are configured using a Chef Server which is a container running chef-zero. You can interact with the
-chef-zero server by doing the following:
-
-``` bash
-$ CHEF_SERVER="$(terraform output -raw chef_zero)" knife node list -c test/chef-config/knife.rb
-cephfs_client
-node1
-node2
-node3
-$ CHEF_SERVER="$(terraform output -raw chef_zero)" knife node edit -c test/chef-config/knife.rb
-```
-
-In addition, on any node that has been deployed, you can re-run ``chef-client`` like you normally would on a production
-system. This should allow you to do development on your multi-node environment as needed. **Just make sure you include
-the knife config otherwise you will be interacting with our production chef server!**
-
-## Using Terraform directly
-
-You do not need to use kitchen-terraform directly if you're just doing development. It's primarily useful for testing
-the multi-node cluster using inspec. You can simply deploy the cluster using terraform directly by doing the following:
-
-``` bash
-# Sanity check
-$ terraform plan
-# Deploy the cluster
-$ terraform apply
-# Destroy the cluster
-$ terraform destroy
-```
-
-## Cleanup
-
-``` bash
-# To remove all the nodes and start again, run the following test-kitchen command.
-$ kitchen destroy multi-node
-
-# To refresh all the cookbooks, use the following command.
-$ CHEF_SERVER="$(terraform output chef_zero)" chef exec rake knife_upload
-```
+See [TESTING.md](TESTING.md) for unit, single-node and multi-node (kitchen-terraform) testing
+instructions.
 
 ## Contributing
 
@@ -167,7 +83,7 @@ $ CHEF_SERVER="$(terraform output chef_zero)" chef exec rake knife_upload
 - Author:: Oregon State University <chef@osuosl.org>
 
 ```text
-Copyright:: 2017-2019 Oregon State University
+Copyright:: 2017-2026 Oregon State University
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

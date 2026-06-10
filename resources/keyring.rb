@@ -1,4 +1,3 @@
-resource_name :osl_ceph_keyring
 provides :osl_ceph_keyring
 # backwards compatible old name
 provides :ceph_keyring

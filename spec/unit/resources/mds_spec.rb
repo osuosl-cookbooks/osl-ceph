@@ -34,4 +34,16 @@ describe 'osl_ceph_mds' do
 
   it { is_expected.to enable_service('ceph-mds@Fauxhai.service') }
   it { is_expected.to start_service('ceph-mds@Fauxhai.service') }
+
+  context 'restart' do
+    cached(:subject) { chef_run }
+
+    recipe do
+      osl_ceph_mds 'default' do
+        action :restart
+      end
+    end
+
+    it { is_expected.to restart_service('ceph-mds@Fauxhai.service') }
+  end
 end

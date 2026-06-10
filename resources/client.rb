@@ -1,4 +1,3 @@
-resource_name :osl_ceph_client
 provides :osl_ceph_client
 # backwards compatible old name
 provides :ceph_chef_client

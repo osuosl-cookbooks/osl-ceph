@@ -36,3 +36,17 @@ describe 'ceph_test::radosgw' do
     end
   end
 end
+
+describe 'osl_ceph_radosgw restart' do
+  platform 'almalinux', '8'
+  cached(:subject) { chef_run }
+  step_into :osl_ceph_radosgw
+
+  recipe do
+    osl_ceph_radosgw 'default' do
+      action :restart
+    end
+  end
+
+  it { is_expected.to restart_service('ceph-radosgw@rgw.Fauxhai.service') }
+end

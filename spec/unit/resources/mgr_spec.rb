@@ -39,4 +39,16 @@ describe 'osl_ceph_mgr' do
 
   it { is_expected.to enable_service('ceph-mgr@Fauxhai.service') }
   it { is_expected.to start_service('ceph-mgr@Fauxhai.service') }
+
+  context 'restart' do
+    cached(:subject) { chef_run }
+
+    recipe do
+      osl_ceph_mgr 'default' do
+        action :restart
+      end
+    end
+
+    it { is_expected.to restart_service('ceph-mgr@Fauxhai.service') }
+  end
 end

@@ -137,6 +137,41 @@ describe 'ceph_test::spec_cephfs' do
             pass: 0
           )
       end
+      it do
+        is_expected.to mount_mount('/mnt/options')
+          .with(
+            fstype: 'ceph',
+            device: '10.0.0.2://',
+            options: ['_netdev', 'name=cephfs', 'secretfile=/etc/ceph/ceph.client.cephfs.secret', 'ro'],
+            dump: 0,
+            pass: 0
+          )
+      end
+      it do
+        is_expected.to umount_osl_cephfs('/mnt/umount').with(client_name: 'cephfs')
+      end
+      it do
+        is_expected.to delete_file('ceph.client secret for /mnt/umount')
+          .with(path: '/etc/ceph/ceph.client.cephfs.secret')
+      end
+      it do
+        is_expected.to umount_mount('/mnt/umount')
+          .with(
+            fstype: 'ceph',
+            device: '10.0.0.2:/',
+            dump: 0,
+            pass: 0
+          )
+      end
+      it do
+        is_expected.to disable_mount('/mnt/umount')
+          .with(
+            fstype: 'ceph',
+            device: '10.0.0.2:/',
+            dump: 0,
+            pass: 0
+          )
+      end
     end
   end
 end

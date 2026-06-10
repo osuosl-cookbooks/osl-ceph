@@ -20,6 +20,7 @@ control 'config' do
     its('global.mon host') { should match /10\.0\.[0-9]+\.[0-9]+/ } if vagrant
     its('global.mon initial members') { should eq 'node1' }
     its('global.public network') { should eq '10.0.0.0/8' }
+    its(['client', 'admin socket']) { should eq '/var/run/ceph/$cluster-$type.$id.asok' }
   end
 
   if keyring

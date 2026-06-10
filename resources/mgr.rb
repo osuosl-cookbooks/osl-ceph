@@ -1,5 +1,4 @@
-resource_name :osl_ceph_mon
-provides :osl_ceph_mon
+provides :osl_ceph_mgr
 default_action :start
 unified_mode true
 

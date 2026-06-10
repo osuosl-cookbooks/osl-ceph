@@ -14,3 +14,14 @@ osl_cephfs '/mnt/foo' do
   subdir '/foo'
   client_name 'cephfs'
 end
+
+osl_cephfs '/mnt/options' do
+  key 'AQB3sfxaorsvKhAAkS7kVr01tZQNT1u0mhS1oQ=='
+  client_name 'cephfs'
+  options 'ro'
+end
+
+osl_cephfs '/mnt/umount' do
+  client_name 'cephfs'
+  action :umount
+end
