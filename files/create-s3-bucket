@@ -1,0 +1,70 @@
+#!/bin/bash
+# Provision an S3 bucket for a project: create the RGW user if needed,
+# create the bucket as the admin user, then transfer ownership.
+#
+# Managed by Chef (osl-ceph::s3_admin) -- local changes will be overwritten.
+set -euo pipefail
+
+usage() {
+  cat >&2 <<EOF
+Usage: ${0##*/} <project> <bucket>
+
+Creates the bucket <project>-<bucket> owned by the RGW user <project>.
+Example: ${0##*/} fooproject backups   # creates fooproject-backups
+EOF
+  exit 2
+}
+
+[[ $# -eq 2 ]] || usage
+
+project=$1
+bucket=$2
+
+# Both parts must be valid S3 name components so the constructed
+# <project>-<bucket> name always matches the naming scheme.
+name_re='^[a-z0-9]([a-z0-9-]*[a-z0-9])?$'
+for part in "$project" "$bucket"; do
+  if ! [[ $part =~ $name_re ]]; then
+    echo "error: '$part' must be lowercase alphanumeric (dashes allowed inside)" >&2
+    exit 1
+  fi
+done
+
+full_bucket="${project}-${bucket}"
+
+bucket_owner() {
+  radosgw-admin bucket stats --bucket="$full_bucket" 2>/dev/null \
+    | grep -oP '"owner"\s*:\s*"\K[^"]*' | head -n1
+}
+
+if ! radosgw-admin user info --uid="$project" > /dev/null 2>&1; then
+  echo "Creating RGW user '$project'"
+  radosgw-admin user create --uid="$project" --display-name="$project" > /dev/null
+fi
+
+owner=$(bucket_owner || true)
+if [[ -z $owner ]]; then
+  echo "Creating bucket '$full_bucket'"
+  s3cmd --config /root/.s3cfg mb "s3://$full_bucket" > /dev/null
+elif [[ $owner != "$project" && $owner != admin ]]; then
+  echo "error: bucket '$full_bucket' already exists and is owned by '$owner', refusing to take it over" >&2
+  exit 1
+else
+  echo "Bucket '$full_bucket' already exists (owner: $owner)"
+fi
+
+radosgw-admin bucket link --bucket="$full_bucket" --uid="$project"
+radosgw-admin bucket chown --bucket="$full_bucket" --uid="$project" > /dev/null
+
+owner=$(bucket_owner || true)
+if [[ $owner != "$project" ]]; then
+  echo "error: bucket '$full_bucket' is owned by '${owner:-<unknown>}', expected '$project'" >&2
+  exit 1
+fi
+
+echo "Bucket '$full_bucket' is owned by '$project'"
+echo
+echo "Credentials for project '$project':"
+radosgw-admin user info --uid="$project" | grep -E '"(access_key|secret_key)"'
+echo
+echo "Deliver these keys via the Secrets app on https://cloud.osuosl.org -- never by email or chat."
