@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+10.3.0 (2026-06-11)
+-------------------
+- Add s3_admin recipe for admin-driven S3 bucket provisioning
+
 10.2.0 (2026-06-10)
 -------------------
 - Update documentation and improve test coverage
