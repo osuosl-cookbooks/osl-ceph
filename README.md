@@ -49,6 +49,33 @@ keyrings, CephFS mounts, RBD mappings and Nagios/NRPE monitoring.
 | `nagios`      | Installs the [ceph-nagios-plugins](https://github.com/osuosl/ceph-nagios-plugins) checks           |
 | `monitoring`  | Configures NRPE checks (`check_ceph_osd`, `check_ceph_mon`) using the `ceph/nagios` data bag item  |
 
+### S3 bucket provisioning (`s3_admin`)
+
+The `s3_admin` recipe enables admin-driven S3 bucket provisioning: a dedicated admin RGW user creates
+buckets via the S3 API and ownership is then transferred to the project user (`radosgw-admin` cannot
+create buckets directly). It requires a one-time manual setup:
+
+1. Create the admin RGW user on the cluster (this user is not cookbook-managed):
+
+   ```text
+   radosgw-admin user create --uid=admin --display-name="OSL Admin"
+   ```
+
+2. Add the generated `access_key` and `secret_key` to the `ceph` data bag item referenced by
+   `node['osl-ceph']['data_bag_item']` as `rgw_admin_access_key` and `rgw_admin_secret_key`.
+
+3. Add `osl-ceph::s3_admin` to the mon role. The recipe does nothing until both data bag fields exist.
+
+Once converged, provision a bucket for a project from a mon host:
+
+```text
+create-s3-bucket <project> <bucket>   # creates the bucket <project>-<bucket>
+```
+
+The script creates the RGW user `<project>` if missing, creates the bucket as the admin user,
+transfers ownership, verifies it, and prints the project's keys. Deliver keys via the Secrets app
+on https://cloud.osuosl.org — never email or chat.
+
 ## Resources
 
 | Resource                                                | Description                                              |
