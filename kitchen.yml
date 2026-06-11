@@ -135,6 +135,26 @@ suites:
         - mon
         - mgr
         - radosgw
+  - name: s3_admin
+    run_list:
+      - recipe[ceph_test::s3_admin]
+    attributes:
+      osl-ceph:
+        data_bag_item: cluster
+    verifier:
+      inspec_tests:
+        - test/integration/default
+        - test/integration/config
+        - test/integration/mon
+        - test/integration/mgr
+        - test/integration/radosgw
+      controls:
+        - default
+        - config
+        - mon
+        - mgr
+        - radosgw
+        - s3_admin
   - name: monitoring
     run_list:
       - recipe[ceph_test::mds]

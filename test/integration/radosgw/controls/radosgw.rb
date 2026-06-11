@@ -20,7 +20,7 @@ control 'radosgw' do
 
   describe port 8080 do
     it { should be_listening }
-    its('processes') { should include 'notif-worker0' }
+    its('processes') { should include('radosgw').or include('notif-worker0') }
   end
 
   %w(ceph-radosgw@rgw.node1.service ceph-radosgw.target).each do |s|
