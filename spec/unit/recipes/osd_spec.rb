@@ -47,6 +47,64 @@ describe 'osl-ceph::osd' do
 
       it { is_expected.to enable_service 'partprobe.service' }
       it { is_expected.to start_service 'partprobe.service' }
+
+      it do
+        is_expected.to create_cookbook_file('/usr/local/libexec/ceph-rotational.rb').with(
+          owner: 'root',
+          group: 'root',
+          mode: '0750'
+        )
+      end
+
+      it do
+        is_expected.to create_systemd_unit('ceph-rotational.service').with(
+          content: <<~EOF
+            [Unit]
+            Description=Correct rotational flag for SSDs behind MegaRAID virtual drives
+            After=local-fs.target
+
+            [Service]
+            Type=oneshot
+            ExecStart=/usr/local/libexec/ceph-rotational.rb
+            ExecStartPre=/sbin/udevadm settle
+            RemainAfterExit=yes
+            TimeoutStartSec=60
+
+            [Install]
+            WantedBy=multi-user.target
+          EOF
+        )
+      end
+
+      # Ordering goes on the OSD templates: both are otherwise only ordered
+      # before ceph.target, and ceph-volume@ starts ceph-osd@ at runtime.
+      %w(ceph-osd@.service ceph-volume@.service).each do |unit|
+        it do
+          is_expected.to create_osl_systemd_unit_drop_in("rotational-#{unit}").with(
+            override_name: 'rotational',
+            unit_name: unit,
+            content: {
+              'Unit' => {
+                'Wants' => 'ceph-rotational.service',
+                'After' => 'ceph-rotational.service',
+              },
+            }
+          )
+        end
+      end
+
+      it { is_expected.to enable_service 'ceph-rotational.service' }
+      it { is_expected.to start_service 'ceph-rotational.service' }
+
+      it 'reruns the fixer when the script changes' do
+        expect(chef_run.cookbook_file('/usr/local/libexec/ceph-rotational.rb'))
+          .to notify('service[ceph-rotational.service]').to(:restart).delayed
+      end
+
+      it 'reruns the fixer when the unit changes' do
+        expect(chef_run.systemd_unit('ceph-rotational.service'))
+          .to notify('service[ceph-rotational.service]').to(:restart).delayed
+      end
       it { is_expected.to enable_service 'ceph-osd.target' }
       it { is_expected.to start_service 'ceph-osd.target' }
       it { is_expected.to_not create_osl_ceph_keyring 'bootstrap-osd' }
