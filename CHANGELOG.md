@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+10.4.0 (2026-09-08)
+-------------------
+- Fix rotational flag for SSDs behind MegaRAID virtual drives
+
 10.3.0 (2026-06-11)
 -------------------
 - Add s3_admin recipe for admin-driven S3 bucket provisioning
