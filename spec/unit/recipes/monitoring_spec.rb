@@ -16,6 +16,9 @@ describe 'osl-ceph::monitoring' do
          )
       end
 
+      it { is_expected.to install_osl_ceph_install('exporter').with(exporter: true) }
+      it { is_expected.to start_osl_ceph_exporter('default') }
+
       it do
         is_expected.to sync_git("#{Chef::Config[:file_cache_path]}/ceph-nagios")
           .with(

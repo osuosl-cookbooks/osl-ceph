@@ -86,6 +86,7 @@ on https://cloud.osuosl.org — never email or chat.
 | [osl\_ceph\_mgr](documentation/osl_ceph_mgr.md)         | Sets up and runs a Ceph manager                           |
 | [osl\_ceph\_mds](documentation/osl_ceph_mds.md)         | Sets up and runs a Ceph metadata server                   |
 | [osl\_ceph\_radosgw](documentation/osl_ceph_radosgw.md) | Sets up and runs a Ceph object gateway                    |
+| [osl\_ceph\_exporter](documentation/osl_ceph_exporter.md) | Runs `ceph-exporter` for Prometheus perf counters        |
 | [osl\_ceph\_keyring](documentation/osl_ceph_keyring.md) | Writes a keyring file from a known key                    |
 | [osl\_ceph\_client](documentation/osl_ceph_client.md)   | Creates a client auth entity and its keyring/secret file  |
 | [osl\_cephfs](documentation/osl_cephfs.md)              | Mounts a CephFS filesystem                                |

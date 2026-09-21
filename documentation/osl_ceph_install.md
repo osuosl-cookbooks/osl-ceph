@@ -15,14 +15,15 @@ via `osl_firewall_ceph`.
 
 ## Properties
 
-| Name      | Type            | Default  | Description                                  |
-| --------- | --------------- | -------- | -------------------------------------------- |
-| `release` | `String`        | `reef`   | Ceph release to install                      |
-| `mds`     | `true`, `false` | `false`  | Install the `ceph-mds` package               |
-| `mgr`     | `true`, `false` | `false`  | Install the `ceph-mgr` and dashboard packages|
-| `mon`     | `true`, `false` | `false`  | Install the `ceph-mon` package               |
-| `osd`     | `true`, `false` | `false`  | Install the `ceph-osd` package               |
-| `radosgw` | `true`, `false` | `false`  | Install the `ceph-radosgw` package           |
+| Name       | Type            | Default  | Description                                  |
+| ---------- | --------------- | -------- | -------------------------------------------- |
+| `release`  | `String`        | `reef`   | Ceph release to install                      |
+| `exporter` | `true`, `false` | `false`  | Install the `ceph-exporter` package          |
+| `mds`      | `true`, `false` | `false`  | Install the `ceph-mds` package               |
+| `mgr`      | `true`, `false` | `false`  | Install the `ceph-mgr` and dashboard packages|
+| `mon`      | `true`, `false` | `false`  | Install the `ceph-mon` package               |
+| `osd`      | `true`, `false` | `false`  | Install the `ceph-osd` package               |
+| `radosgw`  | `true`, `false` | `false`  | Install the `ceph-radosgw` package           |
 
 The `ceph-common` and `ceph-selinux` packages are always installed.
 
@@ -32,6 +33,14 @@ Install the Ceph client packages only:
 
 ```ruby
 osl_ceph_install 'default'
+```
+
+Install the perf-counter exporter that `osl-ceph::monitoring` runs:
+
+```ruby
+osl_ceph_install 'exporter' do
+  exporter true
+end
 ```
 
 Install everything needed for a monitor + OSD node:

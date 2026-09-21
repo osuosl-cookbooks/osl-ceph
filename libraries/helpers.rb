@@ -33,6 +33,7 @@ module OslCeph
 
       def ceph_packages
         packages = %w(ceph-common ceph-selinux)
+        packages.push('ceph-exporter') if new_resource.exporter
         packages.push('ceph-mds') if new_resource.mds
 
         if new_resource.mgr

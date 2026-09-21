@@ -76,6 +76,19 @@ describe 'osl_ceph_install' do
     it { is_expected.to remove_yum_repository 'ceph-noarch' }
   end
 
+  context 'exporter' do
+    cached(:subject) { chef_run }
+
+    recipe do
+      osl_ceph_install 'default' do
+        exporter true
+      end
+    end
+
+    it { is_expected.to install_package(%w(ceph-common ceph-exporter ceph-selinux)) }
+    it { is_expected.to accept_osl_firewall_ceph 'osl-ceph' }
+  end
+
   context 'mds' do
     cached(:subject) { chef_run }
 

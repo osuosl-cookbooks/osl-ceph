@@ -3,6 +3,7 @@ default_action :install
 unified_mode true
 
 property :release, String, default: 'reef'
+property :exporter, [true, false], default: false
 property :mds, [true, false], default: false
 property :mgr, [true, false], default: false
 property :mon, [true, false], default: false
@@ -33,7 +34,8 @@ action :install do
 
   package ceph_packages
 
-  if new_resource.mds || new_resource.mgr || new_resource.mon || new_resource.osd || new_resource.radosgw
+  if new_resource.exporter || new_resource.mds || new_resource.mgr || new_resource.mon ||
+     new_resource.osd || new_resource.radosgw
     osl_firewall_ceph 'osl-ceph'
   end
 end
