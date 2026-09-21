@@ -6,7 +6,7 @@ chef_version     '>= 16.0'
 issues_url       'https://github.com/osuosl-cookbooks/osl-ceph/issues'
 source_url       'https://github.com/osuosl-cookbooks/osl-ceph'
 description      'Installs and configures Ceph storage nodes and clients'
-version          '10.4.0'
+version          '10.5.0'
 
 depends 'line'
 depends 'osl-git'

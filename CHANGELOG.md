@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+10.5.0 (2026-09-21)
+-------------------
+- Add osl_ceph_exporter for daemon perf counters
+
 10.4.0 (2026-09-08)
 -------------------
 - Fix rotational flag for SSDs behind MegaRAID virtual drives
