@@ -10,7 +10,7 @@ version          '10.4.0'
 
 depends 'line'
 depends 'osl-git'
-depends 'osl-firewall'
+depends 'osl-firewall', '>= 1.27.2'
 depends 'osl-nrpe'
 depends 'osl-repos'
 depends 'osl-resources'

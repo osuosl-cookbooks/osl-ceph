@@ -17,6 +17,14 @@
 # limitations under the License.
 include_recipe 'osl-ceph::nagios'
 
+# Reef moved daemon perf counters out of mgr/prometheus into this daemon, so
+# every node needs it for the Ceph dashboards to have data.
+osl_ceph_install 'exporter' do
+  exporter true
+end
+
+osl_ceph_exporter 'default'
+
 secrets = data_bag_item('ceph', 'nagios')
 arch = node['kernel']['machine'] == 'ppc64le' ? 'ppc64' : 'x86'
 
