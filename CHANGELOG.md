@@ -3,6 +3,10 @@ osl-ceph CHANGELOG
 This file is used to list changes made in each version of the
 osl-ceph cookbook.
 
+10.5.1 (2026-10-10)
+-------------------
+- Add Ceph assessment tools and give ceph-exporter its own admin socket
+
 10.5.0 (2026-09-21)
 -------------------
 - Add osl_ceph_exporter for daemon perf counters
