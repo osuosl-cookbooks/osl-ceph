@@ -24,6 +24,10 @@ come from `ceph.conf` or from the drop-in instead. Giving it a real `client.ceph
 cephadm does (`mon`/`mgr`/`osd allow r`) would restore that, at the cost of a new entry in the `ceph` data
 bag for the OSD-only nodes that have no admin keyring.
 
+The drop-in also passes `--admin-socket /var/run/ceph/ceph-exporter.asok`. Without an `--id` the daemon is
+`client.admin`, and on the default `[client]` socket path it would take `ceph-client.admin.asok`, so every root
+`ceph` command on the host would print `AdminSocketConfigObs::init: failed ... File exists`.
+
 The exporter reports only counters at priority `PRIO_USEFUL` (5) or above, which is its default and covers
 everything the upstream dashboards query.
 

@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+# ceph-check-rotational: reconcile OSD device class, start-time rotational flag and live flag.
+# Logs to /root/ceph-check-rotational-<host>-<UTC>.log; installed by osl-ceph::admin_tools.
+
+LOG=/root/ceph-check-rotational-$(hostname -s)-$(date -u +%Y%m%dT%H%MZ).log
+TMP=$(mktemp -d)
+trap 'rm -rf "$TMP"' EXIT
+
+{
+  echo "Rotational check: $(date -u '+%F %T') UTC on $(hostname -f)"
+  timeout 120 ceph osd metadata -f json > "$TMP/meta.json" || { echo 'ceph osd metadata failed'; exit 1; }
+  timeout 120 ceph osd tree -f json > "$TMP/tree.json" || { echo 'ceph osd tree failed'; exit 1; }
+
+  python3 - "$(hostname -f)" "$TMP" <<'EOF'
+import json, os, sys
+
+local, tmp = sys.argv[1], sys.argv[2]
+meta = {m["id"]: m for m in json.load(open(os.path.join(tmp, "meta.json")))}
+tree = json.load(open(os.path.join(tmp, "tree.json")))
+cls = {n["id"]: n.get("device_class")
+       for n in tree["nodes"] if n.get("type") == "osd"}
+
+
+def split(v):
+    return [d.strip() for d in str(v or "").split(",") if d.strip()]
+
+
+def data_devices(m):
+    """Block device only. DB/WAL may sit on a separate, faster device."""
+    explicit = split(m.get("bluestore_bdev_devices"))
+    if explicit:
+        return explicit
+    aux = set(split(m.get("bluefs_db_devices")) + split(m.get("bluefs_wal_devices")))
+    return [d for d in split(m.get("devices")) if d not in aux]
+
+
+def live_rotational(m):
+    """Kernel flag right now; only readable for OSDs on this host."""
+    for d in data_devices(m):
+        path = f"/sys/block/{d}/queue/rotational"
+        if os.path.exists(path):
+            try:
+                return open(path).read().strip()
+            except OSError:
+                return None
+    return None
+
+
+rows, counts = [], {}
+for i in sorted(meta):
+    m = meta[i]
+    host = m.get("hostname", "?")
+    dev = m.get("devices", "?")
+    c = cls.get(i, "?")
+    rot = m.get("bluestore_bdev_rotational", m.get("rotational", "?"))
+    live = live_rotational(m) if local.split(".")[0] == host.split(".")[0] else None
+
+    if live is not None and live != rot:
+        state = "PENDING"   # flag corrected, OSD not yet restarted
+    elif c == "ssd" and rot == "1":
+        state = "MISDETECT"  # SSD still seen as a spinner
+    elif c == "hdd" and rot == "0":
+        state = "WRONGCLASS"  # really an SSD, but serving the hdd rule
+    else:
+        continue
+
+    counts[state] = counts.get(state, 0) + 1
+    rows.append((state, i, c, rot, live if live is not None else "-", host, dev))
+
+for state, i, c, rot, live, host, dev in rows:
+    print(f"{state:<10} osd.{i:<4} class={c:<4} meta_rot={rot} live_rot={live} "
+          f"host={host} dev={dev}")
+
+print()
+for state, msg in (
+    ("PENDING", "flag already corrected; restart the OSD (with noout) to pick it up"),
+    ("MISDETECT", "SSD reported as a spinner; check ceph-rotational.service on that host"),
+    ("WRONGCLASS", "device is an SSD but classed hdd; needs rm-device-class + set-device-class"),
+):
+    if counts.get(state):
+        print(f"{counts[state]:>3} {state:<10} {msg}")
+if not rows:
+    print("  no discrepancies")
+print(f"\n{len(rows)} of {len(meta)} OSD(s) flagged. "
+      f"live_rot is only readable for OSDs on {local}; "
+      "meta_rot updates when the OSD restarts. An SSD that is classed hdd and "
+      "reports rot=1 looks consistent here; only storcli PD LIST (Med) exposes it.")
+EOF
+} 2>&1 | tee "$LOG"
+rc=${PIPESTATUS[0]}
+
+echo
+echo "Saved to: $LOG"
+exit "$rc"

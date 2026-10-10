@@ -16,6 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 include_recipe 'osl-ceph'
+include_recipe 'osl-ceph::admin_tools'
 
 osl_ceph_install 'mon' do
   mon true

@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+# ceph-assess: read-only Ceph assessment on a mon (admin keyring), all output in one log.
+# Logs to /root/ceph-assess-<host>-<UTC>.log; installed by osl-ceph::admin_tools.
+
+LOG=/root/ceph-assess-$(hostname -s)-$(date -u +%Y%m%dT%H%MZ).log
+T=120
+
+# ceph-exporter can hold client.admin's admin socket; drop that one stderr line so sections parse.
+quiet() { grep -v 'AdminSocketConfigObs::init: failed'; }
+
+run() {
+  printf '\n\n===== %s =====\n' "$*"
+  timeout "$T" "$@" 2>&1 | quiet
+}
+
+banner() { printf '\n\n===== %s =====\n' "$1"; }
+
+# json_py <python body> reads JSON on stdin as `d`; any failure prints a note instead.
+json_py() {
+  python3 -c "import json, sys
+try:
+    d = json.load(sys.stdin)
+except Exception as e:
+    sys.exit('(could not parse JSON: %s)' % e)
+$1" 2>&1
+}
+
+{
+  echo "Ceph assessment: $(date -u '+%F %T') UTC on $(hostname -f)"
+
+  run ceph versions
+  run ceph -s
+  run ceph health detail
+  run ceph df detail
+  run ceph progress
+
+  CLASSES=$(timeout "$T" ceph osd crush class ls -f json 2>/dev/null | json_py 'print(" ".join(d))')
+  [[ -z $CLASSES || $CLASSES =~ ^[a-z0-9_\ -]+$ ]] || { banner "device class list failed: $CLASSES"; CLASSES=''; }
+  for class in $CLASSES; do
+    run ceph osd df tree class "$class"
+  done
+
+  run ceph balancer status
+  run ceph balancer eval
+  banner 'upmap entries (pg_upmap_items in the osdmap)'
+  timeout "$T" ceph osd dump 2>/dev/null | grep -c '^pg_upmap_items'
+
+  run ceph osd get-require-min-compat-client
+  run ceph features
+  run ceph osd pool autoscale-status
+  run ceph osd pool ls detail
+  run ceph osd crush rule dump
+  run ceph osd crush tree --show-shadow
+
+  banner 'manual reweight overrides (REWEIGHT != 1)'
+  timeout "$T" ceph osd df -f json 2>/dev/null | json_py '
+rows = [n for n in d["nodes"] if n.get("reweight", 1) < 0.99999]
+for n in sorted(rows, key=lambda n: n["id"]):
+    print("%-8s %-4s crush %.5f reweight %.5f use %5.1f%% %s" % (n["name"], n.get("device_class"),
+          n["crush_weight"], n["reweight"], n["utilization"], n["status"]))
+print("%d override(s)" % len(rows))'
+
+  banner 'nearfull/backfillfull/full ratios + pool flags'
+  timeout "$T" ceph osd dump 2>&1 | quiet | grep -E '^pool|ratio|require_osd_release'
+
+  # Per-OSD mclock capacity rows run to dozens, so they are counted, not listed.
+  banner 'current balancer/mclock/recovery/scrub/slow-op config'
+  CONF=$(timeout "$T" ceph config dump 2>&1 | quiet)
+  printf '%s\n' "$CONF" | grep -iE 'balancer|mclock|backfill|recovery|misplaced|scrub|slow_ops|spurious|auto_repair' | grep -v max_capacity_iops
+  printf '%s\n' "$CONF" | awk '$1 ~ /^osd\.[0-9]+$/ {
+      for (i = 2; i <= NF; i++) if ($i ~ /^osd_mclock_max_capacity_iops_(hdd|ssd)$/) { n[$i]++; ids[$i] = ids[$i] " " $1 }
+    }
+    END {for (k in n) printf "%d per-OSD %s rows:%s\n", n[k], k, ids[k]}'
+  printf '%s\n' "$CONF" | grep -E '^osd/|^osd +.*max_capacity_iops' || true
+
+  banner 'osd perf (top 20 by commit latency)'
+  timeout "$T" ceph osd perf 2>&1 | quiet | { read -r h; echo "$h"; sort -k2 -n -r | head -20; }
+
+  banner 'osd metadata summary (rotational flag at OSD start, min_alloc_size, DB device)'
+  timeout "$T" ceph osd metadata -f json 2>/dev/null | json_py '
+from collections import Counter
+c = Counter()
+print("%-8s %-14s %-4s %-9s %-10s %s" % ("osd", "host", "rot", "min_alloc", "db", "devices"))
+for m in sorted(d, key=lambda m: m["id"]):
+    alloc = next((v for k, v in m.items() if "min_alloc" in k), "?")
+    rot = m.get("bluestore_bdev_rotational", m.get("rotational", "?"))
+    db = m.get("bluefs_db_devices") or "-"
+    c[(rot, alloc)] += 1
+    print("osd.%-4s %-14s %-4s %-9s %-10s %s" % (m["id"], m.get("hostname", "?")[:14], rot, alloc, db, m.get("devices", "?")))
+print()
+for (rot, alloc), n in sorted(c.items()):
+    print("%3d OSDs rotational=%s min_alloc=%s" % (n, rot, alloc))'
+
+  for class in $CLASSES; do
+    osd=$(timeout "$T" ceph osd df class "$class" -f json 2>/dev/null |
+      json_py 'print(max(d["nodes"], key=lambda o: o["utilization"])["id"])')
+    if [[ $osd =~ ^[0-9]+$ ]]; then
+      banner "fullest $class OSD: osd.$osd - PGs on it (top 40)"
+      timeout "$T" ceph pg ls-by-osd "osd.$osd" 2>&1 | quiet | head -40
+    else
+      banner "fullest $class OSD: detection failed ($osd)"
+    fi
+  done
+
+  banner 'machine-readable osd df (json)'
+  timeout "$T" ceph osd df -f json 2>/dev/null
+  echo
+
+} > "$LOG" 2>&1
+
+grep -m1 '^HEALTH_' "$LOG"
+echo "Saved to: $LOG ($(wc -l < "$LOG") lines)"
