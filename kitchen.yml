@@ -117,6 +117,7 @@ suites:
         - config
         - mon
         - mgr
+        - admin_tools
         - osd
   - name: radosgw
     run_list:

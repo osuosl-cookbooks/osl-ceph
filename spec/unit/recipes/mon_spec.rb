@@ -12,6 +12,7 @@ describe 'osl-ceph::mon' do
       end
 
       it { is_expected.to include_recipe 'osl-ceph' }
+      it { is_expected.to include_recipe 'osl-ceph::admin_tools' }
       it { is_expected.to install_osl_ceph_install('mon').with(mon: true) }
       it { is_expected.to_not start_osl_ceph_mon 'mon' }
 

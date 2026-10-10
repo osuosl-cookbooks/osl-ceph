@@ -42,7 +42,8 @@ keyrings, CephFS mounts, RBD mappings and Nagios/NRPE monitoring.
 | `default`     | Installs the Ceph client packages and creates `ceph.conf` from `node['osl-ceph']['config']`        |
 | `mds`         | Deploys a metadata server (CephFS)                                                                 |
 | `mgr`         | Deploys a manager daemon                                                                           |
-| `mon`         | Deploys a monitor using keys from the `ceph` data bag                                              |
+| `mon`         | Deploys a monitor using keys from the `ceph` data bag; includes `admin_tools`                     |
+| `admin_tools` | Installs read-only operator tools (`ceph-assess`, `ceph-metrics-assess`, `ceph-check-rotational`) in `/usr/local/sbin`; included by `mon` |
 | `osd`         | Deploys an OSD node, including a partprobe workaround for NVMe logical volumes                     |
 | `radosgw`     | Deploys a RadosGW object gateway                                                                   |
 | `s3_admin`    | Deploys the admin s3cmd config (`/root/.s3cfg`) and the `create-s3-bucket` provisioning script on mon hosts, using the `rgw_admin_access_key`/`rgw_admin_secret_key` fields from the `ceph` data bag item |
@@ -75,6 +76,19 @@ create-s3-bucket <project> <bucket>   # creates the bucket <project>-<bucket>
 The script creates the RGW user `<project>` if missing, creates the bucket as the admin user,
 transfers ownership, verifies it, and prints the project's keys. Deliver keys via the Secrets app
 on https://cloud.osuosl.org — never email or chat.
+
+### Operator tools (`admin_tools`)
+
+The `mon` recipe installs three read-only tools on every monitor host. Each writes everything it
+collects to one log under `/root`, named `<tool>-<host>-<UTC>.log`, for copying off the host:
+
+| Tool | Collects |
+| ---- | -------- |
+| `ceph-assess` | versions, health, `df detail`, `osd df tree` per device class, balancer status and score, upmap count, pools and CRUSH rules, override reweights, recovery/mclock config, `osd perf`, osd metadata (rotational, min_alloc, DB device), PGs on the fullest OSD per class, and `osd df` as JSON |
+| `ceph-metrics-assess` | mgr prometheus module options, rbd-enabled pools and image counts, what the active mgr serves, ceph-exporter state |
+| `ceph-check-rotational` | OSDs whose device class, start-time rotational flag and live kernel flag disagree (`PENDING`, `MISDETECT`, `WRONGCLASS`) |
+
+They change nothing on the cluster. The `ceph-ops` skill in the OSL Claude plugin reads their logs.
 
 ## Resources
 

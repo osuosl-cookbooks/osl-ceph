@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+# ceph-metrics-assess: read-only check of what the mgr prometheus module and ceph-exporter serve.
+# Logs to /root/ceph-metrics-assess-<host>-<UTC>.log; installed by osl-ceph::admin_tools.
+
+LOG=/root/ceph-metrics-assess-$(hostname -s)-$(date -u +%Y%m%dT%H%MZ).log
+
+run() {
+  printf '\n\n===== %s =====\n' "$*"
+  timeout 120 "$@" 2>&1
+}
+
+{
+  echo "Metrics assessment: $(date -u "+%F %T") UTC on $(hostname -f)"
+  echo "fsid: $(timeout 60 ceph fsid 2>/dev/null)"
+
+  run ceph versions
+  run ceph -s
+
+  # mgr/prometheus only collects for pools carrying the 'rbd' application.
+  run ceph osd pool ls detail
+  run ceph osd pool application get
+
+  printf '\n\n===== pools with the rbd application enabled =====\n'
+  RBD_POOLS=$(timeout 120 ceph osd pool application get --format json 2>/dev/null |
+    python3 -c 'import json,sys
+try:
+    d = json.load(sys.stdin)
+except Exception as e:
+    sys.exit(0)
+print("\n".join(sorted(p for p, apps in d.items() if "rbd" in apps)))' 2>/dev/null)
+  if [ -z "$RBD_POOLS" ]; then
+    echo "(none found, or the application get / python3 parse failed)"
+  else
+    echo "$RBD_POOLS"
+  fi
+
+  # 8 series per image: read/write ops and bytes, plus read/write latency _sum and _count.
+  printf '\n\n===== image count per rbd pool (series = images x 8) =====\n'
+  printf '%-28s %10s %10s  %s\n' POOL IMAGES SERIES NAMESPACES
+  TOTAL=0
+  for pool in $RBD_POOLS; do
+    n=$(timeout 180 rbd ls -p "$pool" 2>/dev/null | grep -c .)
+    [ -z "$n" ] && n=0
+    ns=$(timeout 60 rbd namespace ls -p "$pool" --format json 2>/dev/null |
+      python3 -c 'import json,sys
+try:
+    print(",".join(x["name"] for x in json.load(sys.stdin)) or "-")
+except Exception:
+    print("-")' 2>/dev/null)
+    [ -z "$ns" ] && ns='-'
+    printf '%-28s %10s %10s  %s\n' "$pool" "$n" "$((n * 8))" "$ns"
+    TOTAL=$((TOTAL + n))
+  done
+  printf '%-28s %10s %10s\n' TOTAL "$TOTAL" "$((TOTAL * 8))"
+  echo
+  echo "Note: image counts above are the default namespace only. Any pool"
+  echo "showing namespaces other than '-' has additional images not counted."
+
+  printf '\n\n===== sample image names (first 5 per pool, sanity check) =====\n'
+  for pool in $RBD_POOLS; do
+    printf -- '--- %s ---\n' "$pool"
+    timeout 60 rbd ls -p "$pool" 2>&1 | head -5
+  done
+
+  printf '\n\n===== mgr/prometheus config now in the mon config db =====\n'
+  timeout 120 ceph config dump 2>/dev/null | grep -iE 'prometheus|exporter' || echo "(nothing set)"
+
+  printf '\n\n===== the three options that matter =====\n'
+  for opt in rbd_stats_pools rbd_stats_pools_refresh_interval exclude_perf_counters; do
+    printf '%-38s %s\n' "$opt" "$(timeout 60 ceph config get mgr "mgr/prometheus/$opt" 2>/dev/null)"
+  done
+
+  run ceph mgr module ls
+  run ceph mgr services
+  run ceph mgr stat
+
+  # Confirms the perf-counter gap from this end rather than from Prometheus.
+  printf '\n\n===== metrics currently served by the active mgr =====\n'
+  URL=$(timeout 60 ceph mgr services 2>/dev/null |
+    python3 -c 'import json,sys
+try:
+    print(json.load(sys.stdin).get("prometheus", ""))
+except Exception:
+    print("")' 2>/dev/null)
+  [ -z "$URL" ] && URL=http://localhost:9283/
+  echo "endpoint: ${URL}metrics"
+  BODY=$(timeout 120 curl -s --max-time 110 "${URL}metrics" 2>&1)
+  if [ -z "$BODY" ]; then
+    echo "(no response — the active mgr is probably on another host; rerun there)"
+  else
+    printf 'total metric lines : %s\n' "$(printf '%s' "$BODY" | grep -c '^ceph_')"
+    printf 'distinct names     : %s\n' "$(printf '%s' "$BODY" | grep -o '^ceph_[a-z0-9_]*' | sort -u | grep -c .)"
+    for p in ceph_rbd_ ceph_osd_stat_bytes ceph_osd_op_r ceph_rgw_req ceph_bluefs_; do
+      printf '%-22s %s\n' "$p" "$(printf '%s' "$BODY" | grep -c "^$p")"
+    done
+  fi
+
+  # --------------------------------------------------- ceph-exporter state ---
+  printf '\n\n===== ceph-exporter on this host =====\n'
+  rpm -q ceph-exporter 2>&1
+  systemctl list-units --all --no-legend 'ceph-exporter*' 2>&1 | head
+  ss -lntp 2>/dev/null | grep -E ':(9283|9926)' || echo "(nothing listening on 9283/9926)"
+
+  printf '\n\n===== ceph-exporter available from the configured repos =====\n'
+  timeout 120 dnf -q list --showduplicates ceph-exporter 2>&1 | tail -5
+
+} 2>&1 | tee "$LOG"
+
+echo
+echo "Saved to: $LOG"
