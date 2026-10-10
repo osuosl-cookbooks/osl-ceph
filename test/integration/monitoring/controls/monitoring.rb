@@ -37,6 +37,16 @@ control 'monitoring' do
     it { should be_listening }
   end
 
+  # The exporter runs as client.admin; on the default socket path it collided with root's ceph CLI.
+  describe file('/var/run/ceph/ceph-exporter.asok') do
+    it { should be_socket }
+  end
+
+  describe command('ceph osd stat') do
+    its('exit_status') { should eq 0 }
+    its('stderr') { should_not match(/AdminSocketConfigObs/) }
+  end
+
   # Installed and listening is not enough: the point of the daemon is the perf
   # counters mgr/prometheus stopped exporting in Reef.
   describe command('curl -s --max-time 10 http://localhost:9926/metrics') do

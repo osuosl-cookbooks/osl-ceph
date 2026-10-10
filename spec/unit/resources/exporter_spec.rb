@@ -15,7 +15,7 @@ describe 'osl_ceph_exporter' do
       content: <<~EOC
         [Service]
         ExecStart=
-        ExecStart=/usr/bin/ceph-exporter -f --no-mon-config --setuser ceph --setgroup ceph
+        ExecStart=/usr/bin/ceph-exporter -f --no-mon-config --admin-socket /var/run/ceph/ceph-exporter.asok --setuser ceph --setgroup ceph
       EOC
     )
   end
