@@ -14,7 +14,8 @@ that read only this file):
 - never create, converge or destroy kitchen instances;
 - never read data bags or production secrets;
 - never edit the `version` line in `metadata.rb` or `CHANGELOG.md`;
-- code comments are at most two lines.
+- code comments are at most five lines, not counting a line that holds a URL
+  or file path.
 
 ## Who runs it
 
